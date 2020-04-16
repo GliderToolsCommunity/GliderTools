@@ -23,7 +23,7 @@ To install the core package run: ``pip install glidertools``.
 
 GitLab
 ......
-1. Clone glidertools to your local machine: `git clone --depth 1 https://gitlab.com/socco/GliderTools` (--depth 1 reduces the download size)
+1. Clone glidertools to your local machine: `git clone https://github.com/GliderToolsCommunity/GliderTools`
 2. Change to the parent directory of GliderTools
 3. Install glidertools with `pip install -e ./GliderTools`. This will allow changes you make locally, to be reflected when you import the package in Python
 
@@ -38,7 +38,7 @@ There are some packages that are not installed by default, as these are large pa
 
 How you can contribute
 ----------------------
-- Error reporting with using GitLab (https://gitlab.com/socco/GliderTools/issues/new). Please copy the entire error message (even if it's long).
+- Error reporting with using GitLab (https://github.com/GliderToolsCommunity/GliderTools/issues/new). Please copy the entire error message (even if it's long).
 - Detailed error reporting so users know where the fault lies.
 - Oxygen processing is rudimentary as we do not have the expertise in our group to address this
 
