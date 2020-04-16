@@ -8,8 +8,9 @@ from .helpers import getframe, transfer_nc_attrs
 
 def time_average_per_dive(dives, time):
     """
-    Gets the average time stamp per dive. This is used to create psuedo discrete
-    time steps per dive for plotting data (using time as x-axis variable).
+    Gets the average time stamp per dive. This is used to create psuedo
+    discrete time steps per dive for plotting data (using time as x-axis
+    variable).
 
     Parameters
     ----------

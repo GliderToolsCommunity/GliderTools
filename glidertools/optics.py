@@ -10,8 +10,10 @@ def find_bad_profiles(dives, depth, var, ref_depth=None, stdev_multiplier=1, met
     """
     Find profiles that exceed a threshold at a reference depth.
 
-    This function masks bad dives based on mean + std x [1] or median + std x [1] at a reference depth.
-    The function is typically used to clean raw fluorescence and backscatter data.
+    This function masks bad dives based on
+        mean + std x [1] or
+        median + std x [1] at a reference depth.
+    Function is typically used to clean raw fluorescence and backscatter data.
 
     Parameters
     ----------
@@ -22,11 +24,14 @@ def find_bad_profiles(dives, depth, var, ref_depth=None, stdev_multiplier=1, met
     var: numpy.ndarray or pandas.Series
         Array of data variable for function to be performed on.
     ref_depth: int
-        The depth threshold for optics.find_bad_profiles below which the median or mean is calculated for identifying outliers.
+        The depth threshold for optics.find_bad_profiles below which the
+        median or mean is calculated for identifying outliers.
     stdev_multiplier: int
-        The standard deviation multiplier for calculating outliers, i.e. mean +- std x [1].
+        The standard deviation multiplier for calculating outliers,
+        i.e. mean +- std x [1].
     method: str
-        Whether to use the deep median or deep mean to determine bad profiles for optics.find_bad_profiles.
+        Whether to use the deep median or deep mean to determine bad profiles
+        for optics.find_bad_profiles.
 
     Returns
     -------

@@ -4,6 +4,7 @@ from __future__ import (print_function as _pf,
                         absolute_import as _ai)
 from .helpers import getframe, transfer_nc_attrs
 
+
 def outlier_bounds_std(arr, multiplier=3):
     r"""
     Mask values outside the upper and lower outlier limits by standard deviation

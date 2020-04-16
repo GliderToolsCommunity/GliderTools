@@ -73,7 +73,9 @@ def mixed_layer_depth(dives, depth, dens_or_temp, thresh=0.01, ref_depth=10, ret
     df = DataFrame(data=arr, columns=col)
 
     grp = df.groupby('dives')
-    mld = grp.apply(lambda g: mld_profile(g.dens.values, g.depth.values, thresh, ref_depth, mask=return_as_mask))
+    mld = grp.apply(lambda g: mld_profile(g.dens.values, g.depth.values,
+                                          thresh, ref_depth,
+                                          mask=return_as_mask))
 
     if return_as_mask:
         return np.concatenate([l for l in mld])
