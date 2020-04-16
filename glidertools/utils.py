@@ -1,15 +1,16 @@
-# -*- coding: utf-8 -*-
 #!/usr/bin/env python
-from __future__ import (print_function as _pf,
-                        unicode_literals as _ul,
-                        absolute_import as _ai)
+from __future__ import absolute_import as _ai
+from __future__ import print_function as _pf
+from __future__ import unicode_literals as _ul
+
 from .helpers import getframe, transfer_nc_attrs
 
 
 def time_average_per_dive(dives, time):
     """
-    Gets the average time stamp per dive. This is used to create psuedo discrete
-    time steps per dive for plotting data (using time as x-axis variable).
+    Gets the average time stamp per dive. This is used to create psuedo
+    discrete time steps per dive for plotting data (using time as x-axis
+    variable).
 
     Parameters
     ----------
@@ -18,15 +19,14 @@ def time_average_per_dive(dives, time):
     time : np.array, dtype=datetime64, shape=[n, ]
         time stamp for each observed measurement
 
-    Returns  
+    Returns
     -------
     time_average_per_dive : np.array, dtype=datetime64, shape=[n, ]
-        each dive will have the average time stamp of that dive. Can be used for
-        plotting where time_average_per_dive is set as the x-axis.
+        each dive will have the average time stamp of that dive. Can be used
+        for plotting where time_average_per_dive is set as the x-axis.
     """
     from pandas import Series
     from numpy import datetime64, array, nanmean
-    from xarray.coding.times import decode_cf_datetime
 
     atime = array(time)
     dives = array(dives)
@@ -48,7 +48,7 @@ def time_average_per_dive(dives, time):
 
 def mask_to_depth_array(dives, depth, var):
     """
-    To be used when function returns a boolean section (as a mask) and you would
+    Use when function returns a boolean section (as a mask) and you would
     like to return the depth of the positive mask (True) for each dive. This is
     useful for cases like MLD which returns a mask. Note that this is for
     ungridded data in "series" format.
@@ -67,6 +67,7 @@ def mask_to_depth_array(dives, depth, var):
 
     from numpy import r_, diff, array
     from pandas import Series
+
     i = r_[False, diff(var)].astype(bool)
     idx_depth = Series(array(depth)[i], index=array(dives)[i])
 
@@ -112,8 +113,6 @@ def merge_dimensions(df1, df2, interp_lim=3):
         )
     """
 
-    import numpy as np
-    import pandas as pd
     import xarray as xr
     from .helpers import GliderToolsError
 
@@ -151,6 +150,7 @@ def calc_glider_vert_velocity(time, depth):
     """
     from numpy import array
     from pandas import Series
+
     # Converting time from datetime 64 to seconds since deployment
     t_ns = array(time).astype('datetime64[ns]').astype(float)
     t_s = Series((t_ns - t_ns.min()) / 1e9)
@@ -191,8 +191,10 @@ def calc_dive_phase(time, depth):
     phase = ndarray(time.size)
 
     phase[velocity > 0.5] = 1  # down dive
-    phase[velocity <-0.5] = 4  # up dive
-    phase[(depth > 200) & (velocity >= -0.5) & (velocity <= 0.5)] = 3  # inflexion
+    phase[velocity < -0.5] = 4  # up dive
+    phase[
+        (depth > 200) & (velocity >= -0.5) & (velocity <= 0.5)
+    ] = 3  # inflexion
     phase[depth <= 200] = 0  # surface drift
     phase[isnan(phase)] = 6
     phase = phase.astype(int)
@@ -226,6 +228,7 @@ def calc_dive_number(time, depth):
 
 def dive_phase_to_number(phase):
     from pandas import Series
+
     phase = Series(phase)
 
     u_dive = ((phase == 4).astype(int).diff() == 1).astype(int).cumsum()
@@ -264,8 +267,9 @@ def distance(lon, lat, ref_idx=None):
     earth_radius = 6371e3
 
     if not lon.size == lat.size:
-        raise ValueError('lon, lat size must match; found %s, %s'
-                          % (lon.size, lat.size))
+        raise ValueError(
+            'lon, lat size must match; found %s, %s' % (lon.size, lat.size)
+        )
     if not len(lon.shape) == 1:
         raise ValueError('lon, lat must be flat arrays')
 
@@ -284,8 +288,9 @@ def distance(lon, lat, ref_idx=None):
         dlon = lon[ref_idx] - lon
         dlat = lat[ref_idx] - lat
 
-    a = np.sin(dlat / 2)**2 + \
-        np.sin(dlon / 2)**2 * np.cos(lat[i1]) * np.cos(lat[i2])
+    a = np.sin(dlat / 2) ** 2 + np.sin(dlon / 2) ** 2 * np.cos(
+        lat[i1]
+    ) * np.cos(lat[i2])
 
     angles = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
 

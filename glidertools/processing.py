@@ -1,16 +1,25 @@
-# -*- coding: utf-8 -*-
 #!/usr/bin/env python
-from __future__ import (print_function as _pf,
-                        unicode_literals as _ul,
-                        absolute_import as _ai)
-from .helpers import getframe, transfer_nc_attrs, printv
+from __future__ import absolute_import as _ai
+from __future__ import print_function as _pf
+from __future__ import unicode_literals as _ul
+
+from .helpers import getframe, printv, transfer_nc_attrs
 
 
-def calc_physics(variable, dives, depth,
-                 spike_window=3, spike_method='minmax',
-                 iqr=1.5, depth_threshold=400, mask_frac=0.2,
-                 savitzky_golay_window=11, savitzky_golay_order=2,
-                 verbose=True, name='Physics Variable'):
+def calc_physics(
+    variable,
+    dives,
+    depth,
+    spike_window=3,
+    spike_method='minmax',
+    iqr=1.5,
+    depth_threshold=400,
+    mask_frac=0.2,
+    savitzky_golay_window=11,
+    savitzky_golay_order=2,
+    verbose=True,
+    name='Physics Variable',
+):
     """
     A standard setup for processing physics variables (temperature, salinity).
 
@@ -22,9 +31,13 @@ def calc_physics(variable, dives, depth,
     https://en.wikipedia.org/wiki/Savitzky-Golay_filter
     """
 
-    from pandas import Series
-    from numpy import array, ma, NaN, inf, count_nonzero, isnan
-    from .cleaning import savitzky_golay, despike, outlier_bounds_iqr, horizontal_diff_outliers, mask_bad_dive_fraction
+    from numpy import array, isnan
+    from .cleaning import (
+        savitzky_golay,
+        despike,
+        outlier_bounds_iqr,
+        horizontal_diff_outliers,
+    )
 
     # an interpolation step is added so that no nans are created.
     # Note that this interpolates on the flattened series
@@ -33,25 +46,45 @@ def calc_physics(variable, dives, depth,
     x = array(dives)
     y = array(depth)
     z = array(variable)
-    printv(verbose, '\n' + '=' * 50 + "\n{}:".format(name))
+    printv(verbose, '\n' + '=' * 50 + '\n{}:'.format(name))
 
     if iqr:
         nans_before = isnan(z).sum()
         z = outlier_bounds_iqr(z, multiplier=iqr)
         nans_after = isnan(z).sum()
         n_masked = nans_after - nans_before
-        printv(verbose, '    Removing outliers with IQR * {}: {} obs'.format(iqr, n_masked))
+        printv(
+            verbose,
+            '\tRemoving outliers with IQR * {}: {} obs'.format(iqr, n_masked),
+        )
 
     if spike_window:
         z = despike(z, spike_window, spike_method)[0]
-        printv(verbose, "    Removing spikes with rolling median (spike window={})".format(spike_window))
+        printv(
+            verbose,
+            '\tRemoving spikes with rolling median (spike window={})'.format(
+                spike_window
+            ),
+        )
 
     if depth_threshold:
         z = horizontal_diff_outliers(x, y, z, iqr, depth_threshold, mask_frac)
-        printv(verbose, "    Removing horizontal outliers (fraction={}, multiplier={})".format(mask_frac, iqr))
+        printv(
+            verbose,
+            (
+                '\tRemoving horizontal outliers '
+                '(fraction={}, multiplier={})'
+            ).format(mask_frac, iqr),
+        )
 
     if savitzky_golay_window:
-        printv(verbose, "    Smoothing with Savitzky-Golay filter (window={}, order={})".format(savitzky_golay_window, savitzky_golay_order))
+        printv(
+            verbose,
+            (
+                '\tSmoothing with Savitzky-Golay filter '
+                '(window={}, order={})'
+            ).format(savitzky_golay_window, savitzky_golay_order),
+        )
         z = savitzky_golay(z, savitzky_golay_window, savitzky_golay_order)
 
     z = transfer_nc_attrs(getframe(), var, z, '_processed')
@@ -59,10 +92,18 @@ def calc_physics(variable, dives, depth,
     return z
 
 
-def calc_oxygen(o2raw, pressure, salinity, temperature, auto_conversion=True,
-                spike_window=7, spike_method='median',
-                savitzky_golay_window=0, savitzky_golay_order=2,
-                verbose=True):
+def calc_oxygen(
+    o2raw,
+    pressure,
+    salinity,
+    temperature,
+    auto_conversion=True,
+    spike_window=7,
+    spike_method='median',
+    savitzky_golay_window=0,
+    savitzky_golay_order=2,
+    verbose=True,
+):
     """
     This function processes oxygen.
 
@@ -110,9 +151,8 @@ def calc_oxygen(o2raw, pressure, salinity, temperature, auto_conversion=True,
 
     """
 
-    from sklearn.linear_model import LinearRegression
     from numpy import isnan, abs, array, ones, c_, median
-    from . cleaning import outlier_bounds_iqr, despike, savitzky_golay
+    from .cleaning import outlier_bounds_iqr, despike, savitzky_golay
     import seawater as sw
     from pandas import Series
 
@@ -128,16 +168,26 @@ def calc_oxygen(o2raw, pressure, salinity, temperature, auto_conversion=True,
 
     if spike_window:
         o2raw, _ = despike(o2raw, spike_window, spike_method)
-        printv(verbose,
-                '\n' + '=' * 50 + "\n{}:\n"
-                "\tSmoothing data with despiking algorithm:\n\t"
-                "    spike identification (spike window={})"
-                "".format(name, spike_window))
+        printv(
+            verbose,
+            '\n' + '=' * 50 + '\n{}:\n'
+            '\tSmoothing data with despiking algorithm:\n\t'
+            '    spike identification (spike window={})'
+            ''.format(name, spike_window),
+        )
 
     if savitzky_golay_window:
-        printv(verbose, "\tSmoothing with Savitzky-Golay filter (window={}, order={})".format(savitzky_golay_window, savitzky_golay_order))
-        o2raw = savitzky_golay(o2raw, savitzky_golay_window, savitzky_golay_order)
-  
+        printv(
+            verbose,
+            (
+                '\tSmoothing with Savitzky-Golay filter '
+                '(window={}, order={})'
+            ).format(savitzky_golay_window, savitzky_golay_order),
+        )
+        o2raw = savitzky_golay(
+            o2raw, savitzky_golay_window, savitzky_golay_order
+        )
+
     o2sat = sw.satO2(salinity, temperature)
     density = sw.dens(salinity, temperature, pressure)
 
@@ -150,7 +200,7 @@ def calc_oxygen(o2raw, pressure, salinity, temperature, auto_conversion=True,
         # conversion factors to estimate the appropriate conversion.
 
         # clean the data first with basic cleaning
-        surf = ((pressure < 20) & ~isnan(o2raw) & ~isnan(o2sat))
+        surf = (pressure < 20) & ~isnan(o2raw) & ~isnan(o2sat)
         # prepare the data for linear regression
         Y = o2raw[surf].copy()
         X = c_[ones(surf.sum()), o2sat[surf]]
@@ -167,14 +217,18 @@ def calc_oxygen(o2raw, pressure, salinity, temperature, auto_conversion=True,
         ratio_diffs = abs(observed_ratio - theoretic_ratio)
         # catch if the difference is too big
         if ratio_diffs.min() > 10:
-            printv(verbose,
-                ('Oxygen unit could not be estimated automatically. '
-                 'Do the unit conversion on the raw data before '
-                 'passing it to the function. \n'
-                 'Below is some info to help you\n'
-                 '    µmol/l > µmol/kg * 1.025\n'
-                 '    µmol/l > ml/l * 44.66\n'
-                 '    µmol/l > mg/l * 31.25'))
+            printv(
+                verbose,
+                (
+                    'Oxygen unit could not be estimated automatically. '
+                    'Do the unit conversion on the raw data before '
+                    'passing it to the function. \n'
+                    'Below is some info to help you\n'
+                    '    µmol/l > µmol/kg * 1.025\n'
+                    '    µmol/l > ml/l * 44.66\n'
+                    '    µmol/l > mg/l * 31.25'
+                ),
+            )
         # otherwise do the conversion
         else:
             unit_idx = ratio_diffs.argmin()
@@ -191,39 +245,85 @@ def calc_oxygen(o2raw, pressure, salinity, temperature, auto_conversion=True,
                 printv(verbose, 'Difference is {}'.format(ratio_diffs))
             printv(verbose, '\tUnits automatically detected {}'.format(unit))
             if ratio_diffs.min() > 5:
-                print('\tWARNING: Confirm units mannually as near the confidence threshold')
+                print(
+                    '\tWARNING: Confirm units mannually as near the '
+                    'confidence threshold'
+                )
         o2aou = o2sat - o2mll
         o2pct = o2mll / o2sat * 100
 
-        o2mll = transfer_nc_attrs(getframe(), var, o2mll, 'o2mll', units='mL/L', comment='', standard_name='dissolved_oxygen')
-        o2aou = transfer_nc_attrs(getframe(), var, o2mll, 'o2aou', units='mL/L', comment='', standard_name='aparent_oxygen_utilisation')
-        o2pct = transfer_nc_attrs(getframe(), var, o2mll, 'o2pct', units='percent', comment='', standard_name='theoretical_oxgen_saturation')
+        o2mll = transfer_nc_attrs(
+            getframe(),
+            var,
+            o2mll,
+            'o2mll',
+            units='mL/L',
+            comment='',
+            standard_name='dissolved_oxygen',
+        )
+        o2aou = transfer_nc_attrs(
+            getframe(),
+            var,
+            o2mll,
+            'o2aou',
+            units='mL/L',
+            comment='',
+            standard_name='aparent_oxygen_utilisation',
+        )
+        o2pct = transfer_nc_attrs(
+            getframe(),
+            var,
+            o2mll,
+            'o2pct',
+            units='percent',
+            comment='',
+            standard_name='theoretical_oxgen_saturation',
+        )
 
         return o2mll, o2pct, o2aou
 
     else:
         print(
-            "No oxygen conversion applied - user "
-            "must impliment before or after running "
-            "the cleaning functions.")
+            'No oxygen conversion applied - user '
+            'must impliment before or after running '
+            'the cleaning functions.'
+        )
 
 
-def calc_backscatter(bb_raw, tempC, salt, dives, depth, wavelength,
-            dark_count, scale_factor, spike_window=7, spike_method='median',
-            iqr=3, profiles_ref_depth=300, deep_multiplier=1, deep_method='median',
-            return_figure=False, verbose=True):
+def calc_backscatter(
+    bb_raw,
+    tempC,
+    salt,
+    dives,
+    depth,
+    wavelength,
+    dark_count,
+    scale_factor,
+    spike_window=7,
+    spike_method='median',
+    iqr=3,
+    profiles_ref_depth=300,
+    deep_multiplier=1,
+    deep_method='median',
+    return_figure=False,
+    verbose=True,
+):
     r"""
-    The function processes the raw backscattering data in counts into total backscatter (bbp) in metres.
+    The function processes the raw backscattering data in counts into total
+    backscatter (bbp) in metres.
 
-    The function uses a series of steps to clean the data before applying the Zhang et al. (2009) functions to convert the
-    data into total backscatter (bbp/m)). The function uses functions from the flo_functions toolkit [1]_.
-    The theta angle of sensors (124deg) and xfactor for theta 124 (1.076) are set values that should be updated if you are not using
-    a WetLabs ECO BB2FL.
+    The function uses a series of steps to clean the data before applying the
+    Zhang et al. (2009) functions to convert the data into total backscatter
+    (bbp/m)). The function uses functions from the flo_functions toolkit [1]_.
+    The theta angle of sensors (124deg) and xfactor for theta 124 (1.076) are
+    set values that should be updated if you are not using a WetLabs ECO BB2FL
 
     The following standard sequence is applied:
 
-    1. find IQR outliers  (i.e. data values outside of the lower and upper limits calculated by cleaning.outlier_bounds_iqr)
-    2. find_bad_profiles  (e.g. high values below 300 m are counted as bad profiles)
+    1. find IQR outliers  (i.e. data values outside of the lower and upper
+       limits calculated by cleaning.outlier_bounds_iqr)
+    2. find_bad_profiles  (e.g. high values below 300 m are counted as bad
+       profiles)
     3. flo_scale_and_offset (factory scale and offset)
     4. flo_bback_total  (total backscatter based on Zhang et al. 2009) [2]_
     5. backscatter_dark_count  (based on Briggs et al. 2011) [3]_
@@ -251,35 +351,50 @@ def calc_backscatter(bb_raw, tempC, salt, dives, depth, wavelength,
     spike_window: int
         The window size over which to run the despiking method.
     spike_method: str
-        Whether to use a rolling median or combination of min+max filter as the despiking method.
+        Whether to use a rolling median or combination of min+max filter as
+        the despiking method.
     iqr: int
-        Multiplier to determine the lower and upper limits of the interquartile range for outlier detection.
+        Multiplier to determine the lower and upper limits of the
+        interquartile range for outlier detection.
     profiles_ref_depth: int
-        The depth threshold for optics.find_bad_profiles below which the median or mean is calculated for identifying outliers.
+        The depth threshold for optics.find_bad_profiles below which the
+        median or mean is calculated for identifying outliers.
     deep_multiplier: int=1
-        The standard deviation multiplier for calculating outliers, i.e. :math:`\mu \pm \sigma \cdot[1]`.
+        The standard deviation multiplier for calculating outliers,
+        i.e. :math:`\mu \pm \sigma \cdot[1]`.
     deep_method: str
-        Whether to use the deep median or deep mean to determine bad profiles for optics.find_bad_profiles.
+        Whether to use the deep median or deep mean to determine bad profiles
+        for optics.find_bad_profiles.
     return_figure: bool
-        If True, will return a figure object that shows before and after the quenching correction was applied.
+        If True, will return a figure object that shows before and after the
+        quenching correction was applied.
     verbose: bool
         If True, will print the progress of the processing function.
 
     Returns
     -------
     baseline: numpy.ma.masked_array
-        The despiked + bad profile identified backscatter with the mask denoting the filtered values of the backscatter baseline as
+        The despiked + bad profile identified backscatter with the mask
+        denoting the filtered values of the backscatter baseline as
         defined in Briggs et al. (2011).
     quench_corrected: np.array / pd.Series, dtype=float, shape=[n, ]
         The backscatter spikes as defined in Briggs et al. (2011).
     figs: object
-        The figures reporting the despiking, bad profiles and quenching correction.
+        The figures reporting the despiking, bad profiles and quenching
+        correction.
 
     References
     ----------
-    .. [1] https://github.com/ooici/ion-functions Copyright (c) 2010, 2011 The Regents of the University of California
-    .. [2] Zhang, X., Hu, L., & He, M. (2009). Scattering by pure seawater: Effect of salinity. Optics Express, 17(7), 5698. https://doi.org/10.1364/OE.17.005698
-    .. [3] Briggs, N., Perry, M. J., Cetinic, I., Lee, C., D'Asaro, E., Gray, A. M., & Rehm, E. (2011). High-resolution observations of aggregate flux during a sub-polar North Atlantic spring bloom. Deep-Sea Research Part I: Oceanographic Research Papers, 58(10), 1031–1039. https://doi.org/10.1016/j.dsr.2011.07.007
+    .. [1] https://github.com/ooici/ion-functions Copyright (c) 2010, 2011 The
+           Regents of the University of California
+    .. [2] Zhang, X., Hu, L., & He, M. (2009). Scattering by pure seawater:
+           Effect of salinity. Optics Express, 17(7), 5698.
+           https://doi.org/10.1364/OE.17.005698
+    .. [3] Briggs, N., Perry, M. J., Cetinic, I., Lee, C., D'Asaro, E., Gray,
+           A. M., & Rehm, E. (2011). High-resolution observations of aggregate
+           flux during a sub-polar North Atlantic spring bloom. Deep-Sea
+           Research Part I: Oceanographic Research Papers, 58(10), 1031–1039.
+           https://doi.org/10.1016/j.dsr.2011.07.007
 
 
     """
@@ -307,7 +422,7 @@ def calc_backscatter(bb_raw, tempC, salt, dives, depth, wavelength,
 
     dive_count = count_nonzero(unique(dives))
 
-    printv(verbose, '\n' + '=' * 50 + "\n{}:".format(name))
+    printv(verbose, '\n' + '=' * 50 + '\n{}:'.format(name))
 
     if iqr:
 
@@ -315,15 +430,28 @@ def calc_backscatter(bb_raw, tempC, salt, dives, depth, wavelength,
         bb_raw = outlier_bounds_iqr(bb_raw, multiplier=iqr)
         nans_after = isnan(bb_raw).sum()
         n_masked = nans_after - nans_before
-        printv(verbose, '\tRemoving outliers with IQR * {}: {} obs'.format(iqr, n_masked))
+        printv(
+            verbose,
+            '\tRemoving outliers with IQR * {}: {} obs'.format(iqr, n_masked),
+        )
 
-    printv(verbose, '\tMask bad profiles based on deep values (depth={}m)'.format(ref_depth))
-    bad_profiles = op.find_bad_profiles(dives, depth, bb_raw, ref_depth, stdev_multiplier, method)
+    printv(
+        verbose,
+        '\tMask bad profiles based on deep values (depth={}m)'.format(
+            ref_depth
+        ),
+    )
+    bad_profiles = op.find_bad_profiles(
+        dives, depth, bb_raw, ref_depth, stdev_multiplier, method
+    )
     bb_raw[bad_profiles[0]] = nan
 
     bad_count = count_nonzero(bad_profiles[1])
 
-    printv(verbose, '\tNumber of bad profiles = {}/{}'.format(bad_count, dive_count))
+    printv(
+        verbose,
+        '\tNumber of bad profiles = {}/{}'.format(bad_count, dive_count),
+    )
     printv(verbose, '\tZhang et al. (2009) correction')
     beta = ff.flo_scale_and_offset(bb_raw, dark_count, scale_factor)
     bbp = ff.flo_bback_total(beta, tempC, salt, theta, wavelength, xfactor)
@@ -332,12 +460,29 @@ def calc_backscatter(bb_raw, tempC, salt, dives, depth, wavelength,
     printv(verbose, '\tDark count correction')
     bbp = op.backscatter_dark_count(bbp, depth)
 
-    printv(verbose, "\tSpike identification (spike window={})".format(spike_window))
+    printv(
+        verbose,
+        '\tSpike identification (spike window={})'.format(spike_window),
+    )
     baseline, spikes = despike(bbp, spike_window, spike_method='median')
-    baseline = Series(baseline, name="bb{:.0f}".format(wavelength))
+    baseline = Series(baseline, name='bb{:.0f}'.format(wavelength))
 
-    baseline = transfer_nc_attrs(getframe(), var, baseline, name + '_baseline', units='units', standard_name='backscatter')
-    spikes = transfer_nc_attrs(getframe(),   var, spikes,   name + '_spikes',   units='units', standard_name='backscatter')
+    baseline = transfer_nc_attrs(
+        getframe(),
+        var,
+        baseline,
+        name + '_baseline',
+        units='units',
+        standard_name='backscatter',
+    )
+    spikes = transfer_nc_attrs(
+        getframe(),
+        var,
+        spikes,
+        name + '_spikes',
+        units='units',
+        standard_name='backscatter',
+    )
 
     if not return_figure:
         return baseline, spikes
@@ -348,17 +493,34 @@ def calc_backscatter(bb_raw, tempC, salt, dives, depth, wavelength,
         return baseline, spikes, fig
 
 
-def calc_fluorescence(flr_raw, bbp, dives, depth, time, lat, lon, dark_count, scale_factor,
-                      spike_window=7, spike_method='median',
-                      night_day_group=True, sunrise_sunset_offset=1,
-                      profiles_ref_depth=300, deep_multiplier=1, deep_method='median',
-                      return_figure=False, verbose=True):
+def calc_fluorescence(
+    flr_raw,
+    bbp,
+    dives,
+    depth,
+    time,
+    lat,
+    lon,
+    dark_count,
+    scale_factor,
+    spike_window=7,
+    spike_method='median',
+    night_day_group=True,
+    sunrise_sunset_offset=1,
+    profiles_ref_depth=300,
+    deep_multiplier=1,
+    deep_method='median',
+    return_figure=False,
+    verbose=True,
+):
     r"""
-    This function processes raw fluorescence and corrects for quenching using the Thomalla et al. (2018) approach [1]_.
+    This function processes raw fluorescence and corrects for quenching using
+    the Thomalla et al. (2018) approach [1]_.
 
     The following standard sequence is applied:
 
-    1. find_bad_profiles  (e.g. high Fluorescence in > 300 m water signals bad profile)
+    1. find_bad_profiles  (e.g. high Fluorescence in > 300 m water signals
+       bad profile)
     2. fluorescence_dark_count & scale factor  (i.e. factory correction)
     3. despike  (using Briggs et al. 2011 - rolling min--max)
     4. quenching_correction  (corrects for quenching with Thomalla et al. 2017)
@@ -368,7 +530,8 @@ def calc_fluorescence(flr_raw, bbp, dives, depth, time, lat, lon, dark_count, sc
     flr_raw: np.array / pd.Series, dtype=float, shape=[n, ]
         The raw output of fluorescence data in instrument counts.
     bbp: np.array / pd.Series, dtype=float, shape=[n, ]
-        The processed backscatter data from the less noisy channel, i.e. the one dataset with less spikes or bad profiles.
+        The processed backscatter data from the less noisy channel, i.e. the
+        one dataset with less spikes or bad profiles.
     dives: np.array / pd.Series, dtype=float, shape=[n, ]
         The dive count (round is down dives, 0.5 is up dives).
     depth: np.array / pd.Series, dtype=float, shape=[n, ]
@@ -386,42 +549,55 @@ def calc_fluorescence(flr_raw, bbp, dives, depth, time, lat, lon, dark_count, sc
     spike_window: int=7
         The window size over which to run the despiking method.
     spike_method: str=median
-        Whether to use a rolling median or combination of min+max filter as the despiking method.
+        Whether to use a rolling median or combination of min+max filter as
+        the despiking method.
     night_day_group: bool=True
-        If True, use preceding night otherwise use following night for calculating the flr:bbp ratio.
+        If True, use preceding night otherwise use following night for
+        calculating the flr:bbp ratio.
     sunrise_sunset_offset: int=1
-        The delayed onset and recovery of quenching in hours [1] (assumes symmetrical).
+        The delayed onset and recovery of quenching in hours [1]
+        (assumes symmetrical).
     profiles_ref_depth: int=300
-        The depth threshold for optics.find_bad_profiles below which the median or mean is calculated for identifying outliers.
+        The depth threshold for optics.find_bad_profiles below which the
+        median or mean is calculated for identifying outliers.
     deep_multiplier: int=1
-        The standard deviation multiplier for calculating outliers, i.e. mean ± std x [1].
+        The standard deviation multiplier for calculating outliers,
+        i.e. mean ± std x [1].
     deep_method: str='median'
-        Whether to use the deep median or deep mean to determine bad profiles for optics.find_bad_profiles.
+        Whether to use the deep median or deep mean to determine bad profiles
+        for optics.find_bad_profiles.
     return_figure: bool=False
-        If True, will return a figure object that shows before and after the quenching correction was applied.
+        If True, will return a figure object that shows before and after the
+        quenching correction was applied.
     verbose: bool=True
         If True, will print the progress of the processing function.
 
     Returns
     -------
     baseline: array, dtype=float, shape=[n, ]
-        The despiked + bad profile identified fluorescence that has not had the quenching correction applied.
+        The despiked + bad profile identified fluorescence that has not had
+        the quenching correction applied.
     quench_corrected: array, dtype=float, shape=[n, ]
         The fluorescence data corrected for quenching.
     quench_layer: array, dtype=bool, shape=[n, ]
         The quenching layer as a mask.
     figs: object
-        The figures reporting the despiking, bad profiles and quenching correction.
+        The figures reporting the despiking, bad profiles and quenching
+        correction.
 
     References
     ----------
-    .. [1] Thomalla, S. J., Moutier, W., Ryan-Keogh, T. J., Gregor, L., & Schutt, J. (2018). An optimized method for correcting fluorescence quenching using optical backscattering on autonomous platforms. Limnology and Oceanography: Methods, 16(2), 132–144. https://doi.org/10.1002/lom3.10234
+    .. [1] Thomalla, S. J., Moutier, W., Ryan-Keogh, T. J., Gregor, L.,
+           & Schutt, J. (2018). An optimized method for correcting fluorescence
+           quenching using optical backscattering on autonomous platforms.
+           Limnology and Oceanography: Methods, 16(2), 132–144.
+           https://doi.org/10.1002/lom3.10234
 
     """
 
     from numpy import array, nan, count_nonzero, unique
     from . import optics as op
-    from .cleaning import despike, despiking_report, outlier_bounds_iqr
+    from .cleaning import despike, despiking_report
 
     var = flr_raw.copy()  # metdata preservation
     flr_raw = array(flr_raw)
@@ -435,13 +611,24 @@ def calc_fluorescence(flr_raw, bbp, dives, depth, time, lat, lon, dark_count, sc
     stdev_multiplier = deep_multiplier
     method = deep_method
 
-    printv(verbose, '\n' + '=' * 50 + '\nFluorescence\n\tMask bad profiles based on deep values (ref depth={}m)'.format(ref_depth))
-    bad_profiles = op.find_bad_profiles(dives, depth, flr_raw, ref_depth, stdev_multiplier, method)
+    printv(
+        verbose,
+        (
+            '\n' + '=' * 50 + '\nFluorescence\n\tMask bad profiles based on '
+            'deep values (ref depth={}m)'
+        ).format(ref_depth),
+    )
+    bad_profiles = op.find_bad_profiles(
+        dives, depth, flr_raw, ref_depth, stdev_multiplier, method
+    )
     flr_raw[bad_profiles[0]] = nan
 
     bad_count = count_nonzero(bad_profiles[1])
     dive_count = count_nonzero(unique(dives))
-    printv(verbose, '\tNumber of bad profiles = {}/{}'.format(bad_count, dive_count))
+    printv(
+        verbose,
+        '\tNumber of bad profiles = {}/{}'.format(bad_count, dive_count),
+    )
 
     printv(verbose, '\tDark count correction')
     flr_raw -= dark_count
@@ -452,26 +639,86 @@ def calc_fluorescence(flr_raw, bbp, dives, depth, time, lat, lon, dark_count, sc
 
     printv(verbose, '\tQuenching correction')
     quench_corrected, quench_layer = op.quenching_correction(
-        baseline, bbp, dives, depth, time, lat, lon,
+        baseline,
+        bbp,
+        dives,
+        depth,
+        time,
+        lat,
+        lon,
         sunrise_sunset_offset=1,
-        night_day_group=True)
+        night_day_group=True,
+    )
 
-    printv(verbose, "\tSpike identification (spike window={})".format(spike_window))
+    printv(
+        verbose,
+        '\tSpike identification (spike window={})'.format(spike_window),
+    )
 
-    baseline =         transfer_nc_attrs(getframe(), var, baseline, 'FLR_baseline', units='RFU', standard_name='')
-    quench_corrected = transfer_nc_attrs(getframe(), var, quench_corrected, 'FLR_quench_corrected', units='RFU', standard_name='fluorescence')
-    quench_layer =     transfer_nc_attrs(getframe(), var, quench_layer, 'quenching_layer', units='', standard_name='', comment='')
+    baseline = transfer_nc_attrs(
+        getframe(),
+        var,
+        baseline,
+        'FLR_baseline',
+        units='RFU',
+        standard_name='',
+    )
+    quench_corrected = transfer_nc_attrs(
+        getframe(),
+        var,
+        quench_corrected,
+        'FLR_quench_corrected',
+        units='RFU',
+        standard_name='fluorescence',
+    )
+    quench_layer = transfer_nc_attrs(
+        getframe(),
+        var,
+        quench_layer,
+        'quenching_layer',
+        units='',
+        standard_name='',
+        comment='',
+    )
 
     if return_figure:
-        printv(verbose, '\tGenerating figures for despiking and quenching report')
-        figs = despiking_report(dives, depth, flr_raw, baseline.data, spikes, name='Fluorescence'),
-        figs += op.quenching_report(baseline.data, quench_corrected.data, quench_layer, dives, depth),
+        printv(
+            verbose, '\tGenerating figures for despiking and quenching report'
+        )
+        figs = (
+            despiking_report(
+                dives,
+                depth,
+                flr_raw,
+                baseline.data,
+                spikes,
+                name='Fluorescence',
+            ),
+        )
+        figs += (
+            op.quenching_report(
+                baseline.data,
+                quench_corrected.data,
+                quench_layer,
+                dives,
+                depth,
+            ),
+        )
         return baseline, quench_corrected, quench_layer, figs
     else:
         return baseline, quench_corrected, quench_layer
 
 
-def calc_par(par_raw, dives, depth, time, scale_factor_wet_uEm2s, sensor_output_mV, curve_max_depth=80, verbose=True):
+def calc_par(
+    par_raw,
+    dives,
+    depth,
+    time,
+    scale_factor_wet_uEm2s,
+    sensor_output_mV,
+    curve_max_depth=80,
+    verbose=True,
+):
     """
     Calculates the theoretical PAR based on an exponential curve fit.
 
@@ -479,7 +726,8 @@ def calc_par(par_raw, dives, depth, time, scale_factor_wet_uEm2s, sensor_output_
 
     1. par_scaling  (factory cal sheet scaling)
     2. par_dark_count  (correct deep par values to 0 using 5th %)
-    3. par_fill_surface  (return the theoretical curve of par based exponential fit)
+    3. par_fill_surface  (return the theoretical curve of par based
+       exponential fit)
 
     Parameters
     ----------
@@ -511,17 +759,24 @@ def calc_par(par_raw, dives, depth, time, scale_factor_wet_uEm2s, sensor_output_
     printv(verbose, '\n' + '=' * 50 + '\nPAR\n\tDark correction')
 
     # dark correction for par
-    par_scaled = op.par_scaling(par_raw, scale_factor_wet_uEm2s, sensor_output_mV)
+    par_scaled = op.par_scaling(
+        par_raw, scale_factor_wet_uEm2s, sensor_output_mV
+    )
     par_dark = op.par_dark_count(par_scaled, dives, depth, time)
     printv(verbose, '\tFitting exponential curve to data')
-    par_filled = op.par_fill_surface(par_dark, dives, depth, max_curve_depth=curve_max_depth)
+    par_filled = op.par_fill_surface(
+        par_dark, dives, depth, max_curve_depth=curve_max_depth
+    )
     par_filled[par_filled < 0] = 0
 
     attrs = dict(
         standard_name='photosynthetically_available_radiation',
         units='uE/m2/s2',
-        comment='')
-    par_filled = transfer_nc_attrs(getframe(), var, par_filled, 'PAR_processed', **attrs)
+        comment='',
+    )
+    par_filled = transfer_nc_attrs(
+        getframe(), var, par_filled, 'PAR_processed', **attrs
+    )
     par_filled = par_filled.fillna(0)
 
     return par_filled

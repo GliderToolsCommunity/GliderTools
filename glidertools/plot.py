@@ -1,27 +1,29 @@
-# -*- coding: utf-8 -*-
 #!/usr/bin/env python
-from __future__ import (print_function as _pf,
-                        unicode_literals as _ul,
-                        absolute_import as _ai)
+from __future__ import absolute_import as _ai
+from __future__ import print_function as _pf
+from __future__ import unicode_literals as _ul
+
 import numpy as np
+
 try:
     _plotly_avail = True
     import plotly
 except ImportError:
     _plotly_avail = False
     from warnings import warn
+
     warn('install "plotly" for 3D plotting sections', category=ImportWarning)
 
 
 def _process_2D_plot_args(args, gridding_dz=1):
     """
-    Processes the input to the plotting class functions. Allows plots to receive
+    Processes input to the plotting class functions. Allows plots to receive
     one (2D) or three (1D) input arguements.
     """
-    from numpy import array, ma, nan, ndarray, nanmax, arange, isnan
+    from numpy import array, ma, nan, ndarray
     from pandas import DataFrame, Series
     from xarray import DataArray
-    from .mapping import grid_data, grid_flat_dataarray
+    from .mapping import grid_data
     from .helpers import GliderToolsError
 
     name = ''
@@ -41,7 +43,9 @@ def _process_2D_plot_args(args, gridding_dz=1):
             z = ma.masked_invalid(array(z)).astype(float)
 
         if (x.size == y.size) & (len(z.shape) == 1):
-            df = grid_data(x, y, z, interp_lim=6, verbose=False, return_xarray=False)
+            df = grid_data(
+                x, y, z, interp_lim=6, verbose=False, return_xarray=False
+            )
             x = df.columns
             y = df.index
             z = ma.masked_invalid(df.values)
@@ -55,11 +59,16 @@ def _process_2D_plot_args(args, gridding_dz=1):
             unit = ' [{}]'.format(z.units) if 'units' in z.attrs else ''
             name = name + unit
             if z.ndim == 1:
-                raise GliderToolsError('Please provide gridded DataArray or x and y coordinates')
+                raise GliderToolsError(
+                    'Please provide gridded DataArray or x and y coordinates'
+                )
             elif z.ndim == 2:
                 z = z.to_series().unstack()
             elif z.ndim > 2:
-                raise GliderToolsError('GliderTools plotting currently only supports 2 dimensional plotting')
+                raise GliderToolsError(
+                    'GliderTools plotting currently only supports 2 '
+                    'dimensional plotting'
+                )
         elif isinstance(z, (ndarray, Series)):
             if z.ndim == 2:
                 z = DataFrame(z)
@@ -97,6 +106,7 @@ class plot_functions(object):
         - gridding_dz - gridding depth [default 1]
 
     """
+
     @staticmethod
     def __new__(*args, **kwargs):
 
@@ -255,7 +265,15 @@ class plot_functions(object):
         """
 
         from matplotlib.pyplot import colorbar, subplots
-        from numpy import ma, nanpercentile, datetime64, array, nanmin, nanmax, isnan
+        from numpy import (
+            ma,
+            nanpercentile,
+            datetime64,
+            array,
+            nanmin,
+            nanmax,
+            isnan,
+        )
         from datetime import datetime
 
         z = ma.masked_invalid(z)
@@ -268,9 +286,10 @@ class plot_functions(object):
             carry_on = input(
                 'There are a large number of points to plot ({}). '
                 'This will take a while to plot.\n'
-                'Type "y" to continue or "n" to cancel.\n'.format(y.size))
+                'Type "y" to continue or "n" to cancel.\n'.format(y.size)
+            )
             if carry_on != 'y':
-                print("You have aborted the scatter plot")
+                print('You have aborted the scatter plot')
                 return None
 
         x_time = isinstance(x[0], (datetime, datetime64))
@@ -337,10 +356,10 @@ class plot_functions(object):
 
         if ax is None:
             fig, ax = subplots(1, 1, figsize=[4, 6])
-        else:
-            fig = ax.get_figure()
-        im = ax.hist2d(x, y, bins=50, norm=LogNorm(),
-                       rasterized=True, **hist_kwargs)[-1]
+
+        im = ax.hist2d(
+            x, y, bins=50, norm=LogNorm(), rasterized=True, **hist_kwargs
+        )[-1]
         ax.plot(xbins, ybins, lw=4, ls='-', color='k', label='Bins')
         ax.set_ylim(ax.get_ylim()[::-1])
         ax.set_ylabel('Depth (m)')
@@ -354,13 +373,22 @@ class plot_functions(object):
         return ax
 
     if _plotly_avail:
+
         @staticmethod
         def section3D(
-                dives, depth, x, y, variable,
-                zmin=-1000, zmax=1,
-                vmin=None, vmax=None, cmap=None,
-                aspect_ratio_x=1.5,
-                return_plot=True):
+            dives,
+            depth,
+            x,
+            y,
+            variable,
+            zmin=-1000,
+            zmax=1,
+            vmin=None,
+            vmax=None,
+            cmap=None,
+            aspect_ratio_x=1.5,
+            return_plot=True,
+        ):
 
             """
             Returns an interactive 3D plot in an HTML page.
@@ -372,7 +400,7 @@ class plot_functions(object):
             depth : array, dtype=float, shape=[n, ]
                 head-to-tail concatenated depth readings
             x : array, dtype=float, shape=[n, ]
-                the x-coordinate used in the plot (e.g. longitude, time, density)
+                the x-coordinate used in the plot (e.g. longitude, time)
             y : array, dtype=float, shape=[n, ]
                 the y-coordinate used in the plot (e.g. latitude, time)
             variable : array, dtype=float, shape=[n, ]
@@ -396,7 +424,8 @@ class plot_functions(object):
 
             Example
             -------
-            >>> fig = gt.plot.section3D(df.dives, df.ctd_depth, df.longitude, df.latitude, df.temperature)
+            >>> fig = gt.plot.section3D(df.dives, df.ctd_depth, df.longitude,
+                                        df.latitude, df.temperature)
             """
 
             from plotly.offline import download_plotlyjs, plot
@@ -409,12 +438,14 @@ class plot_functions(object):
             def matplotlib_to_plotly(cmap, pl_entries=255):
                 if cmap is None:
                     cmap = cm.Spectral_r
-                h = 1.0/(pl_entries-1)
+                h = 1.0 / (pl_entries - 1)
                 pl_colorscale = []
 
                 for k in range(pl_entries):
-                    C = list(map(np.uint8, np.array(cmap(k*h)[:3])*255))
-                    pl_colorscale.append([k*h, 'rgb'+str((C[0], C[1], C[2]))])
+                    C = list(map(np.uint8, np.array(cmap(k * h)[:3]) * 255))
+                    pl_colorscale.append(
+                        [k * h, 'rgb' + str((C[0], C[1], C[2]))]
+                    )
 
                 return pl_colorscale
 
@@ -424,7 +455,9 @@ class plot_functions(object):
 
             if x.dtype.type == np.datetime64:
                 x = x.values.astype(float)  # nanoseconds
-            props = dict(bins=np.arange(0, d1, ds), return_xarray=False, verbose=False)
+            props = dict(
+                bins=np.arange(0, d1, ds), return_xarray=False, verbose=False
+            )
             gx = grid_data(dives, depth, x, **props).values
             gy = grid_data(dives, depth, y, **props).values
             gz = grid_data(dives, depth, depth, **props).values
@@ -441,7 +474,8 @@ class plot_functions(object):
                     y=gy,
                     x=gx,
                     name=variable.name.capitalize(),
-                    cmin=c0, cmax=c1,
+                    cmin=c0,
+                    cmax=c1,
                     colorscale=matplotlib_to_plotly(cmap),
                     colorbar=dict(title=variable.name.capitalize()),
                     surfacecolor=gf.values,
@@ -460,7 +494,7 @@ class plot_functions(object):
                     xaxis=dict(title=x.name.capitalize()),
                     yaxis=dict(title=y.name.capitalize()),
                     aspectmode='manual',
-                    aspectratio=dict(y=1, x=aspect_ratio_x, z=0.5)
+                    aspectratio=dict(y=1, x=aspect_ratio_x, z=0.5),
                 ),
             )
 
@@ -500,39 +534,34 @@ class logo:
     @staticmethod
     def run(show_figures=False):
         import matplotlib.pyplot as plt
-        import seaborn as sns
-        import pandas as pd
-  
-        x, y = logo.profile_dummy_data()
 
-        props = dict(transparent=True, dpi=200, bbox_inches='tight')
+        x, y = logo.profile_dummy_data()
 
         fig1, ax1 = logo.logo_with_name()
         fig2, ax2 = logo.logo_wo_name()
 
+        # props = dict(transparent=True, dpi=200, bbox_inches='tight')
         # fig1.savefig('./docs/img/logo_with_name.png', **props)
-        # fig2.savefig('./docs/img/logo_wo_name.png', dpi=200, facecolor='#3a3a3a')
+        # fig2.savefig('./docs/img/logo_wo_name.png', fc='#3a3a3a', **props)
 
         if show_figures:
             plt.show()
 
     @staticmethod
     def profile_dummy_data(n_zigzags=3):
-        import matplotlib.pyplot as plt
         import seaborn as sns
         import pandas as pd
 
-        sns.set_palette("Spectral", int(n_zigzags*2))
+        sns.set_palette('Spectral', int(n_zigzags * 2))
 
         zigzags = np.r_[
-            np.linspace(-1, -.03, 100),
-            np.linspace(-.03, -1, 100)
-        ].tolist() * (n_zigzags -1)
+            np.linspace(-1, -0.03, 100), np.linspace(-0.03, -1, 100)
+        ].tolist() * (n_zigzags - 1)
 
         y = np.array(
-            np.linspace(0, -1, 100).tolist() +
-            zigzags +
-            np.linspace(-1, 0, 100).tolist()
+            np.linspace(0, -1, 100).tolist()
+            + zigzags
+            + np.linspace(-1, 0, 100).tolist()
         )
 
         x = np.linspace(0, 5, y.size)
@@ -549,8 +578,6 @@ class logo:
     @staticmethod
     def logo_with_name(n_zigzags=3, ax=None):
         import matplotlib.pyplot as plt
-        import seaborn as sns
-        import pandas as pd
 
         x, y = logo.profile_dummy_data(n_zigzags)
         interval = int(x.size / (n_zigzags * 2))
@@ -561,24 +588,36 @@ class logo:
 
         for i in range(0, x.size, interval):
             j = i + interval
-            ax.scatter(x[i:j], y[i:j], 84, np.ones(interval) * i,
-                    cmap=plt.cm.Spectral_r, vmin=0, vmax=x.size)
+            ax.scatter(
+                x[i:j],
+                y[i:j],
+                84,
+                np.ones(interval) * i,
+                cmap=plt.cm.Spectral_r,
+                vmin=0,
+                vmax=x.size,
+            )
 
         ax.set_xticks([])
         ax.set_yticks([])
         ax.axis('off')
 
-        fig.text(0.45, 0.46, 'GLIDER\nTOOLS',
-                weight=900, size=50, color='#606060',
-                ha='left', va='center')
+        fig.text(
+            0.45,
+            0.46,
+            'GLIDER\nTOOLS',
+            weight=900,
+            size=50,
+            color='#606060',
+            ha='left',
+            va='center',
+        )
 
         return fig, ax
 
     @staticmethod
     def logo_wo_name(n_zigzags=3, ax=None):
         import matplotlib.pyplot as plt
-        import seaborn as sns
-        import pandas as pd
 
         x, y = logo.profile_dummy_data(n_zigzags)
         interval = int(x.size / (n_zigzags * 2))
@@ -588,8 +627,15 @@ class logo:
 
         for i in range(0, x.size, interval):
             j = i + interval
-            ax.scatter(x[i:j], y[i:j], 84, np.ones(interval) * i,
-                    cmap=plt.cm.Spectral_r, vmin=0, vmax=x.size)
+            ax.scatter(
+                x[i:j],
+                y[i:j],
+                84,
+                np.ones(interval) * i,
+                cmap=plt.cm.Spectral_r,
+                vmin=0,
+                vmax=x.size,
+            )
 
         ax.set_xticks([])
         ax.set_yticks([])
@@ -603,4 +649,4 @@ class logo:
 
 if __name__ == '__main__':
     pass
-    "fun people"
+    'fun people'

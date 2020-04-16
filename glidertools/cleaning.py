@@ -1,18 +1,21 @@
 #!/usr/bin/env python
-from __future__ import (print_function as _pf,
-                        unicode_literals as _ul,
-                        absolute_import as _ai)
+from __future__ import absolute_import as _ai
+from __future__ import print_function as _pf
+from __future__ import unicode_literals as _ul
+
 from .helpers import getframe, transfer_nc_attrs
+
 
 def outlier_bounds_std(arr, multiplier=3):
     r"""
-    Mask values outside the upper and lower outlier limits by standard deviation
+    Mask values outside the upper and lower outlier limits by standard
+    deviation
 
         :math:`\mu \pm 3\sigma`
 
     the multiplier [3] can be adjusted by the user
     returns the lower_limit, upper_limit
-   
+
     Parameters
     ----------
     arr : np.array|xr.DataArray, dtype=float, shape=[n, ]
@@ -28,7 +31,8 @@ def outlier_bounds_std(arr, multiplier=3):
 
     """
 
-    from numpy import array, nanmean, nanstd, ma, nan
+    from numpy import array, nanmean, nanstd, nan
+
     var = arr.copy()
     arr = array(arr)
 
@@ -50,7 +54,7 @@ def outlier_bounds_std(arr, multiplier=3):
 
 def outlier_bounds_iqr(arr, multiplier=1.5):
     r"""
-    Mask values outside the upper and lower outlier limits by interquartile range:
+    Mask values outside the upper/lower outlier limits by interquartile range:
 
     .. math::
 
@@ -75,7 +79,8 @@ def outlier_bounds_iqr(arr, multiplier=1.5):
 
 
     """
-    from numpy import array, nanpercentile, ma, nan
+    from numpy import array, nanpercentile, nan
+
     var = arr.copy()
     arr = array(arr)
 
@@ -94,13 +99,16 @@ def outlier_bounds_iqr(arr, multiplier=1.5):
     return out
 
 
-def horizontal_diff_outliers(dives, depth, arr, multiplier=1.5, depth_threshold=450, mask_frac=0.2):
+def horizontal_diff_outliers(
+    dives, depth, arr, multiplier=1.5, depth_threshold=450, mask_frac=0.2
+):
     """
-    Find Z-score outliers (> 3) on the horizontal. Can be limited below a certain depth.
+    Find Z-score outliers (> 3) on the horizontal. Can be limited below a
+    certain depth.
 
     The function uses the horizontal gradient as a threshold, below a defined
-    depth threshold to find outliers. Useful to identify when a variable at depth
-    is not the same as neighbouring values.
+    depth threshold to find outliers. Useful to identify when a variable at
+    depth is not the same as neighbouring values.
 
     Parameters
     ----------
@@ -127,7 +135,7 @@ def horizontal_diff_outliers(dives, depth, arr, multiplier=1.5, depth_threshold=
         mask_frac.
     """
     from numpy import array, nanmean, nanstd, abs, inf, arange
-    from . mapping import grid_data
+    from .mapping import grid_data
 
     var = arr.copy()
     dives = array(dives)
@@ -136,9 +144,14 @@ def horizontal_diff_outliers(dives, depth, arr, multiplier=1.5, depth_threshold=
 
     # grid data so that the horizontal rolling median can be calculated
     # we use a window of 3 to find only "horizonal spikes"
-    gridded = grid_data(dives, depth, array(arr),
-                        bins=arange(0, depth.max(), 1),
-                        verbose=False, return_xarray=False)
+    gridded = grid_data(
+        dives,
+        depth,
+        array(arr),
+        bins=arange(0, depth.max(), 1),
+        verbose=False,
+        return_xarray=False,
+    )
     median = gridded.rolling(3, axis=1, center=True, min_periods=2).median()
     # get zscore of the difference between the median and the raw data
     diff = gridded - median
@@ -195,6 +208,7 @@ def mask_bad_dive_fraction(mask, dives, var, mask_frac=0.2):
     """
     from pandas import Series
     from numpy import array, NaN
+
     # catch dives where the marjority of the data is masked
     # and return a fully masked dive
     dives = array(dives)
@@ -218,7 +232,9 @@ def mask_bad_dive_fraction(mask, dives, var, mask_frac=0.2):
     return baddive, mask_dives
 
 
-def data_density_filter(x, y, conv_matrix=None, min_count=5, return_figures=True):
+def data_density_filter(
+    x, y, conv_matrix=None, min_count=5, return_figures=True
+):
     """
     Use the 2D density cloud of observations to find outliers for any variables
 
@@ -277,7 +293,7 @@ def data_density_filter(x, y, conv_matrix=None, min_count=5, return_figures=True
         from numpy import exp, mgrid
 
         # make shape a list regardless of input
-        shape = [int(a//2) for a in flatten([shape])]
+        shape = [int(a // 2) for a in flatten([shape])]
         # anisotropic if len(2) else isotropic
         if len(shape) == 1:
             sx, sy = shape[0], shape[0]
@@ -285,12 +301,15 @@ def data_density_filter(x, y, conv_matrix=None, min_count=5, return_figures=True
             sx, sy = shape
 
         # create the x and y grid
-        x, y = mgrid[-sx:sx+1, -sy:sy+1]
+        x, y = mgrid[-sx : sx + 1, -sy : sy + 1]
         sigma = [sx / 8, sy / 8]  # sigma scaled by shape
         c = tuple([sx, sy])  # centre index of x and y
-        g = 1 * exp(-(
-            (x - x[c])**2 / (2 * sigma[0])**2 +
-            (y - y[c])**2 / (2 * sigma[1])**2))
+        g = 1 * exp(
+            -(
+                (x - x[c]) ** 2 / (2 * sigma[0]) ** 2
+                + (y - y[c]) ** 2 / (2 * sigma[1]) ** 2
+            )
+        )
         return g
 
     # turning input into pandas.Series
@@ -298,7 +317,7 @@ def data_density_filter(x, y, conv_matrix=None, min_count=5, return_figures=True
     y = Series(y, name='Y' if not isinstance(y, Series) else y.name)
 
     ###############
-    ##  BINNING  ##
+    #   BINNING   #
     ###############
     # create bins for the data - equal bins
     xbins = linspace(x.min(), x.max(), 250)
@@ -314,7 +333,7 @@ def data_density_filter(x, y, conv_matrix=None, min_count=5, return_figures=True
     count = count.sort_index().sort_index(axis=1)
 
     ###################
-    ##  CONVOLUTION  ##
+    #   CONVOLUTION   #
     ###################
     # make convolution matrix if not given
     if conv_matrix is None:
@@ -338,7 +357,7 @@ def data_density_filter(x, y, conv_matrix=None, min_count=5, return_figures=True
     rows = count.columns
 
     ########################################
-    ##  FINDING OUTLIERS AND CREATE MASK  ##
+    #   FINDING OUTLIERS AND CREATE MASK   #
     ########################################
     # find indicies of of the where there is no convolution,
     # but there are data. Then get the x and y values of these
@@ -360,11 +379,12 @@ def data_density_filter(x, y, conv_matrix=None, min_count=5, return_figures=True
     mask[idx] = True
 
     ###############
-    ##  FIGURES  ##
+    #   FIGURES   #
     ###############
     if return_figures:
-        from numpy import ma, power, diff, sum, r_
+        from numpy import ma, r_
         from matplotlib import colors, cm, pyplot as plt
+
         # x and y plotting coordinates
         xp = cols.values.astype(float)
         yp = rows.values.astype(float)
@@ -379,13 +399,21 @@ def data_density_filter(x, y, conv_matrix=None, min_count=5, return_figures=True
         pn = colors.PowerNorm(0.3)
         mesh_props = dict(cmap=cm.Spectral_r, norm=pn)
         # create the pcolormesh plots
-        im = (ax[0].pcolormesh(xp, yp, a, vmax=a.max()/2, **mesh_props),
-              ax[1].pcolormesh(xp, yp, c, vmin=0, vmax=1))
-        ct = ax[1].contour(xp, yp, b, levels=[0.5], linestyles='-', colors='r', linewidths=2)
+        im = (
+            ax[0].pcolormesh(xp, yp, a, vmax=a.max() / 2, **mesh_props),
+            ax[1].pcolormesh(xp, yp, c, vmin=0, vmax=1),
+        )
+        ax[1].contour(
+            xp, yp, b, levels=[0.5], linestyles='-', colors='r', linewidths=2
+        )
 
         # change figure parameters
         ax[0].set_title('Histogram of data (min_count = {})'.format(min_count))
-        ax[1].set_title('{} Outliers found using \n{} convolution with decision boundary'.format(mask.sum(), str(conv_matrix.shape)))
+        ax[1].set_title(
+            '{} Outliers found using\n{} convolution decision boundary'.format(
+                mask.sum(), str(conv_matrix.shape)
+            )
+        )
         ax[0].set_xticks([])
         ax[0].set_ylabel(y.name)
         ax[1].set_xlabel(x.name)
@@ -395,7 +423,7 @@ def data_density_filter(x, y, conv_matrix=None, min_count=5, return_figures=True
 
         # make colorbar axes based on axes [0, 1]
         p = ax[0].get_position()
-        cax = fig.add_axes([p.x0, p.y0-0.05, p.width, 0.04])
+        cax = fig.add_axes([p.x0, p.y0 - 0.05, p.width, 0.04])
         cb = plt.colorbar(im[0], cax=cax, orientation='horizontal')
         cb.set_label('Count')
         cb.set_ticks([1, 2, 3, 5, 10, 30, 80, 200])
@@ -465,7 +493,9 @@ def despike(var, window_size, spike_method='median'):
     return baseline, spikes
 
 
-def despiking_report(dives, depth, raw, baseline, spikes, name=None, pcolor_kwargs={}):
+def despiking_report(
+    dives, depth, raw, baseline, spikes, name=None, pcolor_kwargs={}
+):
     """
     A report for the results of cleaning.despike.
 
@@ -501,7 +531,7 @@ def despiking_report(dives, depth, raw, baseline, spikes, name=None, pcolor_kwar
 
     """
     from matplotlib.pyplot import subplots, cm
-    from numpy import array, unique, nanpercentile, ma, isnan
+    from numpy import array, nanpercentile, ma, isnan
     from . import plot
 
     if name is None:
@@ -509,9 +539,7 @@ def despiking_report(dives, depth, raw, baseline, spikes, name=None, pcolor_kwar
 
     x = array(dives)
     y = array(depth)
-    z = [array(raw),
-         ma.masked_array(baseline),
-         array(spikes)]
+    z = [array(raw), ma.masked_array(baseline), array(spikes)]
 
     fig, ax = subplots(3, 1, figsize=[10, 11], dpi=90)
     title = '{}\nDespiking Report'.format(name)
@@ -522,9 +550,15 @@ def despiking_report(dives, depth, raw, baseline, spikes, name=None, pcolor_kwar
     props.update(pcolor_kwargs)
 
     im = []
-    im += plot.pcolormesh(x, y, z[0], ax=ax[0], vmin=bmin, vmax=bmax, **props),
-    im += plot.pcolormesh(x, y, z[1], ax=ax[1], vmin=bmin, vmax=bmax, **props),
-    im += plot.pcolormesh(x, y, z[2], ax=ax[2], vmin=smin, vmax=smax, **props),
+    im += (
+        plot.pcolormesh(x, y, z[0], ax=ax[0], vmin=bmin, vmax=bmax, **props),
+    )
+    im += (
+        plot.pcolormesh(x, y, z[1], ax=ax[1], vmin=bmin, vmax=bmax, **props),
+    )
+    im += (
+        plot.pcolormesh(x, y, z[2], ax=ax[2], vmin=smin, vmax=smax, **props),
+    )
 
     for i in range(0, 3):
         ymax = y[~isnan(baseline)].max()
@@ -557,7 +591,7 @@ def rolling_window(var, func, window):
 
     Parameters
     ----------
-    arr : array, dtype=float, shape=[n, ]
+    arr:array, dtype=float, shape=[n, ]
         array that you want to pass the rolling window over
     func : callable
         an aggregating function. e.g. mean, std, median
@@ -570,13 +604,14 @@ def rolling_window(var, func, window):
         the same as the input array, but the rolling window has been applied
     """
     from numpy import ndarray, array, nan, r_
+
     n = window
     # create an empty 2D array with shape (window, len(arr))
     arr = array(var)
     mat = ndarray([n, len(arr) - n]) * nan
     # create a vector for each window
     for i in range(n):
-        mat[i, :] = arr[i: i - n]
+        mat[i, :] = arr[i : i - n]
     # get the mean or meidan or any other function of the matrix
     out = func(mat, axis=0)
 
@@ -585,7 +620,7 @@ def rolling_window(var, func, window):
     i0 = n // 2
     i1 = n - i0
     seg0 = array([func(arr[: i + 1]) for i in range(i0)])
-    seg1 = array([func(arr[-i - 1:]) for i in range(i1)])
+    seg1 = array([func(arr[-i - 1 :]) for i in range(i1)])
     rolwin = r_[seg0, out, seg1]
 
     rolwin = transfer_nc_attrs(getframe(), var, rolwin, '_rollwin')
@@ -616,7 +651,8 @@ def savitzky_golay(var, window_size, order, deriv=0, rate=1, interpolate=True):
         the order of the polynomial used in the filtering.
         Must be less then `window_size` - 1.
     deriv : int
-        the order of the derivative to compute (default = 0 means only smoothing)
+        the order of the derivative to compute (default = 0 means only
+        smoothing)
     interpolate : bool=True
         By default, nans in the array are interpolated with a limit set to
         the window size of the dataset before smoothing. The nans are
@@ -659,7 +695,16 @@ def savitzky_golay(var, window_size, order, deriv=0, rate=1, interpolate=True):
        Cambridge University Press ISBN-13: 9780521880688
     """
     from math import factorial
-    from numpy import array, abs, mat, linalg, concatenate, convolve, isnan, nan
+    from numpy import (
+        array,
+        abs,
+        mat,
+        linalg,
+        concatenate,
+        convolve,
+        isnan,
+        nan,
+    )
     from pandas import Series
 
     # sorting out window stuff
@@ -668,11 +713,11 @@ def savitzky_golay(var, window_size, order, deriv=0, rate=1, interpolate=True):
         window_size = abs(int(window_size))
         order = abs(int(order))
     except ValueError:
-        raise ValueError("window_size and order have to be of type int")
+        raise ValueError('window_size and order have to be of type int')
     if window_size % 2 != 1 or window_size < 1:
-        raise TypeError("window_size size must be a positive odd number")
+        raise TypeError('window_size size must be a positive odd number')
     if window_size < order + 2:
-        raise TypeError("window_size is too small for the polynomial order")
+        raise TypeError('window_size is too small for the polynomial order')
     order_range = range(order + 1)
     half_window = (window_size - 1) // 2
 
@@ -684,12 +729,17 @@ def savitzky_golay(var, window_size, order, deriv=0, rate=1, interpolate=True):
         y = array(arr)
 
     # precompute coefficients
-    b = mat([[k**i for i in order_range] for k in range(-half_window, half_window + 1)])
-    m = linalg.pinv(b).A[deriv] * rate**deriv * factorial(deriv)
+    b = mat(
+        [
+            [k ** i for i in order_range]
+            for k in range(-half_window, half_window + 1)
+        ]
+    )
+    m = linalg.pinv(b).A[deriv] * rate ** deriv * factorial(deriv)
     # pad the signal at the extremes with
     # values taken from the signal itself
-    firstvals = y[0] - abs(y[1:half_window + 1][::-1] - y[0])
-    lastvals = y[-1] + abs(y[-half_window - 1:-1][::-1] - y[-1])
+    firstvals = y[0] - abs(y[1 : half_window + 1][::-1] - y[0])
+    lastvals = y[-1] + abs(y[-half_window - 1 : -1][::-1] - y[-1])
     y = concatenate((firstvals, y, lastvals))
 
     savgol = convolve(m[::-1], y, mode='valid')

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #!/usr/bin/env python
 from __future__ import absolute_import as _ai
 from __future__ import print_function as _pf
@@ -13,8 +12,10 @@ def find_bad_profiles(
     """
     Find profiles that exceed a threshold at a reference depth.
 
-    This function masks bad dives based on mean + std x [1] or median + std x [1] at a reference depth.
-    The function is typically used to clean raw fluorescence and backscatter data.
+    This function masks bad dives based on
+        mean + std x [1] or
+        median + std x [1] at a reference depth.
+    Function is typically used to clean raw fluorescence and backscatter data.
 
     Parameters
     ----------
@@ -25,17 +26,20 @@ def find_bad_profiles(
     var: numpy.ndarray or pandas.Series
         Array of data variable for function to be performed on.
     ref_depth: int
-        The depth threshold for optics.find_bad_profiles below which the median or mean is calculated for identifying outliers.
+        The depth threshold for optics.find_bad_profiles below which the
+        median or mean is calculated for identifying outliers.
     stdev_multiplier: int
-        The standard deviation multiplier for calculating outliers, i.e. mean +- std x [1].
+        The standard deviation multiplier for calculating outliers,
+        i.e. mean +- std x [1].
     method: str
-        Whether to use the deep median or deep mean to determine bad profiles for optics.find_bad_profiles.
+        Whether to use the deep median or deep mean to determine bad profiles
+        for optics.find_bad_profiles.
 
     Returns
     -------
-  
+
     bad_dive_idx: numpy.ndarray or pandas.Series
-        The index of the dives where the deep mean/median is greater than the limit.
+        The index of dives where the deep mean/median is greater than the limit
     bad_dive: mask
         If True, the dive deep mean/median is greater than the limit.
 
@@ -83,7 +87,7 @@ def par_dark_count(par, dives, depth, time):
     Calculates an in situ dark count from the PAR sensor.
 
     The in situ dark count for the PAR sensor is calculated from the median,
-    with masking applied for values before 23:01 and outside the 90th percentile.
+    with masking applied for values before 23:01 and outside the 90th %
 
     Parameters
     ----------
@@ -130,7 +134,8 @@ def backscatter_dark_count(bbp, depth):
     """
     Calculates an in situ dark count from the backscatter sensor.
 
-    The in situ dark count for the backscatter sensor is calculated from the 95th percentile between 200 and 400m.
+    The in situ dark count for the backscatter sensor is calculated from the
+    95th percentile between 200 and 400m.
 
     Parameters
     ----------
@@ -170,7 +175,8 @@ def fluorescence_dark_count(flr, depth):
     """
     Calculates an in situ dark count from the fluorescence sensor.
 
-    The in situ dark count for the fluorescence sensor is calculated from the 95th percentile between 300 and 400m.
+    The in situ dark count for the fluorescence sensor is calculated from the
+    95th percentile between 300 and 400m.
 
     Parameters
     ----------
@@ -211,8 +217,10 @@ def par_scaling(par_uV, scale_factor_wet_uEm2s, sensor_output_mV):
     """
     Scaling correction for par with factory calibration coefficients.
 
-    The function subtracts the sensor output from the raw counts and divides with the scale factor.
-    The factory calibrations are unique for each deployment and should be taken from the calibration file for that deployment.
+    The function subtracts the sensor output from the raw counts and divides
+    with the scale factor. The factory calibrations are unique for each
+    deployment and should be taken from the calibration file for that
+    deployment.
 
     Parameters
     ----------
@@ -221,11 +229,13 @@ def par_scaling(par_uV, scale_factor_wet_uEm2s, sensor_output_mV):
     scale_factor_wet_uEm2s: float
         The scale factor from the factory calibration file in units uE/m2/sec.
     sensor_output_mV: float
-        The sensor output in the dark from the factory calibration file in units mV.
+        The sensor output in the dark from the factory calibration file in
+        units mV.
 
     Returns
     par_uEm2s: numpy.ndarray or pandas.Series
-        The par data corrected for the sensor output and scale factor from the factory calibration file in units uE/m2/sec.
+        The par data corrected for the sensor output and scale factor from the
+        factory calibration file in units uE/m2/sec.
 
     """
     sensor_output_uV = sensor_output_mV / 1000.0
@@ -306,7 +316,7 @@ def photic_depth(par, dives, depth, return_mask=False, ref_percentage=1):
     """
     Algebraically calculates the euphotic depth.
 
-    The function calculates the euphotic depth and attenuation coefficient (Kd),
+    The function calculates the euphotic depth and attenuation coefficient (Kd)
     based upon the linear fit of the natural log of par with depth.
 
     Parameters
@@ -318,9 +328,11 @@ def photic_depth(par, dives, depth, return_mask=False, ref_percentage=1):
     depth: numpy.ndarray or pandas.Series
         The depth array in metres.
     return_mask: bool
-        If True, will return a mask for the photic layer (depth < euphotic depth).
+        If True, will return a mask for the photic layer
+        (depth < euphotic depth).
     ref_percentage: int
-        The percentage light depth to calculate the euphotic layer, typically assumed to be 1% of surface par.
+        The percentage light depth to calculate the euphotic layer, typically
+        assumed to be 1% of surface par.
 
     Returns
     -------
@@ -366,8 +378,8 @@ def photic_depth(par, dives, depth, return_mask=False, ref_percentage=1):
     for d in udives:
         i = dives == d
         zj = np.array(par[i])
-        xj = np.array(dives[i])
         yj = np.array(depth[i])
+        # xj = np.array(dives[i])
 
         if all(np.isnan(zj)):
             slope = np.nan
@@ -391,8 +403,10 @@ def sunset_sunrise(time, lat, lon):
     """
     Calculates the local sunrise/sunset of the glider location.
 
-    The function uses the Astral package to calculate the sunrise and sunset times using the date, latitude and longitude.
-    The times are returned rather than day or night indices, as it is more flexible for the quenching correction.
+    The function uses the Astral package to calculate the sunrise and sunset
+    times using the date, latitude and longitude. The times are returned
+    rather than day or night indices, as it is more flexible for the quenching
+    correction.
 
 
     Parameters
@@ -454,23 +468,28 @@ def quenching_correction(
     """
     Corrects the fluorescence data based upon Thomalla et al. (2017).
 
-    The function calculates the quenching depth and performs the quenching correction based on the fluorescence to
-    backscatter ratio. The quenching depth is calculated based upon the different between night and daytime fluorescence.
-    The default setting is for the preceding night to be used to correct the following day's quenching (`night_day_group=True`).
-    This can be changed so that the following night is used to correct the preceding day. The quenching depth is then found
-    from the difference between the night and daytime fluorescence, using the steepest gradient of the {5 minimum differences and
-    the points the difference changes sign (+ve/-ve)}.
-    The function gets the backscatter/fluorescence ratio between from the quenching depth to the surface, and then calculates a mean
-    nighttime ratio for each night. The quenching ratio is calculated from the nighttime ratio and the daytime ratio, which is
-    then applied to fluorescence to correct for quenching. If the corrected value is less than raw, then the function will return the
-    original raw data.
+    The function calculates the quenching depth and performs the quenching
+    correction based on the fluorescence to backscatter ratio. The quenching
+    depth is calculated based upon the different between night and daytime
+    fluorescence. The default setting is for the preceding night to be used to
+    correct the following day's quenching (`night_day_group=True`). This can
+    be changed so that the following night is used to correct the preceding
+    day. The quenching depth is then found from the difference between the
+    night and daytime fluorescence, using the steepest gradient of the {5
+    minimum differences and the points the difference changes sign (+ve/-ve)}.
+    The function gets the backscatter/fluorescence ratio between from the
+    quenching depth to the surface, and then calculates a mean nighttime
+    ratio for each night. The quenching ratio is calculated from the nighttime
+    ratio and the daytime ratio, which is then applied to fluorescence to
+    correct for quenching. If the corrected value is less than raw, then the
+    function will return the original raw data.
 
     Parameters
     ----------
     flr: numpy.ndarray or pandas.Series
-        The fluorescence data after cleaning and factory calibration conversion.
+        fluorescence data after cleaning and factory calibration conversion
     bbp: numpy.ndarray or pandas.Series
-        The total backscatter data after cleaning and factory calibration conversion.
+        Total backscatter after cleaning and factory calibration conversion
     dives: numpy.ndarray or pandas.Series
         The dive count (round is down dives, 0.5 is up dives).
     depth: numpy.ndarray or pandas.Series
@@ -484,11 +503,14 @@ def quenching_correction(
     max_photic_depth: int
         Limit the quenching correction to depth less than a given value [100].
     night_day_group: bool
-        If True, use preceding night otherwise use following night for calculating the flr:bbp ratio.
+        If True, use preceding night otherwise use following night for
+        calculating the flr:bbp ratio.
     surface_layer: int
-        The surface depth that is omitted from the correction calculations (metres).
+        The surface depth that is omitted from the correction calculations
+        (metres)
     sunrise_sunset_offset: int
-        The delayed onset and recovery of quenching in hours [1] (assumes symmetrical).
+        The delayed onset and recovery of quenching in hours [1]
+        (assumes symmetrical).
 
     Returns
     -------
@@ -565,11 +587,13 @@ def quenching_correction(
     # ############################ #
     sunrise, sunset = sunset_sunrise(time, lat, lon)
     offset = np.timedelta64(sunrise_sunset_offset, 'h')
-    # creating quenching correction batches, where a batch is a night and the following day
+    # creating quenching correction batches, where a batch is a night and the
+    # following day
     day = (time > (sunrise + offset)) & (time < (sunset + offset))
     # find day and night transitions
     daynight_transitions = np.abs(np.diff(day.astype(int)))
-    # get the cumulative sum of daynight to generate separate batches for day and night
+    # get the cumulative sum of daynight to generate separate batches for day
+    # and night
     daynight_batches = daynight_transitions.cumsum()
     # now get the batches with padded 0 to account for the diff
     # also add a bool that makes night_day or day_night batches
@@ -615,8 +639,8 @@ def quenching_correction(
     # ################################ #
     #  FIND THE QUENCHING DEPTH LAYER  #
     # ################################ #
-    # create a "photic layer" mask to which calc will be limited
-    # daytime, shalower than [100m] and fluoresence is quenched relative to night
+    # create a "photic layer" mask to which calc will be limited daytime,
+    # shalower than [100m] and fluoresence is quenched relative to night
     photic_layer = isday & (depth < max_photic_depth) & (fluor_diff > 0)
     # blank array to be filled
     quenching_layer = np.zeros(depth.size).astype(bool)
@@ -662,13 +686,15 @@ def quenching_report(
     """
     A report for the results of optics.quenching_correction.
 
-    The function creates a figure object of 3 subplots containing a pcolormesh of the original fluorescence data,
-    the quenching corrected fluorescence data and the quenching layer calculated from the optics.quenching_correction function.
+    The function creates a figure object of 3 subplots containing a pcolormesh
+    of the original fluorescence data, the quenching corrected fluorescence
+    data and the quenching layer calculated from the
+    optics.quenching_correction function.
 
     Parameters
     ----------
     flr: numpy.ndarray or pandas.Series
-        The fluorescence data after cleaning and factory calibration conversion.
+        Fluorescence data after cleaning and factory calibration conversion.
     flr_corrected: numpy.ndarray or pandas.Series
         The fluorescence data corrected for quenching.
     quenching layer: bool
@@ -683,10 +709,12 @@ def quenching_report(
     Returns
     -------
     figure: object
-        Creates a figure object with 3 subplots containing a pcolormesh of the original fluorescence data,
-        the quenching corrected fluorescence data and the quenching layer calculated from the optics.quenching_correction function.
+        Creates a figure object with 3 subplots containing a pcolormesh of the
+        original fluorescence data, the quenching corrected fluorescence data
+        and the quenching layer calculated from the optics.quenching_correction
+        function.
     """
-    from matplotlib.pyplot import subplots, cm, colorbar
+    from matplotlib.pyplot import subplots, cm
     from numpy import array, nanpercentile
     from . import plot
 
@@ -701,7 +729,6 @@ def quenching_report(
 
     bmin, bmax = nanpercentile(z[1], [2, 98])
     smin, smax = nanpercentile(z[2], [2, 98])
-    im = []
     props = dict(cmap=cm.YlGnBu_r)
     props.update(pcolor_kwargs)
 
@@ -709,7 +736,6 @@ def quenching_report(
     plot.pcolormesh(x, y, z[1], ax=ax[1], vmin=bmin, vmax=bmax, **props),
     plot.pcolormesh(x, y, z[2], ax=ax[2], vmin=smin, vmax=smax, **props),
 
-    cb = []
     for i in range(0, 3):
         ax[i].set_ylim(180, 0)
         ax[i].set_xlim(x.min(), x.max())

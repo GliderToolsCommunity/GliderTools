@@ -1,15 +1,23 @@
-# -*- coding: utf-8 -*-
 #!/usr/bin/env python
-from __future__ import (print_function as _pf,
-                        unicode_literals as _ul,
-                        absolute_import as _ai)
+from __future__ import absolute_import as _ai
+from __future__ import print_function as _pf
+from __future__ import unicode_literals as _ul
+
 import numpy as _np
+
 from .helpers import getframe, transfer_nc_attrs
 
 
-def bottle_matchup(gld_dives, gld_depth, gld_time,
-                   btl_depth, btl_time, btl_values,
-                   min_depth_diff_metres=5, min_time_diff_minutes=120):
+def bottle_matchup(
+    gld_dives,
+    gld_depth,
+    gld_time,
+    btl_depth,
+    btl_time,
+    btl_values,
+    min_depth_diff_metres=5,
+    min_time_diff_minutes=120,
+):
     """
     Performs a matchup between glider and bottle samples based on time and
     depth (or density).
@@ -52,9 +60,12 @@ def bottle_matchup(gld_dives, gld_depth, gld_time,
 
     # make all input variables np.arrays
     args = gld_time, gld_depth, gld_dives, btl_time, btl_depth, btl_values
-    gld_time, gld_depth, gld_dives, btl_time, btl_depth, btl_values = map(_np.array, args)
+    gld_time, gld_depth, gld_dives, btl_time, btl_depth, btl_values = map(
+        _np.array, args
+    )
 
-    # create a blank array that matches glider data (placeholder for calibration bottle values)
+    # create a blank array that matches glider data
+    # (placeholder for calibration bottle values)
     gld_cal = _np.ones_like(gld_depth) * _np.nan
 
     # loop through each ship based CTD station
@@ -86,33 +97,52 @@ def bottle_matchup(gld_dives, gld_depth, gld_time,
                     # assign the bottle values to the calibration output
                     gld_cal[k] = btl_values[j]
                     n_depths += 1
-            print('[stn {}/{}] SUCCESS: {} ({} of {} samples) match-up within {} minutes'.format(c, stations.size, t_str, n_depths, btl_num, t_dif.min()))
+            print(
+                (
+                    '[stn {}/{}] SUCCESS: {} ({} of {} samples) match-up '
+                    'within {} minutes'
+                ).format(
+                    c, stations.size, t_str, n_depths, btl_num, t_dif.min()
+                )
+            )
         else:
-            print("[stn {}/{}]  FAILED: {} Couldn't find samples within constraints".format(c, stations.size, t_str))
+            print(
+                (
+                    "[stn {}/{}]  FAILED: {} Couldn't find samples within "
+                    'constraints'
+                ).format(c, stations.size, t_str)
+            )
 
     attrs = dict(units='', positive='', comment='', standard_name='', axis='')
     gld_cal = transfer_nc_attrs(getframe(), var, gld_cal, var_name, **attrs)
 
     return gld_cal
 
-  
+
 def model_metrics(x, y, model):
     from sklearn import metrics
     from numpy import array
 
-    x = array(x).reshape(-1,1)
+    x = array(x).reshape(-1, 1)
     y = array(y)
 
     y_hat = model.predict(x).squeeze()
-    ol = model.outliers_ if hasattr(model, 'outliers_') else _np.zeros_like(y).astype(bool)
+    ol = (
+        model.outliers_
+        if hasattr(model, 'outliers_')
+        else _np.zeros_like(y).astype(bool)
+    )
 
-    formula = '$f(x) = {:.2g}x + {:.2g}$'.format(model.coef_[0], model.intercept_)
+    # formula = '$f(x) = {:.2g}x + {:.2g}$'.format(
+    #     model.coef_[0], model.intercept_
+    # )
 
     # metrics calculation
     out = dict(
         model_type=model.__class__.__name__,
         model_slope=model.coef_[0],
-        model_intercept=model.intercept_)
+        model_intercept=model.intercept_,
+    )
 
     params = {
         'param_' + key: value
@@ -122,13 +152,15 @@ def model_metrics(x, y, model):
     results = dict(
         r2_all=metrics.r2_score(y, y_hat),
         r2_robust=metrics.r2_score(y[~ol], y_hat[~ol]),
-        rmse_all=metrics.mean_squared_error(y, y_hat)**0.5,
-        rmse_robust=metrics.mean_squared_error(y[~ol], y_hat[~ol])**0.5)
+        rmse_all=metrics.mean_squared_error(y, y_hat) ** 0.5,
+        rmse_robust=metrics.mean_squared_error(y[~ol], y_hat[~ol]) ** 0.5,
+    )
 
     out.update(params)
     out.update(results)
 
     return out
+
 
 def model_figs(bottle_data, glider_data, model, ax=None):
     """
@@ -159,22 +191,43 @@ def model_figs(bottle_data, glider_data, model, ax=None):
 
     assert not any(isnan(x)), 'There are nans in glider_data'
     assert not any(isnan(y)), 'There are nans in bottle_data'
-    assert x.size == y.size, 'glider_data and bottle_data are not the same size'
-    assert x.size == model.outliers_.size, 'model.outliers_ is a different size to bottle_data'
+    assert (
+        x.size == y.size
+    ), 'glider_data and bottle_data are not the same size'
+    assert (
+        x.size == model.outliers_.size
+    ), 'model.outliers_ is a different size to bottle_data'
 
     xf = linspace(nanmin(x), nanmax(x), 100).reshape(-1, 1)
     y_hat = model.predict(x).squeeze()
-    ol = model.outliers_ if hasattr(model, 'outliers_') else _np.zeros_like(y).astype(bool)
-    formula = '$f(x) = {:.2g}x + {:.2g}$'.format(model.coef_[0], model.intercept_)
+    ol = (
+        model.outliers_
+        if hasattr(model, 'outliers_')
+        else _np.zeros_like(y).astype(bool)
+    )
+    formula = '$f(x) = {:.2g}x + {:.2g}$'.format(
+        model.coef_[0], model.intercept_
+    )
     formula = formula if not formula.endswith('+ 0$') else formula[:-5] + '$'
 
     print(x.shape, xf.shape)
-    ## PLOTTING FROM HERE ON
+    # PLOTTING FROM HERE ON #############
     if ax is None:
         _, ax = subplots(1, 1, figsize=[6, 5], dpi=120)
-    ax.plot(x, y, 'o', c='k', zorder=99, label='Samples ({})'.format(x.size))[0]
+    ax.plot(x, y, 'o', c='k', zorder=99, label='Samples ({})'.format(x.size))[
+        0
+    ]
     ax.plot(xf, model.predict(xf), c='#AAAAAA', label='{}'.format(formula))
-    ax.plot(x[ol], y[ol], 'ow', visible=ol.any(), mew=1, mec='k', zorder=100, label='Outliers ({})'.format(ol.sum()))
+    ax.plot(
+        x[ol],
+        y[ol],
+        'ow',
+        visible=ol.any(),
+        mew=1,
+        mec='k',
+        zorder=100,
+        label='Outliers ({})'.format(ol.sum()),
+    )
     ax.legend(fontsize=10, loc='upper left')
 
     # Additional info about the model displayed from here on
@@ -187,25 +240,29 @@ def model_figs(bottle_data, glider_data, model, ax=None):
     # metrics calculation
     r2_all = metrics.r2_score(y, y_hat)
     r2_robust = metrics.r2_score(y[~ol], y_hat[~ol])
-    rmse_all = metrics.mean_squared_error(y, y_hat)**0.5
-    rmse_robust = metrics.mean_squared_error(y[~ol], y_hat[~ol])**0.5
+    rmse_all = metrics.mean_squared_error(y, y_hat) ** 0.5
+    rmse_robust = metrics.mean_squared_error(y[~ol], y_hat[~ol]) ** 0.5
 
     # string formatting
     m_name = 'Huber Regresion'
-    r2_str = "$r^2$ score: {:.2g} ({:.2g})\n"
-    rmse_str = "RMSE: {:.2g} ({:.2g})"
-    placeholder = u"{}: {}\n"
+    r2_str = '$r^2$ score: {:.2g} ({:.2g})\n'
+    rmse_str = 'RMSE: {:.2g} ({:.2g})'
+    placeholder = u'{}: {}\n'
 
     # formatting the strings to be displayed
-    params_str = "{} Params\n".format(m_name)
-    params_str += ''.join([placeholder.format(key, params[key]) for key in params])
-    params_str += "\nResults (robust)\n"
+    params_str = '{} Params\n'.format(m_name)
+    params_str += ''.join(
+        [placeholder.format(key, params[key]) for key in params]
+    )
+    params_str += '\nResults (robust)\n'
     params_str += r2_str.format(r2_all, r2_robust)
     params_str += rmse_str.format(rmse_all, rmse_robust)
 
     # placing the text box
-    anchored_text = AnchoredText(params_str, loc=4, prop=dict(size=10, family='monospace'), frameon=True)
-    anchored_text.patch.set_boxstyle("round, pad=0.3, rounding_size=0.2")
+    anchored_text = AnchoredText(
+        params_str, loc=4, prop=dict(size=10, family='monospace'), frameon=True
+    )
+    anchored_text.patch.set_boxstyle('round, pad=0.3, rounding_size=0.2')
     anchored_text.patch.set_linewidth(0.2)
     ax.add_artist(anchored_text)
 
@@ -217,8 +274,9 @@ def model_figs(bottle_data, glider_data, model, ax=None):
     return ax
 
 
-def robust_linear_fit(gld_var, gld_var_cal, interpolate_limit=3,
-                      return_figures=True, **kwargs):
+def robust_linear_fit(
+    gld_var, gld_var_cal, interpolate_limit=3, return_figures=True, **kwargs
+):
     """
     Perform a robust linear regression using a Huber Loss Function to remove
     outliers. Returns a model object that behaves like a scikit-learn model
@@ -250,7 +308,6 @@ def robust_linear_fit(gld_var, gld_var_cal, interpolate_limit=3,
 
     from sklearn import linear_model
     from pandas import Series
-    from numpy import log
     from .helpers import GliderToolsError
 
     # make all input arguments numpy arrays
@@ -267,8 +324,8 @@ def robust_linear_fit(gld_var, gld_var_cal, interpolate_limit=3,
     y = gld_var_cal[i]
     x = gld_var[i][:, None]
 
-    if "fit_intercept" not in kwargs:
-        kwargs["fit_intercept"] = False
+    if 'fit_intercept' not in kwargs:
+        kwargs['fit_intercept'] = False
     model = linear_model.HuberRegressor(**kwargs)
     model.fit(x, y)
 
@@ -283,6 +340,7 @@ def robust_linear_fit(gld_var, gld_var_cal, interpolate_limit=3,
         nans into account. An extra dimension is also added if needed.
         """
         from xarray import DataArray
+
         var = x.copy()
         x = _np.array(x)
         out = _np.ndarray(x.size) * _np.NaN
