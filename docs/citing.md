@@ -1,15 +1,14 @@
 Citing and Referencing
 ======================
 
-[![DOI](https://zenodo.org/badge/141922866.svg)](https://zenodo.org/badge/latestdoi/141922866)
+[![](https://zenodo.org/badge/141922866.svg)](https://zenodo.org/badge/latestdoi/141922866)
 
 
 Reference
 ---------
 If you would like to cite or reference Glider Tools, please use:
 
-Link to DOI
-
+Gregor, L., Ryan-Keogh, T. J., Nicholson, S.-A., du Plessis, M., Giddy, I., & Swart, S. (2019). GliderTools: A Python Toolbox for Processing Underwater Glider Data. Frontiers in Marine Science, 6(December), 1–13. https://doi.org/10.3389/fmars.2019.00738
 
 
 Authors and contributors
