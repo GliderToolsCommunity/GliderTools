@@ -3,7 +3,7 @@ glidertools
 ===============================
 
 
-.. image:: https://travis-ci.com/GliderToolsCommunity/GliderTools.svg?branch=dev
+.. image:: https://travis-ci.com/GliderToolsCommunity/GliderTools.svg?branch=master
         :target: https://travis-ci.com/GliderToolsCommunity/GliderTools
 .. image:: https://badgen.net/pypi/v/glidertools
         :target: https://pypi.org/project/glidertools
