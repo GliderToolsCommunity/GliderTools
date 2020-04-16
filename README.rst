@@ -7,12 +7,14 @@ glidertools
         :target: https://travis-ci.org/luke-gregor/GliderTools
 .. image:: https://badgen.net/pypi/v/glidertools
         :target: https://pypi.org/project/glidertools
+.. image:: https://readthedocs.org/projects/glidertools/badge/?version=latest
+        :target: https://glidertools.readthedocs.io
 .. image:: https://img.shields.io/badge/License-GPLv3-blue.svg  
         :target: https://www.gnu.org/licenses/gpl-3.0
 
 Glider tools is a Python 3.6+ package designed to process data from the first level of processing to a science ready dataset. The package is designed to easily import data to a standard column format (numpy.ndarray or pandas.DataFrame). Cleaning and smoothing functions are flexible and can be applied as required by the user. We provide examples and demonstrate best practices as developed by the SOCCO Group (http://socco.org.za/).
 
-Please cite the original publication of this package and the version that you've used: Reference here with <#link_to_the_paper>
+Please cite the original publication of this package and the version that you've used: Reference here with https://doi.org/10.3389/fmars.2019.00738
 
 Installation
 ------------
