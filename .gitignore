@@ -63,3 +63,5 @@ target/
 
 # vscode
 .vscode/*
+**/.DS_Store
+.DS_Store

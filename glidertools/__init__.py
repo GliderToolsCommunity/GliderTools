@@ -3,7 +3,9 @@ from __future__ import (print_function as _pf,
                         unicode_literals as _ul,
                         absolute_import as _ai)
 
-__version__ = '2019.5'
+from setuptools_scm import get_version
+__version__ = get_version(root='..', relative_to=__file__)
+del get_version
 
 import warnings as _warnings
 _warnings.filterwarnings('ignore', category=RuntimeWarning)
