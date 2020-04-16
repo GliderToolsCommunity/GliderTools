@@ -1,9 +1,10 @@
-/* You can add customisation to your website */
+div#cheat-sheet.section h1{
+	font-size: 0px;
+}
 
 .highlight{
     background-color: #efefef;
     border-color: #c9c9c9;
     border-width: 1px;
-    border-style: solid;  
+    border-style: solid;
 }
-
