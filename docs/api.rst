@@ -11,10 +11,10 @@ Loading Data
 .. autosummary::
    :toctree: ./_generated/
 
-    load.seaglider_basestation_netCDFs
-    load.seaglider_show_variables
-    load.ego_mission_netCDF
-	load.slocum_geomar_matfile
+   load.seaglider_basestation_netCDFs
+   load.seaglider_show_variables
+   load.ego_mission_netCDF
+   load.slocum_geomar_matfile
 
 
 High level processing

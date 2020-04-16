@@ -1,27 +1,20 @@
 #!/usr/bin/env python
-from __future__ import (print_function as _pf,
-                        unicode_literals as _ul,
-                        absolute_import as _ai)
+from __future__ import absolute_import as _ai
+from __future__ import print_function as _pf
+from __future__ import unicode_literals as _ul
+
+import warnings as _warnings
 
 from setuptools_scm import get_version
+
+from . import (calibration, cleaning, flo_functions, load, mapping, optics,
+               physics, utils)
+from .mapping import grid_data, interp_obj
+from .plot import logo as make_logo
+from .plot import plot_functions as plot
+from .processing import *
+
 __version__ = get_version(root='..', relative_to=__file__)
 del get_version
 
-import warnings as _warnings
 _warnings.filterwarnings('ignore', category=RuntimeWarning)
-
-from .processing import *
-
-from . plot import logo as make_logo
-from . plot import plot_functions as plot
-from . import load
-from . import utils
-from . import optics
-from . import physics
-from . import calibration
-from . import cleaning
-from . import flo_functions
-from . import mapping
-
-from .mapping import grid_data
-from .mapping import interp_obj
