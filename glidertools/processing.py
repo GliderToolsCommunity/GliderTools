@@ -137,7 +137,7 @@ def calc_oxygen(o2raw, pressure, salinity, temperature, auto_conversion=True,
     if savitzky_golay_window:
         printv(verbose, "\tSmoothing with Savitzky-Golay filter (window={}, order={})".format(savitzky_golay_window, savitzky_golay_order))
         o2raw = savitzky_golay(o2raw, savitzky_golay_window, savitzky_golay_order)
-
+  
     o2sat = sw.satO2(salinity, temperature)
     density = sw.dens(salinity, temperature, pressure)
 

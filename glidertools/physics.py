@@ -107,7 +107,7 @@ def potential_density(salt_PSU, temp_C, pres_db, lat, lon, pres_ref=0):
     -------
     potential_density : array, dtype=float, shape=[n, ]
 
-
+  
     Note
     ----
     Using seawater.dens does not yield the same results as this function. We

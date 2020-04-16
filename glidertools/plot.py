@@ -502,7 +502,7 @@ class logo:
         import matplotlib.pyplot as plt
         import seaborn as sns
         import pandas as pd
-
+  
         x, y = logo.profile_dummy_data()
 
         props = dict(transparent=True, dpi=200, bbox_inches='tight')

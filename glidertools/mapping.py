@@ -276,7 +276,7 @@ class QuadTree:
     @property
     def leaves(self):
         return self.get_leaves()
-
+   
     def _plot_quad_test(self):
         from matplotlib import pyplot as plt
 

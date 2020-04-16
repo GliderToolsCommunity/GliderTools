@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
-from __future__ import (print_function as _pf,
-                        unicode_literals as _ul,
-                        absolute_import as _ai)
+from __future__ import absolute_import as _ai
+from __future__ import print_function as _pf
+from __future__ import unicode_literals as _ul
+
 from .helpers import getframe, transfer_nc_attrs
 
 
-def find_bad_profiles(dives, depth, var, ref_depth=None, stdev_multiplier=1, method='median'):
+def find_bad_profiles(
+    dives, depth, var, ref_depth=None, stdev_multiplier=1, method='median'
+):
     """
     Find profiles that exceed a threshold at a reference depth.
 
@@ -30,7 +33,7 @@ def find_bad_profiles(dives, depth, var, ref_depth=None, stdev_multiplier=1, met
 
     Returns
     -------
-
+  
     bad_dive_idx: numpy.ndarray or pandas.Series
         The index of the dives where the deep mean/median is greater than the limit.
     bad_dive: mask
@@ -50,20 +53,26 @@ def find_bad_profiles(dives, depth, var, ref_depth=None, stdev_multiplier=1, met
         # reference depth is found by finding the average maximum
         # depth of the variable. The max depth is multiplied by 3
         # this reference depth can be set
-        ref_depth = df.depth[df.dat.groupby(df.dives).idxmax().values].mean() * 3
+        ref_depth = (
+            df.depth[df.dat.groupby(df.dives).idxmax().values].mean() * 3
+        )
 
     # find the median below the reference depth
     deep_avg = df[df.depth > ref_depth].groupby('dives').dat.median()
 
     if method.startswith('med'):
         # if the deep_avg is larger than the median
-        bad_dive = deep_avg > (deep_avg.median() + (deep_avg.std()*stdev_multiplier))
+        bad_dive = deep_avg > (
+            deep_avg.median() + (deep_avg.std() * stdev_multiplier)
+        )
         bad_dive = bad_dive.index.values[bad_dive]
         bad_dive_idx = array([(dives == d) for d in bad_dive]).any(0)
         return bad_dive_idx, bad_dive
     else:
         # if the deep_avg is larger than the mean
-        bad_dive = deep_avg > (deep_avg.mean() + (deep_avg.std()*stdev_multiplier))
+        bad_dive = deep_avg > (
+            deep_avg.mean() + (deep_avg.std() * stdev_multiplier)
+        )
         bad_dive = bad_dive.index.values[bad_dive]
         bad_dive_idx = array([(dives == d) for d in bad_dive]).any(0)
         return bad_dive_idx, bad_dive
@@ -96,7 +105,6 @@ def par_dark_count(par, dives, depth, time):
     """
     from numpy import array, ma, nanmedian, isnan, nanpercentile
 
-
     par_arr = array(par)
     dives = array(dives)
     depth = array(depth)
@@ -105,7 +113,9 @@ def par_dark_count(par, dives, depth, time):
     # DARK CORRECTION FOR PAR
     hrs = time.astype('datetime64[h]') - time.astype('datetime64[D]')
     xi = ma.masked_inside(hrs.astype(int), 22, 2)  # find 23:01 hours
-    yi = ma.masked_outside(depth, *nanpercentile(depth[~isnan(par)], [90, 100]))  # 90th pctl of depth
+    yi = ma.masked_outside(
+        depth, *nanpercentile(depth[~isnan(par)], [90, 100])
+    )  # 90th pctl of depth
     i = ~(xi.mask | yi.mask)
     dark = nanmedian(par_arr[i])
     par_dark = par_arr - dark
@@ -142,9 +152,10 @@ def backscatter_dark_count(bbp, depth):
     mask = (depth > 200) & (depth < 400)
     if (~isnan(bbp[mask])).sum() == 0:
         raise UserWarning(
-            "There are no backscatter measurements between 200 "
-            "and 400 metres.The dark count correction cannot be "
-            "made and backscatter data can't be processed.")
+            'There are no backscatter measurements between 200 '
+            'and 400 metres.The dark count correction cannot be '
+            "made and backscatter data can't be processed."
+        )
     dark_pctl5 = nanpercentile(bbp_dark[mask], 5)
 
     bbp_dark -= dark_pctl5
@@ -183,9 +194,10 @@ def fluorescence_dark_count(flr, depth):
 
     if (~isnan(flr_dark[mask])).sum() == 0:
         raise UserWarning(
-            "\nThere are no fluorescence measurements between "
-            "300 and 400 metres.\nThe dark count correction "
-            "cannot be made and fluorescence data can't be processed.")
+            '\nThere are no fluorescence measurements between '
+            '300 and 400 metres.\nThe dark count correction '
+            "cannot be made and fluorescence data can't be processed."
+        )
     dark_pctl5 = nanpercentile(flr_dark[mask], 5)
 
     flr_dark -= dark_pctl5
@@ -216,7 +228,7 @@ def par_scaling(par_uV, scale_factor_wet_uEm2s, sensor_output_mV):
         The par data corrected for the sensor output and scale factor from the factory calibration file in units uE/m2/sec.
 
     """
-    sensor_output_uV = sensor_output_mV / 1000.
+    sensor_output_uV = sensor_output_mV / 1000.0
 
     par_uEm2s = (par_uV - sensor_output_uV) / scale_factor_wet_uEm2s
 
@@ -266,8 +278,9 @@ def par_fill_surface(par, dives, depth, max_curve_depth=100):
         else:
             try:
                 [a, b], _ = curve_fit(
-                    exp_func, xm, ym, p0=(500, -0.03), maxfev=1000)
-                yj_hat = exp_func(xj, a , b)
+                    exp_func, xm, ym, p0=(500, -0.03), maxfev=1000
+                )
+                yj_hat = exp_func(xj, a, b)
             except RuntimeError:
                 yj_hat = np.ones_like(depth) * np.nan
 
@@ -335,7 +348,7 @@ def photic_depth(par, dives, depth, return_mask=False, ref_percentage=1):
         if np.isnan(slope):
             euph_depth = np.nan
         else:
-            light_depth = np.exp((depth * -1)/(-1 / slope)) * 100.
+            light_depth = np.exp((depth * -1) / (-1 / slope)) * 100.0
             ind = abs(light_depth - ref_percentage).argmin()
             euph_depth = depth[ind]
 
@@ -345,7 +358,7 @@ def photic_depth(par, dives, depth, return_mask=False, ref_percentage=1):
             return [euph_depth]
 
     #########################################################
-    assert np.array(par).any(), "PAR does not contain data"
+    assert np.array(par).any(), 'PAR does not contain data'
 
     slopes = []
     light_depths = []
@@ -362,8 +375,8 @@ def photic_depth(par, dives, depth, return_mask=False, ref_percentage=1):
             slope = dive_slope(zj, yj)
         light_depth = dive_light_depth(yj, slope)
 
-        slopes += slope,
-        light_depths += light_depth,
+        slopes += (slope,)
+        light_depths += (light_depth,)
 
     slopes = pd.Series(slopes, index=udives)
     light_depths = np.concatenate(light_depths)
@@ -401,12 +414,12 @@ def sunset_sunrise(time, lat, lon):
     """
     from astral import Astral
     from pandas import DataFrame
+
     ast = Astral()
 
-    df = DataFrame.from_dict(dict([
-        ('time', time),
-        ('lat', lat),
-        ('lon', lon)]))
+    df = DataFrame.from_dict(
+        dict([('time', time), ('lat', lat), ('lon', lon)])
+    )
 
     # set days as index
     df = df.set_index(df.time.values.astype('datetime64[D]'))
@@ -425,7 +438,19 @@ def sunset_sunrise(time, lat, lon):
     return sunrise, sunset
 
 
-def quenching_correction(flr, bbp, dives, depth, time, lat, lon, max_photic_depth=100, night_day_group=True, surface_layer=5, sunrise_sunset_offset=1):
+def quenching_correction(
+    flr,
+    bbp,
+    dives,
+    depth,
+    time,
+    lat,
+    lon,
+    max_photic_depth=100,
+    night_day_group=True,
+    surface_layer=5,
+    sunrise_sunset_offset=1,
+):
     """
     Corrects the fluorescence data based upon Thomalla et al. (2017).
 
@@ -621,13 +646,19 @@ def quenching_correction(flr, bbp, dives, depth, time, lat, lon, max_photic_dept
     # fill the array with queching corrected data in the quenching layer only
     flr_corrected[quenching_layer] = quench_corrected[quenching_layer]
 
-    flr_corrected = transfer_nc_attrs(getframe(), var, flr_corrected, 'flr_quench_corrected', units='RFU')
-    quenching_layer = transfer_nc_attrs(getframe(), var, quenching_layer, 'quench_layer', units='')
+    flr_corrected = transfer_nc_attrs(
+        getframe(), var, flr_corrected, 'flr_quench_corrected', units='RFU'
+    )
+    quenching_layer = transfer_nc_attrs(
+        getframe(), var, quenching_layer, 'quench_layer', units=''
+    )
 
     return flr_corrected, quenching_layer
 
 
-def quenching_report(flr, flr_corrected, quenching_layer, dives, depth, pcolor_kwargs={}):
+def quenching_report(
+    flr, flr_corrected, quenching_layer, dives, depth, pcolor_kwargs={}
+):
     """
     A report for the results of optics.quenching_correction.
 
@@ -663,9 +694,7 @@ def quenching_report(flr, flr_corrected, quenching_layer, dives, depth, pcolor_k
     i = y < 183
     y = y[i]
     x = array(dives)[i]
-    z = [array(flr)[i],
-         array(flr_corrected)[i],
-         array(quenching_layer)[i]]
+    z = [array(flr)[i], array(flr_corrected)[i], array(quenching_layer)[i]]
 
     fig, ax = subplots(3, 1, figsize=[10, 11], dpi=90)
     title = 'Quenching correction with Thomalla et al. (2017)'

@@ -12,7 +12,7 @@ def outlier_bounds_std(arr, multiplier=3):
 
     the multiplier [3] can be adjusted by the user
     returns the lower_limit, upper_limit
-
+   
     Parameters
     ----------
     arr : np.array|xr.DataArray, dtype=float, shape=[n, ]

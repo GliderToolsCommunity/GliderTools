@@ -18,7 +18,7 @@ def time_average_per_dive(dives, time):
     time : np.array, dtype=datetime64, shape=[n, ]
         time stamp for each observed measurement
 
-    Returns
+    Returns  
     -------
     time_average_per_dive : np.array, dtype=datetime64, shape=[n, ]
         each dive will have the average time stamp of that dive. Can be used for
