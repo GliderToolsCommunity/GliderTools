@@ -9,7 +9,7 @@ We provide examples and demonstrate best practices as developed by the `SOCCO Gr
 
 For the original publication of this package see: https://doi.org/10.3389/fmars.2019.00738.
 
-For recommendations or bug reports, please visit https://gitlab.com/socco/GliderTools/issues
+For recommendations or bug reports, please visit hhttps://github.com/GliderToolsCommunity/GliderTools/issues/new
 
 .. toctree::
    :maxdepth: 2
@@ -35,7 +35,7 @@ For recommendations or bug reports, please visit https://gitlab.com/socco/Glider
    :maxdepth: 2
    :caption: Help and Reference
 
-   GitLab Repo <https://gitlab.com/socco/GliderTools>
+   GitLab Repo <https://github.com/GliderToolsCommunity/GliderTools>
    api
    package_structure
    citing

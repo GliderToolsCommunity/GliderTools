@@ -1,0 +1,2 @@
+setuptools
+setuptools_scm
