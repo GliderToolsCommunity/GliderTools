@@ -3,8 +3,8 @@ glidertools
 ===============================
 
 
-.. image:: https://img.shields.io/travis/luke-gregor/GliderTools.svg
-        :target: https://travis-ci.org/luke-gregor/GliderTools
+.. image:: https://travis-ci.com/GliderToolsCommunity/GliderTools.svg?branch=master
+        :target: https://travis-ci.com/GliderToolsCommunity/GliderTools
 .. image:: https://badgen.net/pypi/v/glidertools
         :target: https://pypi.org/project/glidertools
 .. image:: https://readthedocs.org/projects/glidertools/badge/?version=latest
