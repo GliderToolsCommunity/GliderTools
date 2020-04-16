@@ -106,8 +106,7 @@ def model_metrics(x, y, model):
     y_hat = model.predict(x).squeeze()
     ol = model.outliers_ if hasattr(model, 'outliers_') else _np.zeros_like(y).astype(bool)
 
-    formula = '$f(x) = {:.2g}x + {:.2g}$'.format(model.coef_[0],
-                                                 model.intercept_)
+    formula = '$f(x) = {:.2g}x + {:.2g}$'.format(model.coef_[0], model.intercept_)
 
     # metrics calculation
     out = dict(

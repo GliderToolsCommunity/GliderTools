@@ -12,10 +12,9 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import os
-import sys
-
 from setuptools_scm import get_version
+import sys
+import os
 
 sys.path.insert(0, os.path.realpath('..'))
 __version__ = get_version(root='..', relative_to=__file__)

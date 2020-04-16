@@ -500,6 +500,8 @@ class logo:
     @staticmethod
     def run(show_figures=False):
         import matplotlib.pyplot as plt
+        import seaborn as sns
+        import pandas as pd
 
         x, y = logo.profile_dummy_data()
 
@@ -516,6 +518,7 @@ class logo:
 
     @staticmethod
     def profile_dummy_data(n_zigzags=3):
+        import matplotlib.pyplot as plt
         import seaborn as sns
         import pandas as pd
 
@@ -574,6 +577,7 @@ class logo:
     @staticmethod
     def logo_wo_name(n_zigzags=3, ax=None):
         import matplotlib.pyplot as plt
+        import seaborn as sns
         import pandas as pd
 
         x, y = logo.profile_dummy_data(n_zigzags)

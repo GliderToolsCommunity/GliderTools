@@ -282,7 +282,7 @@ class QuadTree:
 
         ax = plt.subplots(figsize=[11, 7], dpi=150)[1]
 
-        for depth in range(self.root.max_depth + 1):
+        for depth in range(self.root.max_depth+1):
             self.root.draw_tree(ax=ax, depth=depth)
 
         x, y = self.root.data.T
