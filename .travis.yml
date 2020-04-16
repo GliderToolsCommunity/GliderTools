@@ -33,7 +33,7 @@ install:
 script:
   - coverage run --source glidertools -m py.test
   - coverage report
-  - pushd docs   # no docs yet
+  - pushd docs
   - ./ci/run-linter.sh
 
 # after_success:
