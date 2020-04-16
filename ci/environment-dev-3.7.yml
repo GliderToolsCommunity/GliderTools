@@ -1,0 +1,39 @@
+name: glidertools-dev
+channels:
+  - conda-forge
+dependencies:
+  - python=3.7
+  # IDE
+  - ipywidgets
+  - jupyterlab
+  - nb_conda_kernels # switch conda envs in jupyter
+  # Input/Output
+  - netcdf4
+  # Numerics
+  - numpy
+  - pandas
+  - scipy
+  - xarray
+  # Package Management
+  - asv
+  - black
+  - coveralls
+  - doc8
+  - flake8
+  - isort
+  - pre-commit
+  - pylint
+  - pytest
+  - pytest-cov
+  - pytest-sugar
+  # Visualization
+  - cartopy
+  - matplotlib
+  - nc-time-axis
+  - pip
+  - tqdm
+  - pip:
+      # Documentation
+      - sphinx
+      - recommonmark
+      - pytest-tldr

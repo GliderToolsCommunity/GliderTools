@@ -1,0 +1,5 @@
+[report]
+omit =
+    setup.py
+    glidertools/__main__.py
+    tests/*

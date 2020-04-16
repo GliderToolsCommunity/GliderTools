@@ -1,0 +1,12 @@
+matplotlib
+seawater
+tqdm
+scipy
+scikit-learn
+numpy
+xarray
+pandas
+astral
+netCDF4
+numexpr
+m2r
