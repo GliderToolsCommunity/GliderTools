@@ -11,7 +11,6 @@ else:
 with open('requirements.txt') as f:
     install_requires = f.read().strip().split('\n')
 
-test_requirements = ['pytest-cov']
 CLASSIFIERS = [
     'Development Status :: 3 - Alpha',
     'License :: OSI Approved :: MIT License',
@@ -24,10 +23,14 @@ CLASSIFIERS = [
 ]
 
 setup(
-    name='GliderTools',
+    name='glidertools',
     author="Luke Gregor",
     author_email='lukegre@gmail.com',
-    description="A toolkit for processing Seaglider base station NetCDF files: despiking, smoothing, outlier detection, backscatter, fluorescence quenching, calibration, gridding, interpolation. Documentation at https://glidertools.readthedocs.io",
+    description=(
+        "A toolkit for processing Seaglider base station NetCDF files: "
+        "despiking, smoothing, outlier detection, backscatter, fluorescence "
+        "quenching, calibration, gridding, interpolation. Documentation "
+        "at https://glidertools.readthedocs.io"),
     keywords='GliderTools',
     license="GNUv3",
     classifiers=CLASSIFIERS,
@@ -39,9 +42,11 @@ setup(
     long_description=long_description,
     packages=find_packages(),
     install_requires=install_requires,
-    
+
     test_suite='glidertools/tests',
-    tests_require=test_requirements,
+    tests_require=[
+        'pytest-cov'
+    ],
     setup_requires=[
         'setuptools_scm',
         'setuptools>=30.3.0',
