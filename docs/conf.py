@@ -12,9 +12,10 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-from setuptools_scm import get_version
-import sys
 import os
+import sys
+
+from setuptools_scm import get_version
 
 sys.path.insert(0, os.path.realpath('..'))
 __version__ = get_version(root='..', relative_to=__file__)
@@ -51,9 +52,9 @@ autodoc_default_flags = ['members', 'inherited-members']
 templates_path = ['_templates']
 
 
-source_parsers = {
-    '.md': 'recommonmark.parser.CommonMarkParser',
-}
+# source_parsers = {
+#     '.md': 'recommonmark.parser.CommonMarkParser',
+# }
 
 # The suffix of source filenames.
 source_suffix = ['.rst', '.md']
@@ -215,22 +216,25 @@ htmlhelp_basename = 'ReadtheDocsTemplatedoc'
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
-# The paper size ('letterpaper' or 'a4paper').
-# 'papersize': 'letterpaper',
-
-# The font size ('10pt', '11pt' or '12pt').
-# 'pointsize': '10pt',
-
-# Additional stuff for the LaTeX preamble.
-# 'preamble': '',
+    # The paper size ('letterpaper' or 'a4paper').
+    # 'papersize': 'letterpaper',
+    # The font size ('10pt', '11pt' or '12pt').
+    # 'pointsize': '10pt',
+    # Additional stuff for the LaTeX preamble.
+    # 'preamble': '',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    ('index', 'ReadtheDocsTemplate.tex',
-     u'Read the Docs Template Documentation', u'Read the Docs', 'manual'),
+    (
+        'index',
+        'ReadtheDocsTemplate.tex',
+        u'Read the Docs Template Documentation',
+        u'Read the Docs',
+        'manual',
+    ),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -259,8 +263,13 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'readthedocstemplate', u'Read the Docs Template Documentation',
-     [u'Read the Docs'], 1)
+    (
+        'index',
+        'readthedocstemplate',
+        u'Read the Docs Template Documentation',
+        [u'Read the Docs'],
+        1,
+    )
 ]
 
 # If true, show URL addresses after external links.
@@ -273,8 +282,14 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'ReadtheDocsTemplate', u'Read the Docs Template Documentation',
-     u'Read the Docs', 'ReadtheDocsTemplate', 'Miscellaneous'),
+    (
+        'index',
+        'ReadtheDocsTemplate',
+        u'Read the Docs Template Documentation',
+        u'Read the Docs',
+        'ReadtheDocsTemplate',
+        'Miscellaneous',
+    ),
 ]
 
 # Documents to append as an appendix to all manuals.
