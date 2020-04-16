@@ -4,13 +4,13 @@ set -eo pipefail
 
 echo "Code Styling with (black, isort)"
 
-source activate glidertools-dev
+# source activate glidertools-dev
 
 # echo "[flake8]"  # a little too strict
 # flake8 glidertools --exclude=__init__.py --max-line-length=79 --ignore=C901,W605,W503,F722
 
 echo "[black]"
-black --exclude flo_functions --check -S -l 79 glidertools
+black --exclude flo_functions --exclude __init__ --check -S -l 79 glidertools
 
 echo "[isort]"
 isort --recursive --check-only -w 79 glidertools
