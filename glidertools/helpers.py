@@ -1,4 +1,5 @@
 import inspect
+from inspect import currentframe as getframe
 
 from . import __version__ as version
 
