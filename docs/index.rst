@@ -9,7 +9,7 @@ We provide examples and demonstrate best practices as developed by the `SOCCO Gr
 
 For the original publication of this package see: https://doi.org/10.3389/fmars.2019.00738.
 
-For recommendations or bug reports, please visit hhttps://github.com/GliderToolsCommunity/GliderTools/issues/new
+For recommendations or bug reports, please visit https://github.com/GliderToolsCommunity/GliderTools/issues/new
 
 .. toctree::
    :maxdepth: 2
