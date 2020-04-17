@@ -3,7 +3,13 @@
 
 name: Python package
 
-on: release
+on: 
+  release:
+    types:
+      - prereleased
+      - created
+      - edited
+      - published
 
 jobs:
   build:
