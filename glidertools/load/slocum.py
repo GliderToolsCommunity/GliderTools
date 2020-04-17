@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-from __future__ import (print_function as _pf,
-                        unicode_literals as _ul,
-                        absolute_import as _ai)
+from __future__ import absolute_import as _ai
+from __future__ import print_function as _pf
+from __future__ import unicode_literals as _ul
 
 
 def slocum_geomar_matfile(filename, verbose=True):
@@ -43,8 +43,8 @@ def slocum_geomar_matfile(filename, verbose=True):
         var = mat[key]
         col, dives = [], []
         for i, dat in enumerate(var.squeeze()):
-            col += dat.squeeze(),
-            dives += np.ones(dat.squeeze().size) * i,
+            col += (dat.squeeze(),)
+            dives += (np.ones(dat.squeeze().size) * i,)
 
         try:
             df[key] = np.concatenate(col)
@@ -53,7 +53,7 @@ def slocum_geomar_matfile(filename, verbose=True):
             ser = pd.Series(col, index=np.array(dives).squeeze())
             df[key] = ser.reindex(df.dives).values
 
-    df['dives'] /= 2.
+    df['dives'] /= 2.0
     if 'time_datenum' in df.columns:
         df['time'] = convert_matlab_datenum_to_datetime64(df.time_datenum)
 

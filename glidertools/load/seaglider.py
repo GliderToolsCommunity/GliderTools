@@ -1,16 +1,20 @@
 #!/usr/bin/env python
-from __future__ import (print_function as _pf,
-                        unicode_literals as _ul,
-                        absolute_import as _ai)
-from netCDF4 import Dataset
+from __future__ import absolute_import as _ai
+from __future__ import print_function as _pf
+from __future__ import unicode_literals as _ul
+
 import numpy as np
+from netCDF4 import Dataset
+
 from ..helpers import GliderToolsWarning
 
 # TODO: fix dives indexing (merge dim if same size as another more populated dim)
 # TODO: when dims merge dives are sometimes taken from the wrong dataframe
 
+
 def process_files(file_str):
     from glob import glob
+
     if isinstance(file_str, str):
         files = np.sort(glob(file_str))
 
@@ -21,6 +25,7 @@ def process_files(file_str):
 
 def show_variables(files):
     from pandas import DataFrame
+
     files = process_files(files)
 
     i = len(files) // 2
@@ -34,7 +39,9 @@ def show_variables(files):
         var = variables[key]
         info[i] = {
             'name': key,
-            'dims': var.dimensions[0] if len(var.dimensions) == 1 else 'string',
+            'dims': var.dimensions[0]
+            if len(var.dimensions) == 1
+            else 'string',
             'units': '' if not hasattr(var, 'units') else var.units,
             'comment': '' if not hasattr(var, 'comment') else var.comment,
         }
@@ -45,13 +52,13 @@ def show_variables(files):
     dim[dim.str.startswith('str')] = 'string'
     vars['dims'] = dim
 
-    vars = (vars
-            .sort_values(['dims', 'name'])
-            .reset_index(drop=True)
-            .loc[:, ['dims', 'name', 'units', 'comment']]
-            .set_index('name')
-            .style
-            )
+    vars = (
+        vars.sort_values(['dims', 'name'])
+        .reset_index(drop=True)
+        .loc[:, ['dims', 'name', 'units', 'comment']]
+        .set_index('name')
+        .style
+    )
 
     return vars
 
@@ -62,9 +69,9 @@ def check_var_in_ncfiles(files, key):
     for file in files:
         vardict = Dataset(file).variables
         if key in vardict:
-            is_in_files += True,
+            is_in_files += (True,)
         else:
-            is_in_files += False,
+            is_in_files += (False,)
 
     return any(is_in_files)
 
@@ -165,6 +172,7 @@ def get_dim_same_size(files, dim):
     Get dimension with the same size as the given dimension.
     If more than one is found, return the with most variables.
     """
+
     def sub_dim_same_size(file, dim):
         dimensions = Dataset(file).dimensions
         # make sure that the given dimension is in the file
@@ -200,13 +208,14 @@ def get_dim_coord(files, dim_name, coord_name, niter=0):
         return dim_vars[is_coord][0]
     elif (same_size_dims != []) and (niter < 2):
         for d in same_size_dims:
-            return get_dim_coord(files, d, coord_name, niter=niter+1)
+            return get_dim_coord(files, d, coord_name, niter=niter + 1)
     else:
         return
 
 
 def make_variable_dimension_dict(files, variable_names, n_check_files=3):
     import warnings
+
     step_size = len(files) // n_check_files
     step_size = 1 if step_size == 0 else step_size
     files_checklist = files[::step_size]
@@ -265,21 +274,23 @@ def read_nc_files_divevars(files, keys, verbose=True, return_skipped=False):
         fname = files[i]
         nc = Dataset(fname)
 
-        d = nc.dive_number if hasattr(nc, 'dive_number') else d+1
+        d = nc.dive_number if hasattr(nc, 'dive_number') else d + 1
 
         nc_keys = [k for k in filter(lambda k: k in nc.variables, keys)]
         if nc_keys:
             skipped = set(keys) - set(nc_keys)
             if skipped:
-                error += '{} not in {}\n'.format(str(skipped), path.split(fname)[1])
+                error += '{} not in {}\n'.format(
+                    str(skipped), path.split(fname)[1]
+                )
             arr = row_stack([nc.variables[k][:] for k in nc_keys])
             nc.close()
 
             df = DataFrame(arr.T, columns=nc_keys)
             df['dives'] = d
-            data += df,
+            data += (df,)
         else:
-            skipped_files += fname,
+            skipped_files += (fname,)
             error += '{} was skipped\n'.format(fname)
 
     if len(error) > 0:
@@ -306,11 +317,11 @@ def read_nc_files_strings(files, keys, verbose=True):
     for i in trange(files.size):
         fname = files[i]
         nc = Dataset(fname)
-        d = nc.dive_number if hasattr(nc, 'dive_number') else d+1
+        d = nc.dive_number if hasattr(nc, 'dive_number') else d + 1
         arr = r_[[nc.variables[k][:].squeeze() for k in keys]]
         nc.close()
-        data += arr,
-        idx += d,
+        data += (arr,)
+        idx += (d,)
     df = DataFrame(array(data, dtype=str), columns=keys)
     for col in df:
         df[col] = df[col].str.encode('ascii', 'ignore').str.decode('ascii')
@@ -324,7 +335,6 @@ def read_nc_files_strings(files, keys, verbose=True):
 
 
 def process_time(files, df):
-
     def decode_times_1970(series):
         # DECODING TIMES IF PRESENT
         t0 = np.datetime64('1970-01-01 00:00:00', 's')
@@ -343,11 +353,12 @@ def process_time(files, df):
             return (t0 + dt).astype('datetime64[ns]')
 
     import os
+
     time_cols = df.columns[['time' in col for col in df]].values.tolist()
     if isinstance(files, str):
         file = [files]
     else:
-        file = [files[len(files)//2]]
+        file = [files[len(files) // 2]]
 
     if len(time_cols) > 0:
         for col in time_cols:
@@ -361,6 +372,7 @@ def process_time(files, df):
 def process_dives(df):
     def get_dives(time, depth, dives=None):
         from ..utils import calc_dive_number
+
         if dives is None:
             return calc_dive_number(time, depth)
         else:
@@ -392,9 +404,15 @@ def process_dives(df):
     return df
 
 
-def load_multiple_vars(files, variable_names, return_merged=False, verbose=True,
-                       keep_global_attrs=False, netcdf_attrs={},
-                       keep_variable_attrs=True):
+def load_multiple_vars(
+    files,
+    variable_names,
+    return_merged=False,
+    verbose=True,
+    keep_global_attrs=False,
+    netcdf_attrs={},
+    keep_variable_attrs=True,
+):
     """
     Load a list of variables from the SeaGlider object as a
     ``pandas.DataFrame``.
@@ -421,6 +439,7 @@ def load_multiple_vars(files, variable_names, return_merged=False, verbose=True,
     import time
     from pandas import DataFrame, to_numeric
     from ..utils import merge_dimensions
+
     # create a dictionary with dims as keys and variables as keys
     files = process_files(files)
 
@@ -432,13 +451,19 @@ def load_multiple_vars(files, variable_names, return_merged=False, verbose=True,
     # LOADING EACH DIMENSION
     for dim_name, var_names in dims_dict.items():
 
-        print('\nDIMENSION: {}\n{}'.format(dim_name, str(var_names)).replace("'", ""))
+        print(
+            '\nDIMENSION: {}\n{}'.format(dim_name, str(var_names)).replace(
+                "'", ''
+            )
+        )
         time.sleep(0.2)  # to prevent progress bar interruption
         skipped_files = []
         if dim_name is 'string':
             df = read_nc_files_strings(files, var_names, verbose)
         else:
-            df, skipped_files = read_nc_files_divevars(files, var_names, verbose, return_skipped=True)
+            df, skipped_files = read_nc_files_divevars(
+                files, var_names, verbose, return_skipped=True
+            )
         for col in df:
             df[col] = to_numeric(df[col], errors='coerce')
 
@@ -463,7 +488,12 @@ def load_multiple_vars(files, variable_names, return_merged=False, verbose=True,
     ## MERGING DATA IF POSSIBLE
     can_merge = len(merge_list) > 1
     if return_merged and can_merge:
-        print('\nMerging dimensions on time indicies: {}, '.format(merge_list[0]), end='')
+        print(
+            '\nMerging dimensions on time indicies: {}, '.format(
+                merge_list[0]
+            ),
+            end='',
+        )
         df_merged = data[merge_list.pop(0)]
         for other in merge_list:
             if 'dives' in data[other]:
@@ -477,29 +507,40 @@ def load_multiple_vars(files, variable_names, return_merged=False, verbose=True,
         data['merged'] = data['merged'].drop(columns=drop_names)
 
     elif return_merged and (not can_merge):
-            print("\nCannot merge data - not enough time indexed DataFrames"
-                  "\nReturning unmerged dataframes")
+        print(
+            '\nCannot merge data - not enough time indexed DataFrames'
+            '\nReturning unmerged dataframes'
+        )
 
     # MAKING NETCDFS
     for key in data:
-        data[key] = make_xr_dataset(data[key], files,
-                                    keep_global_attrs=keep_global_attrs,
-                                    keep_variable_attrs=keep_variable_attrs,
-                                    index_name=key, attrs=netcdf_attrs)
+        data[key] = make_xr_dataset(
+            data[key],
+            files,
+            keep_global_attrs=keep_global_attrs,
+            keep_variable_attrs=keep_variable_attrs,
+            index_name=key,
+            attrs=netcdf_attrs,
+        )
         if 'dives' in data:
             data = data.set_coords('dives')
 
     return data
 
 
-def make_xr_dataset(df, files, index_name='index', attrs={},
-                    keep_variable_attrs=True,
-                    keep_global_attrs=False):
+def make_xr_dataset(
+    df,
+    files,
+    index_name='index',
+    attrs={},
+    keep_variable_attrs=True,
+    keep_global_attrs=False,
+):
     import re
     from xarray import open_dataset
     from pandas import Timestamp
 
-    first = list(open_dataset(files[0] ).attrs.items())
+    first = list(open_dataset(files[0]).attrs.items())
     final = list(open_dataset(files[-1]).attrs.items())
 
     if keep_global_attrs:
@@ -507,34 +548,39 @@ def make_xr_dataset(df, files, index_name='index', attrs={},
     else:
         global_attrs = {}
 
-    lons = df.filter(regex=re.compile("lon", re.IGNORECASE))
-    lats = df.filter(regex=re.compile("lat", re.IGNORECASE))
-    depths = df.filter(regex=re.compile("depth", re.IGNORECASE))
-    times = df.filter(regex=re.compile("time_dt64", re.IGNORECASE))
-    dives = df.filter(regex=re.compile("dive", re.IGNORECASE))
+    lons = df.filter(regex=re.compile('lon', re.IGNORECASE))
+    lats = df.filter(regex=re.compile('lat', re.IGNORECASE))
+    depths = df.filter(regex=re.compile('depth', re.IGNORECASE))
+    times = df.filter(regex=re.compile('time_dt64', re.IGNORECASE))
+    dives = df.filter(regex=re.compile('dive', re.IGNORECASE))
 
     now = str(Timestamp('today'))[:19]
-    history = ("[{}] imported data with GliderTools.load.seaglider_"
-               "basestation_netCDFs;\n").format(now)
+    history = (
+        '[{}] imported data with GliderTools.load.seaglider_'
+        'basestation_netCDFs;\n'
+    ).format(now)
 
     global_attrs.update(attrs)
-    global_attrs.update({
-        'date_created': now,
-        'number_of_dives': dives.max().max()//1,
-        'files': str([f.split('/')[-1] for f in files]),
-        'time_coverage_start': str(times.min().min()),
-        'time_coverage_end':   str(times.max().max()),
-        'geospatial_vertical_min': depths.min().min(),
-        'geospatial_vertical_max': depths.max().max(),
-        'geospatial_lat_min': lats.min().min(),
-        'geospatial_lat_max': lats.max().max(),
-        'geospatial_lon_min': lons.min().min(),
-        'geospatial_lon_max': lons.max().max(),
-        'processing': history})
+    global_attrs.update(
+        {
+            'date_created': now,
+            'number_of_dives': dives.max().max() // 1,
+            'files': str([f.split('/')[-1] for f in files]),
+            'time_coverage_start': str(times.min().min()),
+            'time_coverage_end': str(times.max().max()),
+            'geospatial_vertical_min': depths.min().min(),
+            'geospatial_vertical_max': depths.max().max(),
+            'geospatial_lat_min': lats.min().min(),
+            'geospatial_lat_max': lats.max().max(),
+            'geospatial_lon_min': lons.min().min(),
+            'geospatial_lon_max': lons.max().max(),
+            'processing': history,
+        }
+    )
 
     coords = set()
     for key in df:
-        check_files = files[[0, files.size//2, -1]]
+        check_files = files[[0, files.size // 2, -1]]
         coords.update(get_var_coords(check_files, key))
     coords = list(coords)
 
@@ -542,8 +588,8 @@ def make_xr_dataset(df, files, index_name='index', attrs={},
         if 'time' in coord:
             coords[i] = coord + '_dt64'
 
-    xds = (df
-        .reset_index(drop=True)
+    xds = (
+        df.reset_index(drop=True)
         .to_xarray()
         .drop('index')
         .rename({'index': index_name})
@@ -552,7 +598,7 @@ def make_xr_dataset(df, files, index_name='index', attrs={},
     )
 
     if keep_variable_attrs:
-        mid = len(files)//2
+        mid = len(files) // 2
         for key in xds.variables:
             attrs = get_var_attrs(files[mid], key)
             if attrs is not None:

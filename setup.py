@@ -3,7 +3,7 @@ from os.path import exists
 from setuptools import find_packages, setup
 
 if exists('README.rst'):
-    with open('README.md') as f:
+    with open('README.rst') as f:
         long_description = f.read()
 else:
     long_description = ''
@@ -24,15 +24,16 @@ CLASSIFIERS = [
 
 setup(
     name='glidertools',
-    author="Luke Gregor",
+    author='Luke Gregor',
     author_email='lukegre@gmail.com',
     description=(
-        "A toolkit for processing Seaglider base station NetCDF files: "
-        "despiking, smoothing, outlier detection, backscatter, fluorescence "
-        "quenching, calibration, gridding, interpolation. Documentation "
-        "at https://glidertools.readthedocs.io"),
+        'A toolkit for processing Seaglider base station NetCDF files: '
+        'despiking, smoothing, outlier detection, backscatter, fluorescence '
+        'quenching, calibration, gridding, interpolation. Documentation '
+        'at https://glidertools.readthedocs.io'
+    ),
     keywords='GliderTools',
-    license="GNUv3",
+    license='GNUv3',
     classifiers=CLASSIFIERS,
     url='https://github.com/luke-gregor/GliderTools',
     use_scm_version={
@@ -42,11 +43,8 @@ setup(
     long_description=long_description,
     packages=find_packages(),
     install_requires=install_requires,
-
     test_suite='glidertools/tests',
-    tests_require=[
-        'pytest-cov'
-    ],
+    tests_require=['pytest-cov'],
     setup_requires=[
         'setuptools_scm',
         'setuptools>=30.3.0',

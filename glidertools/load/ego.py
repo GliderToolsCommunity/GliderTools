@@ -1,6 +1,7 @@
 # base module to load ego files
 
-from ..utils import dive_phase_to_number, calc_dive_phase
+from ..utils import calc_dive_phase, dive_phase_to_number
+
 
 def load_mission_nc(filename):
     """
