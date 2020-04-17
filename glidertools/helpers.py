@@ -1,10 +1,11 @@
 import inspect
-from inspect import currentframe as getframe
 
-from setuptools_scm import get_version
+from pkg_resources import DistributionNotFound, get_distribution
 
-version = get_version(root='..', relative_to=__file__)
-del get_version
+try:
+    version = get_distribution('glidertools').version
+except DistributionNotFound:
+    version = 'version_undefined'
 
 
 class GliderToolsWarning(UserWarning):
