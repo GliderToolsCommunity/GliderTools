@@ -28,6 +28,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install setuptools wheel twine
+        tag=$(git describe --tags `git rev-list --tags --max-count=1`)
+        git checkout $tag
     - name: Lint with flake8
       run: |
         pip install flake8
