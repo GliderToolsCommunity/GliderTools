@@ -5,16 +5,27 @@ from __future__ import unicode_literals as _ul
 
 import warnings as _warnings
 
-from setuptools_scm import get_version
+from pkg_resources import DistributionNotFound, get_distribution
 
-from . import (calibration, cleaning, flo_functions, load, mapping, optics,
-               physics, utils)
+from . import (  # NOQA
+    calibration,
+    cleaning,
+    flo_functions,
+    load,
+    mapping,
+    optics,
+    physics,
+    utils,
+)
 from .mapping import grid_data, interp_obj
 from .plot import logo as make_logo
 from .plot import plot_functions as plot
 from .processing import *
 
-__version__ = get_version(root='..', relative_to=__file__)
-del get_version
+try:
+    __version__ = get_distribution('glidertools').version
+except DistributionNotFound:
+    __version__ = 'version_undefined'
+del get_distribution, DistributionNotFound
 
 _warnings.filterwarnings('ignore', category=RuntimeWarning)

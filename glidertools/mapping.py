@@ -1,8 +1,10 @@
+from inspect import currentframe as getframe
+
 import numpy as np
 from matplotlib import pyplot as plt
 from numexpr import evaluate
 
-from .helpers import GliderToolsWarning, getframe, transfer_nc_attrs
+from .helpers import GliderToolsWarning, transfer_nc_attrs
 
 
 class QuadTree:

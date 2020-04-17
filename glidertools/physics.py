@@ -4,8 +4,9 @@ from __future__ import print_function as _pf
 from __future__ import unicode_literals as _ul
 
 import warnings
+from inspect import currentframe as getframe
 
-from .helpers import GliderToolsWarning, getframe, transfer_nc_attrs
+from .helpers import GliderToolsWarning, transfer_nc_attrs
 
 try:
     _gsw_avail = True
