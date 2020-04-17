@@ -39,10 +39,12 @@ jobs:
       run: |
         pip install pytest
         pytest
-    - name: Build and publish
-      env:
-        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      run: |
-        python setup.py sdist bdist_wheel
-        twine upload dist/*
+    - name: pypi-publish
+      uses: pypa/gh-action-pypi-publish@v1.1.0
+      with:
+        # PyPI user
+        user: __token__
+        # Password for your PyPI user or an access token
+        password: ${{ secrets.PYPI_PASSWORD }}
+        # The target directory for distribution
+        packages_dir: glidertools
