@@ -35,9 +35,9 @@ setup(
     keywords='GliderTools',
     license='GNUv3',
     classifiers=CLASSIFIERS,
-    url='https://github.com/luke-gregor/GliderTools',
+    url='https://github.com/GliderToolsCommunity/GliderTools',
     use_scm_version={
-        'version_scheme': 'post-release',
+        'version_scheme': 'guess-next-dev',
         'local_scheme': 'dirty-tag',
     },
     long_description=long_description,
