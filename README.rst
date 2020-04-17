@@ -3,7 +3,7 @@ glidertools
 ===============================
 
 
-.. image:: https://travis-ci.com/GliderToolsCommunity/GliderTools.svg?branch=dev
+.. image:: https://travis-ci.com/GliderToolsCommunity/GliderTools.svg?branch=master
         :target: https://travis-ci.com/GliderToolsCommunity/GliderTools
 .. image:: https://badgen.net/pypi/v/glidertools
         :target: https://pypi.org/project/glidertools
@@ -23,7 +23,7 @@ PyPI
 ....
 To install the core package run: ``pip install glidertools``.
 
-GitLab
+GitHub
 ......
 1. Clone glidertools to your local machine: `git clone https://github.com/GliderToolsCommunity/GliderTools`
 2. Change to the parent directory of GliderTools
@@ -43,8 +43,8 @@ These should install automatically with ``pip install package_name``:
 
 How you can contribute
 ----------------------
-- Error reporting with using GitLab (https://github.com/GliderToolsCommunity/GliderTools/issues/new).
-  Please copy the entire error message (even if it's long).
+- Error reporting with using GitLab (https://github.com/GliderToolsCommunity/GliderTools/issues/new). Please copy the entire error message (even if it's long).
+- Join our slack group: https://join.slack.com/t/glidertools/shared_invite/zt-dm30fsed-ik_NE_zbb8aEs_pnnxo3xQ
 - Detailed error reporting so users know where the fault lies.
 - Oxygen processing is rudimentary as we do not have the expertise in our group to address this
 
