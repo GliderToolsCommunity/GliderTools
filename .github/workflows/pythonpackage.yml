@@ -39,10 +39,10 @@ jobs:
       run: |
         pip install pytest
         pytest
+    - name: build
+      run: |
+        python setup.py sdist bdist_wheel
     - name: pypi-publish
       uses: pypa/gh-action-pypi-publish@v1.1.0
       with:
-        # PyPI user
-        user: __token__
-        # Password for your PyPI user or an access token
         password: ${{ secrets.PYPI_PASSWORD }}
