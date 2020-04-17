@@ -482,6 +482,7 @@ def load_multiple_vars(
 
         # adding columns to dimension based dataframes one by one
         for col in df:
+            col = str(col)
             data[dim_name][col] = df[col]
 
     # MERGING DATA IF POSSIBLE
