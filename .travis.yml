@@ -39,8 +39,3 @@ script:
 
 after_success:
   - coveralls
-
-deploy:
-  provider: pypi
-  user: "__token__"
-  password: "pypi-AgEIcHlwaS5vcmcCJGIyOWE2NTI4LTZmNDgtNGJmOC05OTNlLTVmZDQ1YjJjYzliYwACPHsicGVybWlzc2lvbnMiOiB7InByb2plY3RzIjogWyJnbGlkZXJ0b29scyJdfSwgInZlcnNpb24iOiAxfQAABiCCZHrrZVc25mkBleUq73_brHqOnZYp4KZAkWqNalniGQ"
