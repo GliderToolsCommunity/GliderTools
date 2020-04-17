@@ -46,5 +46,3 @@ jobs:
         user: __token__
         # Password for your PyPI user or an access token
         password: ${{ secrets.PYPI_PASSWORD }}
-        # The target directory for distribution
-        packages_dir: glidertools
