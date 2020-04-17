@@ -9,3 +9,4 @@ pandas
 astral
 netCDF4
 numexpr
+setuptools_scm
