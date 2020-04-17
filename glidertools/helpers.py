@@ -1,7 +1,10 @@
 import inspect
 from inspect import currentframe as getframe
 
-from . import __version__ as version
+from setuptools_scm import get_version
+
+version = get_version(root='..', relative_to=__file__)
+del get_version
 
 
 class GliderToolsWarning(UserWarning):

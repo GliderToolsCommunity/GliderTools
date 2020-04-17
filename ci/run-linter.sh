@@ -10,6 +10,6 @@ echo "[black]"
 black --exclude flo_functions --exclude __init__ --check -S -l 79 glidertools
 
 # Leave this commented, very strict
-echo "[doc8]"
-doc8 --ignore-path docs/_generated docs/
-doc8 *.rst
+# echo "[doc8]"
+# doc8 --ignore-path docs/_generated docs/
+# doc8 *.rst
