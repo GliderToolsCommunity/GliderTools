@@ -8,7 +8,7 @@ from netCDF4 import Dataset
 
 from ..helpers import GliderToolsWarning
 
-# TODO: fix dives indexing (merge dim if same size as another more populated dim)
+# TODO: fix dives indexing (merge dim if same size as other more populated dim)
 # TODO: when dims merge dives are sometimes taken from the wrong dataframe
 
 
@@ -131,7 +131,7 @@ def get_var_coords(files, key):
     coords : list
         a list of coordinates from a subset of files
     """
-    from numpy import unique, concatenate
+    from numpy import concatenate
 
     coords = set([get_var_attrs(f, key, 'coordinates') for f in files])
     if None in coords:
@@ -241,7 +241,7 @@ def make_variable_dimension_dict(files, variable_names, n_check_files=3):
     # get compulsory time and depth variables (if present)
     for d in dims:
         dim = dims[d]
-        if d is 'string':
+        if d == 'string':
             continue
         has_coord = any(['time' in v for v in dim])
 
@@ -256,14 +256,14 @@ def make_variable_dimension_dict(files, variable_names, n_check_files=3):
 
 
 def read_nc_files_divevars(files, keys, verbose=True, return_skipped=False):
-    from tqdm import trange
-    from numpy import ones, arange
     from numpy.ma import row_stack
     from pandas import DataFrame, concat
     from os import path
 
     if not verbose:
-        trange = arange
+        from numpy import arange as trange
+    else:
+        from tqdm import trange
 
     data = []
     error = ''
@@ -304,12 +304,13 @@ def read_nc_files_divevars(files, keys, verbose=True, return_skipped=False):
 
 
 def read_nc_files_strings(files, keys, verbose=True):
-    from tqdm import trange
-    from numpy import r_, array, arange
+    from numpy import r_, array
     from pandas import DataFrame
 
     if not verbose:
-        trange = arange
+        from numpy import arange as trange
+    else:
+        from tqdm import trange
 
     data = []
     idx = []
@@ -351,8 +352,6 @@ def process_time(files, df):
         if since1970:
             dt = series.values.astype('timedelta64[s]')
             return (t0 + dt).astype('datetime64[ns]')
-
-    import os
 
     time_cols = df.columns[['time' in col for col in df]].values.tolist()
     if isinstance(files, str):
@@ -458,7 +457,7 @@ def load_multiple_vars(
         )
         time.sleep(0.2)  # to prevent progress bar interruption
         skipped_files = []
-        if dim_name is 'string':
+        if dim_name == 'string':
             df = read_nc_files_strings(files, var_names, verbose)
         else:
             df, skipped_files = read_nc_files_divevars(
@@ -470,7 +469,7 @@ def load_multiple_vars(
         # converting times that have 'seconds since 1970' units
         dim_files = list(set(files.tolist()) - set(skipped_files))
         df = process_time(dim_files, df)
-        # splitting up and down if dives present otherwise calc from depth alone
+        # splitting up and down if dives present otherwise calc from depth
         df = process_dives(df)
 
         # to make the merge list (with time idx) and longest index at the front
@@ -485,7 +484,7 @@ def load_multiple_vars(
         for col in df:
             data[dim_name][col] = df[col]
 
-    ## MERGING DATA IF POSSIBLE
+    # MERGING DATA IF POSSIBLE
     can_merge = len(merge_list) > 1
     if return_merged and can_merge:
         print(

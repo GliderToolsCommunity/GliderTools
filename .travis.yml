@@ -24,21 +24,23 @@ install:
   - source activate glidertools-dev
   - conda install pip
   - pip install .
+  - pip install coverage==4.5.4
   - pip install pytest-cov
   - pip install coveralls
   - pip install black
   - pip install flake8
   - pip install isort
+  - pip install doc8
 
 script:
   - coverage run --source glidertools -m py.test
   - coverage report
   - ./ci/run-linter.sh
 
-# after_success:
-  # - coveralls  # not set up yet
+after_success:
+  - coveralls
 
-# deploy:
-#   provider: pypi
-#   user: "__token__"
-#   password: "Your PyPI API token, including the pypi- prefix"
+deploy:
+  provider: pypi
+  user: "__token__"
+  password: "pypi-AgEIcHlwaS5vcmcCJGIyOWE2NTI4LTZmNDgtNGJmOC05OTNlLTVmZDQ1YjJjYzliYwACPHsicGVybWlzc2lvbnMiOiB7InByb2plY3RzIjogWyJnbGlkZXJ0b29scyJdfSwgInZlcnNpb24iOiAxfQAABiCCZHrrZVc25mkBleUq73_brHqOnZYp4KZAkWqNalniGQ"
