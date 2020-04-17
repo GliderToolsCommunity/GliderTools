@@ -13,8 +13,8 @@ before_install:
   - hash -r
   - conda config --add channels conda-forge
   - conda config --add channels anaconda
-  - conda config --set always_yes yes 
-  - conda config --set changeps1 no 
+  - conda config --set always_yes yes
+  - conda config --set changeps1 no
   - conda config --set show_channel_urls true
   - conda update -q conda
   - conda info -a
@@ -33,12 +33,11 @@ install:
 script:
   - coverage run --source glidertools -m py.test
   - coverage report
-  - pushd docs
   - ./ci/run-linter.sh
 
 # after_success:
   # - coveralls  # not set up yet
-  
+
 # deploy:
 #   provider: pypi
 #   user: "__token__"
