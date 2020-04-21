@@ -54,6 +54,8 @@ How you can contribute
 - Detailed error reporting so users know where the fault lies.
 - Oxygen processing is rudimentary as we do not have the expertise in our group to address this
 
+For contributing follow the instructions here: https://glidertools.readthedocs.io/en/latest/contributing.html
+
 Acknowledgements
 ----------------
 - We rely heavily on ``ion_functions.data.flo_functions`` which was
