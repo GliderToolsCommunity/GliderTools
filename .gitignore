@@ -67,3 +67,4 @@ target/
 **/.DS_Store
 .DS_Store
 junit.xml
+**/.ipynb_checkpoints/**

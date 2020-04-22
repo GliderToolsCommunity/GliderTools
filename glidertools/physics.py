@@ -13,7 +13,7 @@ try:
     from gsw import alpha as alpha_thermal, beta as beta_saline
 except ImportError:
     _gsw_avail = False
-    from seawater import alpha as alpha_thermal, beta as beta_saline
+    from seawater import alpha as alpha_thermal, beta as beta_saline  # noqa
 
     message = (
         "'gsw' could not be imported (Python 2.x is not compatible "
@@ -133,7 +133,7 @@ def potential_density(salt_PSU, temp_C, pres_db, lat, lon, pres_ref=0):
     try:
         import gsw
 
-        salt_abs = gsw.SA_from_SP(salt_PSU, pres_db, lat, lon)
+        salt_abs = gsw.SA_from_SP(salt_PSU, pres_db, lon, lat)
         temp_pot = gsw.t_from_CT(salt_abs, temp_C, pres_db)
         pot_dens = gsw.pot_rho_t_exact(salt_abs, temp_pot, pres_db, pres_ref)
     except ImportError:
