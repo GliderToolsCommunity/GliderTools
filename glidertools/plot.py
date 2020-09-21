@@ -328,6 +328,9 @@ class plot_functions(object):
         ----------
         depth : array, dtype=float, shape=[n, ]
             the head-to-tail concatenated depth readings
+        bins: [array, array]
+            a user defined set of delta depth and depth bins. If
+            unspecified then these bins are automatically chosen.
         hist_kwargs : key-value pairs
             passed to the 2D histogram function.
 
@@ -337,7 +340,7 @@ class plot_functions(object):
         """
         from matplotlib.pyplot import subplots, colorbar
         from matplotlib.colors import LogNorm
-        from numpy import abs, diff, isnan, array, nan, r_
+        from numpy import abs, diff, isnan, array, nan, r_, nanmedian
         from .mapping import get_optimal_bins
 
         depth = array(depth)
@@ -350,16 +353,30 @@ class plot_functions(object):
         if bins is None:
             binning_freq = 50
             ybins = get_optimal_bins(depth, binning_freq)[0]
+            xbins = r_[nan, diff(ybins)]
+
         else:
-            ybins = bins
-        xbins = r_[nan, diff(ybins)]
+            ybins = bins[1]
+            xbins = []
+            for k in range(len(ybins) - 1):
+                d0 = ybins[k]
+                d1 = ybins[k + 1]
+
+                i = (y > d0) & (y < d1)
+                xbins += (nanmedian(x[i]),)
+            xbins = r_[nan, xbins]
 
         if ax is None:
             fig, ax = subplots(1, 1, figsize=[4, 6])
+        if bins is None:
+            im = ax.hist2d(
+                x, y, bins=50, norm=LogNorm(), rasterized=True, **hist_kwargs
+            )[-1]
+        else:
+            im = ax.hist2d(
+                x, y, bins=bins, norm=LogNorm(), rasterized=True, **hist_kwargs
+            )[-1]
 
-        im = ax.hist2d(
-            x, y, bins=50, norm=LogNorm(), rasterized=True, **hist_kwargs
-        )[-1]
         ax.plot(xbins, ybins, lw=4, ls='-', color='k', label='Bins')
         ax.set_ylim(ax.get_ylim()[::-1])
         ax.set_ylabel('Depth (m)')
