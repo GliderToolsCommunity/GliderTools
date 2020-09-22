@@ -13,7 +13,6 @@
 # serve to show the default.
 
 from pkg_resources import get_distribution
-from recommonmark.parser import CommonMarkParser
 
 release = get_distribution('glidertools').version
 version = '.'.join(release.split('.')[:2])
@@ -46,11 +45,6 @@ autodoc_default_flags = ['members', 'inherited-members']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
-
-# parsers
-source_parsers = {
-    '.md': CommonMarkParser,
-}
 
 # The suffix of source filenames.
 source_suffix = ['.rst', '.md']

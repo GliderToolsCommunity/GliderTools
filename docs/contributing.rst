@@ -2,4 +2,4 @@
 Contribution Guide
 =====================
 
-.. include:: ../HOWTOCONTRIBUTE.md
+.. include:: ../HOWTOCONTRIBUTE.rst
