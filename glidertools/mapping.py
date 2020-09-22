@@ -1118,219 +1118,223 @@ def grid_flat_dataarray(xda, bins=None):
 
 try:
     import pykrige as pk
+except ImportError:
+    pk = None
+    
+    
+def variogram(
+    variable,
+    horz,
+    vert,
+    dives,
+    mask=None,
+    xy_ratio=1,
+    max_points=5000,
+    ax=True,
+):
+    """
+    Find the interpolation parameters and x and y scaling of the
+    horizontal and vertical coordinate paramters for objective
+    interpolation (Kriging).
 
-    def variogram(
-        variable,
-        horz,
-        vert,
-        dives,
-        mask=None,
-        xy_ratio=1,
-        max_points=5000,
-        ax=True,
-    ):
-        """
-        Find the interpolation parameters and x and y scaling of the
-        horizontal and vertical coordinate paramters for objective
-        interpolation (Kriging).
+    The range of the variogram will automatically be scaled to 1 and the x
+    and y length scales will be given in the output. This can be used in
+    the gt.mapping.interp_obj function.
 
-        The range of the variogram will automatically be scaled to 1 and the x
-        and y length scales will be given in the output. This can be used in
-        the gt.mapping.interp_obj function.
+    Parameters
+    ----------
+    variable : array-like
+        target variable for interpolation as a flat array
+    horz : array-like
+        the horizontal coordinate variable as a flat array. Can be time in
+        np.datetime64 format, or any other float value
+    vert : array-like
+        the vertical coordinate variable as a flat array. Usually depth,
+        but can be pessure or any other variable.
+    dives : array-like
+        the dive numbers as a flat array
+    mask : array-like
+        a boolean array that can be used to retain certain regions,
+        e.g. depth < 250
+    xy_ratio : float
+        determines the anisotropy of the coordinate variables. The value
+        can be changed iteritively to improve the shape of the semivariance
+        curve. The range of the variogram will automatically be scaled to
+        1. The x and y length scales are given in the output.
+    max_points : int
+        maximum number of points that will be used in the variogram. The
+        function selects a subset of dives rather than random points to be
+        consistent in the vertical. Increasing this number will increase
+        the accuracy of the length scales.
+    ax : bool or mpl.Axes
+        If True, will automatically create an axes, if an axes object is
+        given, returns the plot in those axes.
 
-        Parameters
-        ----------
-        variable : array-like
-            target variable for interpolation as a flat array
-        horz : array-like
-            the horizontal coordinate variable as a flat array. Can be time in
-            np.datetime64 format, or any other float value
-        vert : array-like
-            the vertical coordinate variable as a flat array. Usually depth,
-            but can be pessure or any other variable.
-        dives : array-like
-            the dive numbers as a flat array
-        mask : array-like
-            a boolean array that can be used to retain certain regions,
-            e.g. depth < 250
-        xy_ratio : float
-            determines the anisotropy of the coordinate variables. The value
-            can be changed iteritively to improve the shape of the semivariance
-            curve. The range of the variogram will automatically be scaled to
-            1. The x and y length scales are given in the output.
-        max_points : int
-            maximum number of points that will be used in the variogram. The
-            function selects a subset of dives rather than random points to be
-            consistent in the vertical. Increasing this number will increase
-            the accuracy of the length scales.
-        ax : bool or mpl.Axes
-            If True, will automatically create an axes, if an axes object is
-            given, returns the plot in those axes.
+    Returns
+    -------
+    variogram_params : dict
+        a dictionary containing the information required by the
+        gt.mapping.interp_obj function.
+    plot : axes
+        a axes object containing the plot of the semivariogram
 
-        Returns
-        -------
-        variogram_params : dict
-            a dictionary containing the information required by the
-            gt.mapping.interp_obj function.
-        plot : axes
-            a axes object containing the plot of the semivariogram
+    Example
+    -------
+    >>> gt.mapping.variogram(var, time, depth, dives, mask=depth<350,
+                             xy_ratio=0.5, max_points=6000)
 
-        Example
-        -------
-        >>> gt.mapping.variogram(var, time, depth, dives, mask=depth<350,
-                                 xy_ratio=0.5, max_points=6000)
+    """
+    
+    if pk is None:
+        import warnings
 
-        """
-
-        def make_subset_index(dives, max_points):
-            idx_points = (np.arange(dives.size) % 2).astype(bool)
-            dives_half = dives[idx_points]
-
-            dive_inds, counts = np.unique(dives_half, return_counts=True)
-            average_count = counts.mean()
-            n_dives = max_points // average_count
-            step = int(dive_inds.size // n_dives)
-            step = step if step > 0 else 1
-
-            subsampled_dives = dive_inds[::step]
-            idx_dives = np.any([dives == d for d in subsampled_dives], axis=0)
-
-            idx = idx_dives & idx_points
-            idx = idx & (idx.astype(int).cumsum() < max_points)
-
-            return idx
-
-        def plot_variogram(model, ax, n_dives):
-
-            params = model.variogram_model_parameters
-            psill, range, nugget = params
-            sill = psill + nugget
-
-            x = np.r_[0, model.lags]
-            y = np.r_[nugget, model.semivariance]
-            yhat = model.variogram_function(params, x)
-
-            has_dots = np.any(
-                [
-                    getattr(child, 'get_marker', lambda: None)()
-                    for child in ax.get_children()
-                ]
+        message = (
+            'PyKrige is not installed. To enable the variogram function please '
+            'run `pip install pykrige`. Variograms are required for sensible '
+            '2D interpolation.'
             )
+        warnings.warn(message, category=GliderToolsWarning)
 
-            if not has_dots:
-                ax.plot(x, y, '.k', label='Semivariance')
+    def make_subset_index(dives, max_points):
+        idx_points = (np.arange(dives.size) % 2).astype(bool)
+        dives_half = dives[idx_points]
 
-            ax.plot(x, yhat, '-', lw=4, label='Gaussian model')[0]
-            ax.hlines(
-                sill,
-                0,
-                params[1],
-                color='orange',
-                linestyle='--',
-                linewidth=2.5,
-                label='Sill ({:.2g})'.format(sill),
-            )
-            ax.hlines(
-                nugget,
-                0,
-                params[1],
-                color='red',
-                linestyle='--',
-                linewidth=2.5,
-                label='Nugget ({:.2g})'.format(nugget),
-            )
-            ax.vlines(
-                range,
-                0,
-                sill,
-                color='#CCCCCC',
-                linestyle='-',
-                zorder=0,
-                label='Range (1.0)',
-            )
+        dive_inds, counts = np.unique(dives_half, return_counts=True)
+        average_count = counts.mean()
+        n_dives = max_points // average_count
+        step = int(dive_inds.size // n_dives)
+        step = step if step > 0 else 1
 
-            ax.set_ylim([0, ax.get_ylim()[1]])
-            ax.set_xlim([0, ax.get_xlim()[1]])
-            ax.legend()
+        subsampled_dives = dive_inds[::step]
+        idx_dives = np.any([dives == d for d in subsampled_dives], axis=0)
 
-            # generate info text
-            # text = '${}$'.format(model.variogram_model.capitalize())
-            # text += '\n sill: {:.2g}'.format(psill + nugget)
-            # text += '\n nugget: {:.2g}'.format(nugget)
+        idx = idx_dives & idx_points
+        idx = idx & (idx.astype(int).cumsum() < max_points)
 
-            # info text position
-            # p = ax.get_position()
-            # xt = p.x1 - 0.04 * (p.x1 - p.x0)
-            # yt = p.y0 + 0.04 * (p.y1 - p.y0)
-            # ax.get_figure().text(xt, yt, text, ha='right', va='bottom')
+        return idx
 
-        # making all inputs arrays
-        mask = np.ones_like(dives).astype(bool) if mask is None else mask
-        variable, horz, vert, dives = [
-            np.array(a)[mask] for a in [variable, horz, vert, dives]
-        ]
+    def plot_variogram(model, ax, n_dives):
 
-        # creating a mask that selects dives rather than random points
-        # then remove the nans and the points that are masked out
-        subs = make_subset_index(dives, max_points) & ~np.isnan(variable)
+        params = model.variogram_model_parameters
+        psill, range, nugget = params
+        sill = psill + nugget
 
-        z = variable[subs]
-        y = vert[subs]
-        if np.issubdtype(horz.dtype, np.datetime64):
-            x = horz[subs].astype('datetime64[s]').astype(float) / 3600
-        else:
-            x = horz[subs].astype(float)
+        x = np.r_[0, model.lags]
+        y = np.r_[nugget, model.semivariance]
+        yhat = model.variogram_function(params, x)
 
-        # creating initial scaling with anisotropy
-        xlen = 1 / xy_ratio
-        ylen = 1
-        # and finding inital estiamte of range
-        props = dict(weight=True, nlags=40, variogram_model='gaussian')
-        gauss = pk.OrdinaryKriging(x / xlen, y / ylen, z, **props)
-
-        # scale initial scaling by range
-        xlen *= gauss.variogram_model_parameters[1]
-        ylen *= gauss.variogram_model_parameters[1]
-        # calculate new variogram
-        gauss = pk.OrdinaryKriging(x / xlen, y / ylen, z, **props)
-
-        # making plots
-        if (ax is not None) or (ax is not False):
-            if not isinstance(ax, plt.Axes):
-                fig, ax = plt.subplots(figsize=[6, 4], dpi=100)
-
-            n_dives = np.unique(dives[subs]).size
-            t_dives = np.unique(dives).size
-            plot_variogram(gauss, ax, n_dives)
-            ax.set_xlabel(
-                'Scaled lag (x = {:.0f}; y = {:.0f})'.format(xlen, ylen)
-            )
-            ax.set_ylabel(
-                'Semivariance\n(using {} of {} dives)'.format(n_dives, t_dives)
-            )
-        else:
-            ax = None
-
-        # creating a dict of model parameters used for interpolation
-        full_mask = np.array(mask.copy()) * False
-        full_mask[mask] = subs
-        output = dict(
-            partial_sill=gauss.variogram_model_parameters[0],
-            nugget=gauss.variogram_model_parameters[2],
-            lenscale_x=xlen,
-            lenscale_y=ylen,
-            mask=full_mask,
+        has_dots = np.any(
+            [
+                getattr(child, 'get_marker', lambda: None)()
+                for child in ax.get_children()
+            ]
         )
 
-        return output, ax
+        if not has_dots:
+            ax.plot(x, y, '.k', label='Semivariance')
 
+        ax.plot(x, yhat, '-', lw=4, label='Gaussian model')[0]
+        ax.hlines(
+            sill,
+            0,
+            params[1],
+            color='orange',
+            linestyle='--',
+            linewidth=2.5,
+            label='Sill ({:.2g})'.format(sill),
+        )
+        ax.hlines(
+            nugget,
+            0,
+            params[1],
+            color='red',
+            linestyle='--',
+            linewidth=2.5,
+            label='Nugget ({:.2g})'.format(nugget),
+        )
+        ax.vlines(
+            range,
+            0,
+            sill,
+            color='#CCCCCC',
+            linestyle='-',
+            zorder=0,
+            label='Range (1.0)',
+        )
 
-except ImportError:
-    import warnings
+        ax.set_ylim([0, ax.get_ylim()[1]])
+        ax.set_xlim([0, ax.get_xlim()[1]])
+        ax.legend()
 
-    message = (
-        'PyKrige is not installed. To enable the variogram function please '
-        'run `pip install pykrige`. Variograms are required for sensible '
-        '2D interpolation.'
+        # generate info text
+        # text = '${}$'.format(model.variogram_model.capitalize())
+        # text += '\n sill: {:.2g}'.format(psill + nugget)
+        # text += '\n nugget: {:.2g}'.format(nugget)
+
+        # info text position
+        # p = ax.get_position()
+        # xt = p.x1 - 0.04 * (p.x1 - p.x0)
+        # yt = p.y0 + 0.04 * (p.y1 - p.y0)
+        # ax.get_figure().text(xt, yt, text, ha='right', va='bottom')
+
+    # making all inputs arrays
+    mask = np.ones_like(dives).astype(bool) if mask is None else mask
+    variable, horz, vert, dives = [
+        np.array(a)[mask] for a in [variable, horz, vert, dives]
+    ]
+
+    # creating a mask that selects dives rather than random points
+    # then remove the nans and the points that are masked out
+    subs = make_subset_index(dives, max_points) & ~np.isnan(variable)
+
+    z = variable[subs]
+    y = vert[subs]
+    if np.issubdtype(horz.dtype, np.datetime64):
+        x = horz[subs].astype('datetime64[s]').astype(float) / 3600
+    else:
+        x = horz[subs].astype(float)
+
+    # creating initial scaling with anisotropy
+    xlen = 1 / xy_ratio
+    ylen = 1
+    # and finding inital estiamte of range
+    props = dict(weight=True, nlags=40, variogram_model='gaussian')
+    gauss = pk.OrdinaryKriging(x / xlen, y / ylen, z, **props)
+
+    # scale initial scaling by range
+    xlen *= gauss.variogram_model_parameters[1]
+    ylen *= gauss.variogram_model_parameters[1]
+    # calculate new variogram
+    gauss = pk.OrdinaryKriging(x / xlen, y / ylen, z, **props)
+
+    # making plots
+    if (ax is not None) or (ax is not False):
+        if not isinstance(ax, plt.Axes):
+            fig, ax = plt.subplots(figsize=[6, 4], dpi=100)
+
+        n_dives = np.unique(dives[subs]).size
+        t_dives = np.unique(dives).size
+        plot_variogram(gauss, ax, n_dives)
+        ax.set_xlabel(
+            'Scaled lag (x = {:.0f}; y = {:.0f})'.format(xlen, ylen)
+        )
+        ax.set_ylabel(
+            'Semivariance\n(using {} of {} dives)'.format(n_dives, t_dives)
+        )
+    else:
+        ax = None
+
+    # creating a dict of model parameters used for interpolation
+    full_mask = np.array(mask.copy()) * False
+    full_mask[mask] = subs
+    output = dict(
+        partial_sill=gauss.variogram_model_parameters[0],
+        nugget=gauss.variogram_model_parameters[2],
+        lenscale_x=xlen,
+        lenscale_y=ylen,
+        mask=full_mask,
     )
-    warnings.warn(message, category=GliderToolsWarning)
+
+    return output, ax
+
+
