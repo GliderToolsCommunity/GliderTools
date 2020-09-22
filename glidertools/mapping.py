@@ -1005,7 +1005,7 @@ def grid_data(
             xda[x].attrs = xvar.attrs
             xda = xda.rename({x: xvar.name})
 
-        return xda, gridded
+        return xda
 
 
 def get_optimal_bins(depth, chunk_depth=50, round_up=True):
