@@ -354,6 +354,7 @@ class plot_functions(object):
             binning_freq = 50
             ybins = get_optimal_bins(depth, binning_freq)[0]
             xbins = r_[nan, diff(ybins)]
+            bins = binning_freq
 
         else:
             ybins = bins[1]
@@ -368,14 +369,10 @@ class plot_functions(object):
 
         if ax is None:
             fig, ax = subplots(1, 1, figsize=[4, 6])
-        if bins is None:
-            im = ax.hist2d(
-                x, y, bins=50, norm=LogNorm(), rasterized=True, **hist_kwargs
-            )[-1]
-        else:
-            im = ax.hist2d(
+        
+        im = ax.hist2d(
                 x, y, bins=bins, norm=LogNorm(), rasterized=True, **hist_kwargs
-            )[-1]
+                )[-1]
 
         ax.plot(xbins, ybins, lw=4, ls='-', color='k', label='Bins')
         ax.set_ylim(ax.get_ylim()[::-1])
