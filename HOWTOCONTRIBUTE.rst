@@ -135,22 +135,9 @@ Preparing Pull Requests
   Please stick to `xarray <http://xarray.pydata.org/en/stable/contributing.html>`_'s testing recommendations.
 
 
-#. Create a new changelog entry in ``CHANGELOG.rst``:
-
-   - The entry should be entered as:
-
-    <description> (``:pr:`#<pull request number>```) ```<author's names>`_``
-
-    where ``<description>`` is the description of the PR related to the change and
-    ``<pull request number>`` is the pull request number and ``<author's names>`` are your first
-    and last names.
-
-   - Add yourself to list of authors at the end of ``CHANGELOG.rst`` file if not there yet, in
-     alphabetical order.
-
- #. Add yourself to the
-    `contributors <https://glidertools.readthedocs.io/en/latest/contributors.html>`_
-    list via ``docs/source/contributors.rst``.
+#. Add yourself to the
+    `Project Contributors <https://glidertools.readthedocs.io/en/latest/citation.html>`_
+    list via ``AUTHORS.md``.
 
 #. Finally, submit a pull request through the GitHub website using this data::
 
