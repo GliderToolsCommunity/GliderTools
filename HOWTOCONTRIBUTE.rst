@@ -90,7 +90,7 @@ Preparing Pull Requests
 
 #. Install dependencies into a new conda environment::
 
-    $ conda env update -f ci/environment-dev-3.6.yml
+    $ conda env update -f ci/environment-dev-3.7.yml
     $ conda activate glidertools-dev
 
 #. Make an editable install of glidertools by running::
@@ -124,20 +124,19 @@ Preparing Pull Requests
 
    Now running tests is as simple as issuing this command::
 
-    $ pytest glidertools
+    $ py.test tests
 
    Check that your contribution is covered by tests and therefore increases the overall test coverage::
 
     $ coverage run --source glidertools -m py.test
     $ coverage report
-    $ coveralls
 
   Please stick to `xarray <http://xarray.pydata.org/en/stable/contributing.html>`_'s testing recommendations.
 
 
 #. Add yourself to the
-    `Project Contributors <https://glidertools.readthedocs.io/en/latest/citation.html>`_
-    list via ``AUTHORS.md``.
+    `Project Contributors <https://glidertools.readthedocs.io/en/latest/authors.html>`_
+    list via ``./docs/authors.md``.
 
 #. Finally, submit a pull request through the GitHub website using this data::
 
