@@ -37,10 +37,10 @@ For recommendations or bug reports, please visit https://github.com/GliderToolsC
    :maxdepth: 2
    :caption: Help and Reference
 
-   GitLab Repo <https://github.com/GliderToolsCommunity/GliderTools>
+   GitHub Repo <https://github.com/GliderToolsCommunity/GliderTools>
    api
    package_structure
-   citing
+   authors
    contributing
    history
    wishlist
