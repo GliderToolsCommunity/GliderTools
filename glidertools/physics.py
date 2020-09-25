@@ -134,8 +134,7 @@ def potential_density(salt_PSU, temp_C, pres_db, lat, lon, pres_ref=0):
         import gsw
 
         salt_abs = gsw.SA_from_SP(salt_PSU, pres_db, lon, lat)
-        temp_pot = gsw.t_from_CT(salt_abs, temp_C, pres_db)
-        pot_dens = gsw.pot_rho_t_exact(salt_abs, temp_pot, pres_db, pres_ref)
+        pot_dens = gsw.pot_rho_t_exact(salt_abs, temp_C, pres_db, pres_ref)
     except ImportError:
         import seawater as sw
 
