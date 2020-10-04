@@ -428,10 +428,10 @@ def sunset_sunrise(time, lat, lon):
         An array of the sunset times.
 
     """
-    from astral import Astral
+    import astral as ast
+    from astral.sun import sun  
     from pandas import DataFrame
 
-    ast = Astral()
 
     df = DataFrame.from_dict(
         dict([('time', time), ('lat', lat), ('lon', lon)])
@@ -444,9 +444,20 @@ def sunset_sunrise(time, lat, lon):
     grp_avg = df.groupby(df.index).mean()
     date = grp_avg.index.to_pydatetime()
 
-    grp_avg['sunrise'] = list(map(ast.sunrise_utc, date, df.lat, df.lon))
-    grp_avg['sunset'] = list(map(ast.sunset_utc, date, df.lat, df.lon))
+    sunrise_observer=[]
+    for i in range(len(grp_avg.lat)):
+	    sunrise_observer.append(ast.Observer(latitude=grp_avg.lat[i], longitude=grp_avg.lon[i]))
 
+    sunrise=[]
+    for i in range(len(sunrise_observer)):
+        sunrise.append(sun(sunrise_observer[i], date[i])['sunrise'])
+
+    sunset=[]
+    for i in range(len(sunrise_observer)):
+        sunset.append(sun(sunrise_observer[i], date[i])['sunset'])
+ 
+    grp_avg['sunrise']=sunrise
+    grp_avg['sunset']=sunset
     # reindex days to original dataframe as night
     df_reidx = grp_avg.reindex(df.index).astype('datetime64[ns]')
     sunrise, sunset = df_reidx[['sunrise', 'sunset']].values.T
@@ -617,7 +628,7 @@ def quenching_correction(
     grp_batch = df.groupby(batch)
 
     # GETTING NIGHTTIME AVERAGE FOR NONGRIDDED DATA - USE RBF INTERPOLATION
-    for b in np.unique(night_ave.index.labels[0]):
+    for b in np.unique(night_ave.index[0]):
         i = grp_batch.groups[b].values  # batch index
         j = i[~np.isnan(flr[i]) & (depth[i] < 400)]  # index without nans
         x = night_ave.loc[b].index.values  # batch depth
