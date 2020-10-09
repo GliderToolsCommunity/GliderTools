@@ -1,4 +1,3 @@
--i https://pypi.python.org/simple
 astral==2.2
 certifi
 cftime
