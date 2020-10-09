@@ -22,7 +22,7 @@ CLASSIFIERS = [
 
 setup(
     name="glidertools",
-    version="2020.4e",
+    version="2020.4f",
     author="Luke Gregor",
     author_email="lukegre@gmail.com",
     description=(
