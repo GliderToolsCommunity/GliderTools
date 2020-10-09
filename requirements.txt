@@ -1,0 +1,23 @@
+-i https://pypi.python.org/simple
+astral==2.2
+certifi
+cftime
+cycler
+joblib=
+kiwisolver
+matplotlib
+netcdf4
+numexpr
+numpy
+pandas
+pillow
+pyparsing
+python-dateutil
+pytz
+scikit-learn
+scipy
+seawater
+six
+threadpoolctl
+tqdm
+xarray==0.16
