@@ -1,6 +1,9 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
 name: Test
 
-on: 
+on:
   pull_request: {}
   push:
     branches: master
@@ -9,13 +12,17 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7]
+
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup Python
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
-          python-version: 3.7
+          python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies with pipenv
         run: |
@@ -25,17 +32,5 @@ jobs:
       - run: pipenv run isort --recursive --diff .
       - run: pipenv run black --check .
       - run: pipenv run flake8
-      - run: pipenv run mypy
-      - run: pipenv run pytest --cov --cov-fail-under=100
+      - run: pipenv run pytest --cov --cov-fail-under=20
 
-  docker-image:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Build docker image
-        run: docker build . -t glidertools:test
-
-      - name: Smoke test docker image
-        run: |
-          docker run --rm glidertools:test 10
