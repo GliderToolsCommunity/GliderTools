@@ -2,7 +2,7 @@
 omit =
     setup.py
     glidertools/__main__.py
-    tests/*
+    tests/data/*
 exclude_lines =
     pragma: no cover
     def __repr__
