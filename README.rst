@@ -9,8 +9,6 @@ glidertools
         :target: https://pepy.tech/project/glidertools
 .. image:: https://readthedocs.org/projects/glidertools/badge/?version=latest
         :target: https://glidertools.readthedocs.io
-.. image:: https://coveralls.io/repos/github/GliderToolsCommunity/GliderTools/badge.svg
-        :target: https://coveralls.io/github/GliderToolsCommunity/GliderTools
 .. image:: https://img.shields.io/badge/License-GPLv3-blue.svg
         :target: https://www.gnu.org/licenses/gpl-3.0
 .. image:: https://img.shields.io/badge/Journal-10.3389%2Ffmars.2019.00738-blue
