@@ -23,9 +23,9 @@ from .plot import plot_functions as plot
 from .processing import *
 
 try:
-    __version__ = get_distribution('glidertools').version
+    __version__ = get_distribution("glidertools").version
 except DistributionNotFound:
-    __version__ = 'version_undefined'
+    __version__ = "version_undefined"
 del get_distribution, DistributionNotFound
 
-_warnings.filterwarnings('ignore', category=RuntimeWarning)
+_warnings.filterwarnings("ignore", category=RuntimeWarning)

@@ -24,22 +24,22 @@ def slocum_geomar_matfile(filename, verbose=True):
         DataFrame containing the all columns in the `.mat` file
     """
 
-    from scipy.io import loadmat
     import numpy as np
     import pandas as pd
+    from scipy.io import loadmat
 
     mat = loadmat(filename)
 
     df = pd.DataFrame()
 
     if verbose:
-        print('Loading variables: \n\t[', end='')
+        print("Loading variables: \n\t[", end="")
     for key in mat.keys():
-        if key.startswith('_'):
+        if key.startswith("_"):
             continue
 
         if verbose:
-            print(' ' + key, end=',')
+            print(" " + key, end=",")
         var = mat[key]
         col, dives = [], []
         for i, dat in enumerate(var.squeeze()):
@@ -48,26 +48,26 @@ def slocum_geomar_matfile(filename, verbose=True):
 
         try:
             df[key] = np.concatenate(col)
-            df['dives'] = np.concatenate(dives)
+            df["dives"] = np.concatenate(dives)
         except ValueError:
             ser = pd.Series(col, index=np.array(dives).squeeze())
             df[key] = ser.reindex(df.dives).values
 
-    df['dives'] /= 2.0
-    if 'time_datenum' in df.columns:
-        df['time'] = convert_matlab_datenum_to_datetime64(df.time_datenum)
+    df["dives"] /= 2.0
+    if "time_datenum" in df.columns:
+        df["time"] = convert_matlab_datenum_to_datetime64(df.time_datenum)
 
-    print(']')
+    print("]")
     return df
 
 
 def convert_matlab_datenum_to_datetime64(datenum):
     from numpy import datetime64, timedelta64
 
-    time_epoch = datetime64('1970-01-01 00:00:00.000')
-    time_matlab = timedelta64(-367, 'D')
-    time_ordinal = datetime64('0001-01-01 00:00:00', 'D').astype('timedelta64')
-    time_measurements = (datenum * 86400).astype('timedelta64[s]')
+    time_epoch = datetime64("1970-01-01 00:00:00.000")
+    time_matlab = timedelta64(-367, "D")
+    time_ordinal = datetime64("0001-01-01 00:00:00", "D").astype("timedelta64")
+    time_measurements = (datenum * 86400).astype("timedelta64[s]")
 
     datetime = (time_epoch + time_matlab) + (time_ordinal + time_measurements)
 

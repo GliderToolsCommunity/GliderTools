@@ -1,16 +1,16 @@
 # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Python package
+name: Test
 
 on:
-  release:
-    types:
-      - created
-      - edited
+  pull_request: {}
+  push:
+    branches: master
+    tags: "*"
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -29,17 +29,8 @@ jobs:
           pip install pipenv
           pipenv install --deploy --dev
 
-      - name: Linting and testing
-        run: |
-          pipenv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          pipenv run flake8 . --count --exit-zero --max-complexity=50 --max-line-length=90 --statistics
-          pipenv run pytest --cov --cov-fail-under=20
+      - run: pipenv run isort --recursive --diff .
+      - run: pipenv run black --check .
+      - run: pipenv run flake8 --max-line-length=88
+      - run: pipenv run pytest --cov --cov-fail-under=20
 
-      - name: build
-        run: |
-          pipenv run python setup.py sdist bdist_wheel
-
-      - name: pypi-publish
-        uses: pypa/gh-action-pypi-publish@v1.1.0
-        with:
-          password: ${{ secrets.PYPI_PASSWORD }}
