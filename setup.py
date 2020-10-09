@@ -37,7 +37,16 @@ setup(
     url="https://github.com/GliderToolsCommunity/GliderTools",
     long_description=long_description,
     packages=find_packages(),
-    install_requires=install_requires,
+    install_requires=[
+        "astral>=2.2",
+        "matplotlib>=3",
+        "numexpr",
+        "netcdf4==1.5.4",
+        "scikit-learn>=0.22",
+        "seawater>=3.3",
+        "tqdm>=4",
+        "xarray>=0.16.0",
+    ],
     test_suite="glidertools/tests",
     tests_require=["pytest-cov"],
     setup_requires=[
