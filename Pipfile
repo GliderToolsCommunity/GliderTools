@@ -7,17 +7,17 @@ verify_ssl = true
 python_version = "3.7"
 
 [packages]
-matplotlib
-seawater
-tqdm
-scipy
-scikit-learn
-numpy
-xarray
-pandas
-astral
-netCDF4
-numexpr
+matplotlib = "*"
+seawater = "*"
+tqdm = "*"
+scipy = "*"
+scikit-learn = "*"
+numpy = "*"
+xarray = "*"
+pandas = "*"
+astral = "*"
+netCDF4 = "*"
+numexpr = "*"
 
 [dev-packages]
 black = "==20.8b1"

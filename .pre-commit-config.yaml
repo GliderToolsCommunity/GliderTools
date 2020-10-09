@@ -24,14 +24,6 @@ repos:
     types: [python]
     exclude: setup.py
 
-  - id: mypy
-    name: mypy
-    stages: [commit]
-    language: system
-    entry: pipenv run mypy
-    types: [python]
-    require_serial: true
-
   - id: pytest
     name: pytest
     stages: [commit]
@@ -40,10 +32,12 @@ repos:
     types: [python]
     pass_filenames: false
 
-  - id: pytest-cov
-    name: pytest
-    stages: [push]
-    language: system
-    entry: pipenv run pytest --cov --cov-fail-under=20
-    types: [python]
-    pass_filenames: false
+# I've commented this for now. Might be able to implement this at a
+# later stage, though we'll need to write more tests.
+#   - id: pytest-cov
+#     name: pytest
+#     stages: [push]
+#     language: system
+#     entry: pipenv run pytest --cov --cov-fail-under=20
+#     types: [python]
+#     pass_filenames: false
