@@ -8,9 +8,6 @@ if exists("README.rst"):
 else:
     long_description = ""
 
-with open("requirements.txt") as f:
-    install_requires = f.read().strip().split("\n")
-
 CLASSIFIERS = [
     "Development Status :: 3 - Alpha",
     "License :: OSI Approved :: MIT License",
