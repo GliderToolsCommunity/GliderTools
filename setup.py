@@ -17,13 +17,12 @@ CLASSIFIERS = [
     "Operating System :: OS Independent",
     "Intended Audience :: Science/Research",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
 ]
 
 setup(
     name="glidertools",
+    version="2020.4e",
     author="Luke Gregor",
     author_email="lukegre@gmail.com",
     description=(
@@ -36,10 +35,6 @@ setup(
     license="GNUv3",
     classifiers=CLASSIFIERS,
     url="https://github.com/GliderToolsCommunity/GliderTools",
-    use_scm_version={
-        "version_scheme": "guess-next-dev",
-        "local_scheme": "dirty-tag",
-    },
     long_description=long_description,
     packages=find_packages(),
     install_requires=install_requires,
