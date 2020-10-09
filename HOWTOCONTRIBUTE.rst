@@ -149,3 +149,14 @@ Preparing Pull Requests
 Note that you can create the Pull Request while you're working on this. The PR will update
 as you add more commits. ``glidertools`` developers and contributors can then review your code
 and offer suggestions.
+
+
+## Setup
+```sh
+# Install dependencies
+pipenv install --dev
+
+# Setup pre-commit and pre-push hooks
+pipenv run pre-commit install -t pre-commit
+pipenv run pre-commit install -t pre-push
+```
