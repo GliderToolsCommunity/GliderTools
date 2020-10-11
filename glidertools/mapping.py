@@ -937,12 +937,14 @@ def grid_data(
             "{:.0f}% of x is unique (max 20% unique)".format(u / s * 100)
         )
 
-    chunk_depth = 50
+    chunk_depth = 50 
+    # -DB this might not work if the user uses anything other than depth, example density. Chunk_depth would in that case apply to density, which will probably have a range that is much smaller than 50. 
     optimal_bins, avg_sample_freq = get_optimal_bins(y, chunk_depth)
     if bins is None:
         bins = optimal_bins
 
     # warning if bin average is smaller than average bin size
+    # -DB this is not being raised as a warning. Instead just seems like useful information conveyed to user. Further none of this works out if y is not depth, since avg_sample freq will not make sense otherwise.  
     if verbose:
         avg_bin_size = diff(bins).mean()
         print(
@@ -952,14 +954,14 @@ def grid_data(
             ).format(avg_bin_size, chunk_depth, avg_sample_freq)
         )
 
-    labels = c_[bins[:-1], bins[1:]].mean(axis=1)
-    bins = cut(y, bins, labels=labels)
+    labels = c_[bins[:-1], bins[1:]].mean(axis=1) # -DB creates the mean bin values 
+    bins = cut(y, bins, labels=labels) # -DB creates a new variable where instead of variable the bin category is mentioned (sort of like a discretization)
 
-    grp = Series(z).groupby([x, bins])
-    grp_agg = getattr(grp, how)()
-    gridded = grp_agg.unstack(level=0)
+    grp = Series(z).groupby([x, bins]) # -DB put z into the many bins (like 2D hist)
+    grp_agg = getattr(grp, how)() # -DB basically does grp.how() or in this case grp.mean()
+    gridded = grp_agg.unstack(level=0) 
     gridded = gridded.reindex(labels.astype(float))
-
+    
     if interp_lim > 0:
         gridded = gridded.interpolate(limit=interp_lim).bfill(limit=interp_lim)
 
@@ -969,7 +971,7 @@ def grid_data(
     if return_xarray:
         dummy = transfer_nc_attrs(getframe(), var, var, "_vert_binned")
 
-        xda = gridded.stack().to_xarray()
+        xda = DataArray(gridded)
         if isinstance(var, DataArray):
             xda.attrs = dummy.attrs
             xda.name = dummy.name
