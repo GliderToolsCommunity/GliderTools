@@ -27,13 +27,13 @@ def time_average_per_dive(dives, time):
         each dive will have the average time stamp of that dive. Can be used
         for plotting where time_average_per_dive is set as the x-axis.
     """
+    from numpy import array, datetime64, nanmean
     from pandas import Series
-    from numpy import datetime64, array, nanmean
 
     atime = array(time)
     dives = array(dives)
     if isinstance(atime[0], datetime64):
-        t = atime.astype('datetime64[s]').astype(float)
+        t = atime.astype("datetime64[s]").astype(float)
     else:
         t = atime
 
@@ -41,9 +41,9 @@ def time_average_per_dive(dives, time):
     t_mid = nanmean([t_grp.max(), t_grp.min()], axis=0)
     t_ser = Series(t_mid, index=t_grp.mean().index.values)
     diveavg = t_ser.reindex(index=dives).values
-    diveavg = diveavg.astype('datetime64[s]')
+    diveavg = diveavg.astype("datetime64[s]")
 
-    diveavg = transfer_nc_attrs(getframe(), time, diveavg, '_diveavg')
+    diveavg = transfer_nc_attrs(getframe(), time, diveavg, "_diveavg")
 
     return diveavg
 
@@ -67,7 +67,7 @@ def mask_to_depth_array(dives, depth, var):
 
     """
 
-    from numpy import r_, diff, array
+    from numpy import array, diff, r_
     from pandas import Series
 
     i = r_[False, diff(var)].astype(bool)
@@ -116,22 +116,23 @@ def merge_dimensions(df1, df2, interp_lim=3):
     """
 
     import xarray as xr
+
     from .helpers import GliderToolsError
 
     is_xds = isinstance(df1, xr.Dataset) | isinstance(df2, xr.Dataset)
 
     if is_xds:
-        msg = 'One of your input objects is xr.Dataset, please define '
+        msg = "One of your input objects is xr.Dataset, please define "
         raise GliderToolsError(msg)
 
-    same_type = type(df1.index) == type(df2.index)
+    same_type = type(df1.index) == type(df2.index)  # noqa: E721
 
     if same_type:
-        df = df1.join(df2, sort=True, how='outer', rsuffix='_drop')
+        df = df1.join(df2, sort=True, how="outer", rsuffix="_drop")
         df = df.interpolate(limit=interp_lim).bfill(limit=interp_lim)
         return df.loc[df1.index]
     else:
-        raise UserWarning('Both dataframe indicies need to be same dtype')
+        raise UserWarning("Both dataframe indicies need to be same dtype")
 
 
 def calc_glider_vert_velocity(time, depth):
@@ -154,7 +155,7 @@ def calc_glider_vert_velocity(time, depth):
     from pandas import Series
 
     # Converting time from datetime 64 to seconds since deployment
-    t_ns = array(time).astype('datetime64[ns]').astype(float)
+    t_ns = array(time).astype("datetime64[ns]").astype(float)
     t_s = Series((t_ns - t_ns.min()) / 1e9)
 
     # converting pressure from dbar/m to cm
@@ -183,7 +184,7 @@ def calc_dive_phase(time, depth):
     phase : np.array [int]
         phase according to the EGO dive phases
     """
-    from numpy import array, ndarray, isnan
+    from numpy import array, isnan, ndarray
 
     time = array(time)
     depth = array(depth)
@@ -194,9 +195,7 @@ def calc_dive_phase(time, depth):
 
     phase[velocity > 0.5] = 1  # down dive
     phase[velocity < -0.5] = 4  # up dive
-    phase[
-        (depth > 200) & (velocity >= -0.5) & (velocity <= 0.5)
-    ] = 3  # inflexion
+    phase[(depth > 200) & (velocity >= -0.5) & (velocity <= 0.5)] = 3  # inflexion
     phase[depth <= 200] = 0  # surface drift
     phase[isnan(phase)] = 6
     phase = phase.astype(int)
@@ -270,10 +269,10 @@ def distance(lon, lat, ref_idx=None):
 
     if not lon.size == lat.size:
         raise ValueError(
-            'lon, lat size must match; found %s, %s' % (lon.size, lat.size)
+            "lon, lat size must match; found %s, %s" % (lon.size, lat.size)
         )
     if not len(lon.shape) == 1:
-        raise ValueError('lon, lat must be flat arrays')
+        raise ValueError("lon, lat must be flat arrays")
 
     lon = np.radians(lon)
     lat = np.radians(lat)
@@ -290,9 +289,9 @@ def distance(lon, lat, ref_idx=None):
         dlon = lon[ref_idx] - lon
         dlat = lat[ref_idx] - lat
 
-    a = np.sin(dlat / 2) ** 2 + np.sin(dlon / 2) ** 2 * np.cos(
-        lat[i1]
-    ) * np.cos(lat[i2])
+    a = np.sin(dlat / 2) ** 2 + np.sin(dlon / 2) ** 2 * np.cos(lat[i1]) * np.cos(
+        lat[i2]
+    )
 
     angles = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
 
@@ -302,6 +301,6 @@ def distance(lon, lat, ref_idx=None):
     return d
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     pass

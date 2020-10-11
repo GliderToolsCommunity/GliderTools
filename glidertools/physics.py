@@ -10,15 +10,17 @@ from .helpers import GliderToolsWarning, transfer_nc_attrs
 
 try:
     _gsw_avail = True
-    from gsw import alpha as alpha_thermal, beta as beta_saline
+    from gsw import alpha as alpha_thermal
+    from gsw import beta as beta_saline
 except ImportError:
     _gsw_avail = False
-    from seawater import alpha as alpha_thermal, beta as beta_saline  # noqa
+    from seawater import alpha as alpha_thermal  # noqa: F401
+    from seawater import beta as beta_saline  # noqa: F401
 
     message = (
         "'gsw' could not be imported (Python 2.x is not compatible "
         "with 'gsw'). Reverting to 'seawater'. You will not be able to "
-        'calculate brunt_vaisala and potential_density will not use TEOS-10.'
+        "calculate brunt_vaisala and potential_density will not use TEOS-10."
     )
     warnings.warn(message, category=GliderToolsWarning)
 
@@ -75,10 +77,10 @@ def mixed_layer_depth(
             return mld
 
     arr = np.c_[dens_or_temp, depth, dives]
-    col = ['dens', 'depth', 'dives']
+    col = ["dens", "depth", "dives"]
     df = DataFrame(data=arr, columns=col)
 
-    grp = df.groupby('dives')
+    grp = df.groupby("dives")
     mld = grp.apply(
         lambda g: mld_profile(
             g.dens.values,
@@ -144,10 +146,10 @@ def potential_density(salt_PSU, temp_C, pres_db, lat, lon, pres_ref=0):
         getframe(),
         temp_C,
         pot_dens,
-        'potential_density',
-        units='kg/m3',
-        comment='',
-        standard_name='potential_density',
+        "potential_density",
+        units="kg/m3",
+        comment="",
+        standard_name="potential_density",
     )
     return pot_dens
 
@@ -199,10 +201,10 @@ if _gsw_avail:
             getframe(),
             temp,
             n2,
-            'N_squared',
-            units='1/s2',
-            comment='',
-            standard_name='brunt_vaisala_freq',
+            "N_squared",
+            units="1/s2",
+            comment="",
+            standard_name="brunt_vaisala_freq",
         )
 
         return n2

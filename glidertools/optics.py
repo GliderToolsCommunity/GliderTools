@@ -9,7 +9,7 @@ from .helpers import transfer_nc_attrs
 
 
 def find_bad_profiles(
-    dives, depth, var, ref_depth=None, stdev_multiplier=1, method='median'
+    dives, depth, var, ref_depth=None, stdev_multiplier=1, method="median"
 ):
     """
     Find profiles that exceed a threshold at a reference depth.
@@ -53,32 +53,26 @@ def find_bad_profiles(
 
     dives = array(dives)
 
-    df = DataFrame(c_[depth, dives, var], columns=['depth', 'dives', 'dat'])
+    df = DataFrame(c_[depth, dives, var], columns=["depth", "dives", "dat"])
 
     if not ref_depth:
         # reference depth is found by finding the average maximum
         # depth of the variable. The max depth is multiplied by 3
         # this reference depth can be set
-        ref_depth = (
-            df.depth[df.dat.groupby(df.dives).idxmax().values].mean() * 3
-        )
+        ref_depth = df.depth[df.dat.groupby(df.dives).idxmax().values].mean() * 3
 
     # find the median below the reference depth
-    deep_avg = df[df.depth > ref_depth].groupby('dives').dat.median()
+    deep_avg = df[df.depth > ref_depth].groupby("dives").dat.median()
 
-    if method.startswith('med'):
+    if method.startswith("med"):
         # if the deep_avg is larger than the median
-        bad_dive = deep_avg > (
-            deep_avg.median() + (deep_avg.std() * stdev_multiplier)
-        )
+        bad_dive = deep_avg > (deep_avg.median() + (deep_avg.std() * stdev_multiplier))
         bad_dive = bad_dive.index.values[bad_dive]
         bad_dive_idx = array([(dives == d) for d in bad_dive]).any(0)
         return bad_dive_idx, bad_dive
     else:
         # if the deep_avg is larger than the mean
-        bad_dive = deep_avg > (
-            deep_avg.mean() + (deep_avg.std() * stdev_multiplier)
-        )
+        bad_dive = deep_avg > (deep_avg.mean() + (deep_avg.std() * stdev_multiplier))
         bad_dive = bad_dive.index.values[bad_dive]
         bad_dive_idx = array([(dives == d) for d in bad_dive]).any(0)
         return bad_dive_idx, bad_dive
@@ -109,7 +103,7 @@ def par_dark_count(par, dives, depth, time):
     par_dark: numpy.ndarray or pandas.Series
         The par data corrected for the in situ dark value in units uE/m2/sec.
     """
-    from numpy import array, ma, nanmedian, isnan, nanpercentile
+    from numpy import array, isnan, ma, nanmedian, nanpercentile
 
     par_arr = array(par)
     dives = array(dives)
@@ -117,7 +111,7 @@ def par_dark_count(par, dives, depth, time):
     time = array(time)
 
     # DARK CORRECTION FOR PAR
-    hrs = time.astype('datetime64[h]') - time.astype('datetime64[D]')
+    hrs = time.astype("datetime64[h]") - time.astype("datetime64[D]")
     xi = ma.masked_inside(hrs.astype(int), 22, 2)  # find 23:01 hours
     yi = ma.masked_outside(
         depth, *nanpercentile(depth[~isnan(par)], [90, 100])
@@ -127,7 +121,7 @@ def par_dark_count(par, dives, depth, time):
     par_dark = par_arr - dark
     par_dark[par_dark < 0] = 0
 
-    par_dark = transfer_nc_attrs(getframe(), par, par_dark, '_dark')
+    par_dark = transfer_nc_attrs(getframe(), par, par_dark, "_dark")
 
     return par_dark
 
@@ -153,14 +147,14 @@ def backscatter_dark_count(bbp, depth):
     bbp: numpy.ndarray or pandas.Series
         The total backscatter data corrected for the in situ dark value.
     """
-    from numpy import nanpercentile, isnan, array
+    from numpy import array, isnan, nanpercentile
 
     bbp_dark = array(bbp)
     mask = (depth > 200) & (depth < 400)
     if (~isnan(bbp[mask])).sum() == 0:
         raise UserWarning(
-            'There are no backscatter measurements between 200 '
-            'and 400 metres.The dark count correction cannot be '
+            "There are no backscatter measurements between 200 "
+            "and 400 metres.The dark count correction cannot be "
             "made and backscatter data can't be processed."
         )
     dark_pctl5 = nanpercentile(bbp_dark[mask], 5)
@@ -168,7 +162,7 @@ def backscatter_dark_count(bbp, depth):
     bbp_dark -= dark_pctl5
     bbp_dark[bbp_dark < 0] = 0
 
-    bbp_dark = transfer_nc_attrs(getframe(), bbp, bbp_dark, '_dark')
+    bbp_dark = transfer_nc_attrs(getframe(), bbp, bbp_dark, "_dark")
 
     return bbp
 
@@ -195,22 +189,22 @@ def fluorescence_dark_count(flr, depth):
         The fluorescence data corrected for the in situ dark value.
 
     """
-    from numpy import nanpercentile, isnan, array
+    from numpy import array, isnan, nanpercentile
 
     mask = (depth > 300) & (depth < 400)
     flr_dark = array(flr)
 
     if (~isnan(flr_dark[mask])).sum() == 0:
         raise UserWarning(
-            '\nThere are no fluorescence measurements between '
-            '300 and 400 metres.\nThe dark count correction '
+            "\nThere are no fluorescence measurements between "
+            "300 and 400 metres.\nThe dark count correction "
             "cannot be made and fluorescence data can't be processed."
         )
     dark_pctl5 = nanpercentile(flr_dark[mask], 5)
 
     flr_dark -= dark_pctl5
     flr_dark[flr_dark < 0] = 0
-    flr_dark = transfer_nc_attrs(getframe(), flr, flr_dark, '_dark')
+    flr_dark = transfer_nc_attrs(getframe(), flr, flr_dark, "_dark")
 
     return flr_dark
 
@@ -244,7 +238,7 @@ def par_scaling(par_uV, scale_factor_wet_uEm2s, sensor_output_mV):
 
     par_uEm2s = (par_uV - sensor_output_uV) / scale_factor_wet_uEm2s
 
-    par_uEm2s = transfer_nc_attrs(getframe(), par_uV, par_uEm2s, 'par_uEm2s')
+    par_uEm2s = transfer_nc_attrs(getframe(), par_uV, par_uEm2s, "par_uEm2s")
 
     return par_uEm2s
 
@@ -274,8 +268,8 @@ def par_fill_surface(par, dives, depth, max_curve_depth=100):
         The par data with the algebraically calculated top 5 metres.
 
     """
-    from scipy.optimize import curve_fit
     import numpy as np
+    from scipy.optimize import curve_fit
 
     def dive_par_fit(depth, par):
         def exp_func(x, a, b):
@@ -289,9 +283,7 @@ def par_fill_surface(par, dives, depth, max_curve_depth=100):
             yj_hat = np.ones_like(depth) * np.nan
         else:
             try:
-                [a, b], _ = curve_fit(
-                    exp_func, xm, ym, p0=(500, -0.03), maxfev=1000
-                )
+                [a, b], _ = curve_fit(exp_func, xm, ym, p0=(500, -0.03), maxfev=1000)
                 yj_hat = exp_func(xj, a, b)
             except RuntimeError:
                 yj_hat = np.ones_like(depth) * np.nan
@@ -309,7 +301,7 @@ def par_fill_surface(par, dives, depth, max_curve_depth=100):
         par_fit = dive_par_fit(depth[i], par[i])
         par_filled[i] = par_fit
 
-    par_filled = transfer_nc_attrs(getframe(), var, par_filled, 'par_expfill')
+    par_filled = transfer_nc_attrs(getframe(), var, par_filled, "par_expfill")
 
     return par_filled
 
@@ -372,7 +364,7 @@ def photic_depth(par, dives, depth, return_mask=False, ref_percentage=1):
             return [euph_depth]
 
     #########################################################
-    assert np.array(par).any(), 'PAR does not contain data'
+    assert np.array(par).any(), "PAR does not contain data"
 
     slopes = []
     light_depths = []
@@ -433,23 +425,21 @@ def sunset_sunrise(time, lat, lon):
 
     ast = Astral()
 
-    df = DataFrame.from_dict(
-        dict([('time', time), ('lat', lat), ('lon', lon)])
-    )
+    df = DataFrame.from_dict(dict([("time", time), ("lat", lat), ("lon", lon)]))
 
     # set days as index
-    df = df.set_index(df.time.values.astype('datetime64[D]'))
+    df = df.set_index(df.time.values.astype("datetime64[D]"))
 
     # groupby days and find sunrise for unique days
     grp_avg = df.groupby(df.index).mean()
     date = grp_avg.index.to_pydatetime()
 
-    grp_avg['sunrise'] = list(map(ast.sunrise_utc, date, df.lat, df.lon))
-    grp_avg['sunset'] = list(map(ast.sunset_utc, date, df.lat, df.lon))
+    grp_avg["sunrise"] = list(map(ast.sunrise_utc, date, df.lat, df.lon))
+    grp_avg["sunset"] = list(map(ast.sunset_utc, date, df.lat, df.lon))
 
     # reindex days to original dataframe as night
-    df_reidx = grp_avg.reindex(df.index).astype('datetime64[ns]')
-    sunrise, sunset = df_reidx[['sunrise', 'sunset']].values.T
+    df_reidx = grp_avg.reindex(df.index).astype("datetime64[ns]")
+    sunrise, sunset = df_reidx[["sunrise", "sunset"]].values.T
 
     return sunrise, sunset
 
@@ -526,6 +516,7 @@ def quenching_correction(
     import numpy as np
     import pandas as pd
     from scipy.interpolate import Rbf
+
     from .cleaning import rolling_window
 
     def grad_min(depth, fluor_diff, surface_layer=5):
@@ -588,7 +579,7 @@ def quenching_correction(
     #  GENERATE DAY/NIGHT BATCHES  #
     # ############################ #
     sunrise, sunset = sunset_sunrise(time, lat, lon)
-    offset = np.timedelta64(sunrise_sunset_offset, 'h')
+    offset = np.timedelta64(sunrise_sunset_offset, "h")
     # creating quenching correction batches, where a batch is a night and the
     # following day
     day = (time > (sunrise + offset)) & (time < (sunset + offset))
@@ -609,7 +600,7 @@ def quenching_correction(
     flr_night, bbp_night = flr.copy(), bbp.copy()
 
     # create a dataframe with fluorescence and backscatter
-    df = pd.DataFrame(np.c_[flr, bbp], columns=['flr', 'bbp'])
+    df = pd.DataFrame(np.c_[flr, bbp], columns=["flr", "bbp"])
     # get the binned averages for each batch and select the night
     night_ave = df.groupby([day, batch, np.around(depth)]).mean()
     night_ave = night_ave.dropna().loc[False]
@@ -628,8 +619,8 @@ def quenching_correction(
         elif y.flr.size <= 2:
             continue
         # radial basis functions with a smoothing factor
-        f1 = Rbf(x, y.flr.values, function='linear', smooth=20)
-        f2 = Rbf(x, y.bbp.values, function='linear', smooth=20)
+        f1 = Rbf(x, y.flr.values, function="linear", smooth=20)
+        f2 = Rbf(x, y.bbp.values, function="linear", smooth=20)
         # interpolation function is used to find flr and bbp for all
         # nighttime fluorescence
         flr_night[j] = f1(depth[j])
@@ -648,8 +639,8 @@ def quenching_correction(
     quenching_layer = np.zeros(depth.size).astype(bool)
     # create a grouped dataset by dives to find the depth of quenching
     cols = np.c_[depth, fluor_diff, dives][photic_layer]
-    grp = pd.DataFrame(cols, columns=['depth', 'flr_dif', 'dives'])
-    grp = grp.groupby('dives')
+    grp = pd.DataFrame(cols, columns=["depth", "flr_dif", "dives"])
+    grp = grp.groupby("dives")
     # apply the minimum gradient algorithm to each dive
     quench_mask = grp.apply(lambda df: grad_min(df.depth, df.flr_dif))
     # fill the quench_layer subscripted to the photic layer
@@ -673,10 +664,10 @@ def quenching_correction(
     flr_corrected[quenching_layer] = quench_corrected[quenching_layer]
 
     flr_corrected = transfer_nc_attrs(
-        getframe(), var, flr_corrected, 'flr_quench_corrected', units='RFU'
+        getframe(), var, flr_corrected, "flr_quench_corrected", units="RFU"
     )
     quenching_layer = transfer_nc_attrs(
-        getframe(), var, quenching_layer, 'quench_layer', units=''
+        getframe(), var, quenching_layer, "quench_layer", units=""
     )
 
     return flr_corrected, quenching_layer
@@ -716,8 +707,9 @@ def quenching_report(
         and the quenching layer calculated from the optics.quenching_correction
         function.
     """
-    from matplotlib.pyplot import subplots, cm
+    from matplotlib.pyplot import cm, subplots
     from numpy import array, nanpercentile
+
     from . import plot
 
     y = array(depth)
@@ -727,7 +719,7 @@ def quenching_report(
     z = [array(flr)[i], array(flr_corrected)[i], array(quenching_layer)[i]]
 
     fig, ax = subplots(3, 1, figsize=[10, 11], dpi=90)
-    title = 'Quenching correction with Thomalla et al. (2017)'
+    title = "Quenching correction with Thomalla et al. (2017)"
 
     bmin, bmax = nanpercentile(z[1], [2, 98])
     smin, smax = nanpercentile(z[2], [2, 98])
@@ -741,25 +733,25 @@ def quenching_report(
     for i in range(0, 3):
         ax[i].set_ylim(180, 0)
         ax[i].set_xlim(x.min(), x.max())
-        ax[i].set_ylabel('Depth (m)')
-        ax[i].set_xlabel('Dive number')
+        ax[i].set_ylabel("Depth (m)")
+        ax[i].set_xlabel("Dive number")
 
         if i != 2:
             ax[i].set_xticklabels([])
-            ax[i].cb.set_label('Relative Units')
+            ax[i].cb.set_label("Relative Units")
         else:
-            ax[i].set_xlabel('Dive number')
-            ax[i].cb.set_label('Boolean mask')
+            ax[i].set_xlabel("Dive number")
+            ax[i].cb.set_label("Boolean mask")
 
-    ax[0].set_title('Original fluorescence')
-    ax[1].set_title('Quenching corrected fluorescence')
-    ax[2].set_title('Quenching layer')
+    ax[0].set_title("Original fluorescence")
+    ax[1].set_title("Quenching corrected fluorescence")
+    ax[2].set_title("Quenching layer")
 
     fig.tight_layout()
-    fig.text(0.47, 1.02, title, va='center', ha='center', size=14)
+    fig.text(0.47, 1.02, title, va="center", ha="center", size=14)
 
     return fig
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass

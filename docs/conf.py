@@ -14,8 +14,8 @@
 
 from pkg_resources import get_distribution
 
-release = get_distribution('glidertools').version
-version = '.'.join(release.split('.')[:2])
+release = get_distribution("glidertools").version
+version = ".".join(release.split(".")[:2])
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -32,27 +32,22 @@ version = '.'.join(release.split('.')[:2])
 # ones.
 
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.napoleon',
-    'recommonmark',
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.napoleon",
+    "recommonmark",
 ]
 
 autosummary_generate = True
 
-autodoc_default_flags = ['members', 'inherited-members']
+autodoc_default_flags = ["members", "inherited-members"]
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
-
-
-# source_parsers = {
-#     '.md': 'recommonmark.parser.CommonMarkParser',
-# }
+templates_path = ["_templates"]
 
 # The suffix of source filenames.
-source_suffix = ['.rst', '.md']
+source_suffix = [".rst", ".md"]
 
 napoleon_numpy_docstring = True
 
@@ -60,18 +55,18 @@ napoleon_numpy_docstring = True
 # source_encoding = 'utf-8-sig'
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 # General information about the project.
-project = u'GliderTools'
-copyright = u'GliderTools, 2019'
+project = u"GliderTools"
+copyright = u"GliderTools, 2019"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = '.'.join(version.split('.')[:2])
+version = ".".join(version.split(".")[:2])
 # The full version, including alpha/beta/rc tags.
 release = version
 
@@ -87,7 +82,7 @@ release = version
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build']
+exclude_patterns = ["_build"]
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -105,7 +100,7 @@ exclude_patterns = ['_build']
 # show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = "sphinx"
 
 # A list of ignored prefixes for module index sorting.
 # modindex_common_prefix = []
@@ -118,15 +113,15 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'sphinx_rtd_theme'
+html_theme = "sphinx_rtd_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
-    'logo_only': True,
-    'display_version': False,
-    'style_nav_header_background': '#343131',
+    "logo_only": True,
+    "display_version": False,
+    "style_nav_header_background": "#343131",
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
@@ -141,7 +136,7 @@ html_theme_options = {
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = 'img/logo_with_name.png'
+html_logo = "img/logo_with_name.png"
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -151,11 +146,11 @@ html_logo = 'img/logo_with_name.png'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['static']
+html_static_path = ["static"]
 
 # custom CSS files
 html_context = {
-    'css_files': ['_static/css/custom.css'],
+    "css_files": ["_static/css/custom.css"],
 }
 
 # Add any extra paths that contain custom files (such as robots.txt or
@@ -205,7 +200,7 @@ html_context = {
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'ReadtheDocsTemplatedoc'
+htmlhelp_basename = "ReadtheDocsTemplatedoc"
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -224,11 +219,11 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (
-        'index',
-        'ReadtheDocsTemplate.tex',
-        u'Read the Docs Template Documentation',
-        u'Read the Docs',
-        'manual',
+        "index",
+        "ReadtheDocsTemplate.tex",
+        u"Read the Docs Template Documentation",
+        u"Read the Docs",
+        "manual",
     ),
 ]
 
@@ -259,10 +254,10 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     (
-        'index',
-        'readthedocstemplate',
-        u'Read the Docs Template Documentation',
-        [u'Read the Docs'],
+        "index",
+        "readthedocstemplate",
+        u"Read the Docs Template Documentation",
+        [u"Read the Docs"],
         1,
     )
 ]
@@ -278,14 +273,15 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (
-        'index',
-        'ReadtheDocsTemplate',
-        u'Read the Docs Template Documentation',
-        u'Read the Docs',
-        'ReadtheDocsTemplate',
-        'Miscellaneous',
+        "index",
+        "ReadtheDocsTemplate",
+        u"Read the Docs Template Documentation",
+        u"Read the Docs",
+        "ReadtheDocsTemplate",
+        "Miscellaneous",
     ),
 ]
+
 
 # Documents to append as an appendix to all manuals.
 # texinfo_appendices = []
