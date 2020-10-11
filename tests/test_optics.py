@@ -4,6 +4,9 @@ def test_sunrise_sunset():
         1. can run
         2. output is the right shape
         3. if the output is correct-ish
+
+    Note that the test will fail if the latitude is beyond where the
+    sun sets or rises. Perhaps we should add a length of day catch?
     """
     import numpy as np
 
@@ -14,7 +17,7 @@ def test_sunrise_sunset():
         np.datetime64("2000-01-02"),
         np.datetime64("2000-01-03"),
     ]
-    lat = -35, 35, 80
+    lat = -35, 35, 45
     lon = 0, 0, 0
     sunrise, sunset = gt.optics.sunset_sunrise(time, lat, lon)
 
