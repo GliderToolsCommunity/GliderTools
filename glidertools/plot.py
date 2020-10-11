@@ -324,8 +324,9 @@ class plot_functions(object):
         axes
         """
         from matplotlib.colors import LogNorm
-        from numpy import abs, diff, isnan, array, nan, r_, nanmedian
         from matplotlib.pyplot import colorbar, subplots
+        from numpy import abs, array, diff, isnan, nan, nanmedian, r_
+
         from .mapping import get_optimal_bins
 
         depth = array(depth)
@@ -354,12 +355,12 @@ class plot_functions(object):
 
         if ax is None:
             fig, ax = subplots(1, 1, figsize=[4, 6])
-        
-        im = ax.hist2d(
-                x, y, bins=bins, norm=LogNorm(), rasterized=True, **hist_kwargs
-                )[-1]
 
-        ax.plot(xbins, ybins, lw=4, ls='-', color='k', label='Bins')
+        im = ax.hist2d(x, y, bins=bins, norm=LogNorm(), rasterized=True, **hist_kwargs)[
+            -1
+        ]
+
+        ax.plot(xbins, ybins, lw=4, ls="-", color="k", label="Bins")
 
         ax.set_ylim(ax.get_ylim()[::-1])
         ax.set_ylabel("Depth (m)")

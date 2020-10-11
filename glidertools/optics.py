@@ -441,8 +441,9 @@ def sunset_sunrise(time, lat, lon):
 
     sunrise, sunset = [], []
     for i in range(len(sunrise_observer)):
-        sunrise.append(sun(sunrise_observer[i], date[i])["sunrise"])
-        sunset.append(sun(sunrise_observer[i], date[i])["sunset"])
+        sun_info = sun(sunrise_observer[i], date[i])
+        sunrise.append(sun_info["sunrise"])
+        sunset.append(sun_info["sunset"])
 
     grp_avg["sunrise"] = sunrise
     grp_avg["sunset"] = sunset
