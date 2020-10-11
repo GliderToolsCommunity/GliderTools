@@ -5,15 +5,6 @@ from __future__ import unicode_literals as _ul
 
 import numpy as np
 
-try:
-    _plotly_avail = True
-    import plotly
-except ImportError:
-    _plotly_avail = False
-    from warnings import warn
-
-    warn('install "plotly" for 3D plotting sections', category=ImportWarning)
-
 
 def _process_2D_plot_args(args, gridding_dz=1):
     """
@@ -23,10 +14,11 @@ def _process_2D_plot_args(args, gridding_dz=1):
     from numpy import array, ma, nan, ndarray
     from pandas import DataFrame, Series
     from xarray import DataArray
-    from .mapping import grid_data
-    from .helpers import GliderToolsError
 
-    name = ''
+    from .helpers import GliderToolsError
+    from .mapping import grid_data
+
+    name = ""
     if len(args) == 3:
         x = array(args[0])
         y = array(args[1]).astype(float)
@@ -35,17 +27,15 @@ def _process_2D_plot_args(args, gridding_dz=1):
         if isinstance(z, ma.MaskedArray):
             z[z.mask] = nan
         elif isinstance(z, DataArray):
-            name = z.name if z.name is not None else ''
-            unit = ' [{}]'.format(z.units) if 'units' in z.attrs else ''
+            name = z.name if z.name is not None else ""
+            unit = " [{}]".format(z.units) if "units" in z.attrs else ""
             name = name + unit
             z = ma.masked_invalid(array(z)).astype(float)
         else:
             z = ma.masked_invalid(array(z)).astype(float)
 
         if (x.size == y.size) & (len(z.shape) == 1):
-            df = grid_data(
-                x, y, z, interp_lim=6, verbose=False, return_xarray=False
-            )
+            df = grid_data(x, y, z, interp_lim=6, verbose=False, return_xarray=False)
             x = df.columns
             y = df.index
             z = ma.masked_invalid(df.values)
@@ -55,25 +45,25 @@ def _process_2D_plot_args(args, gridding_dz=1):
     elif len(args) == 1:
         z = args[0]
         if isinstance(z, DataArray):
-            name = z.name if z.name is not None else ''
-            unit = ' [{}]'.format(z.units) if 'units' in z.attrs else ''
+            name = z.name if z.name is not None else ""
+            unit = " [{}]".format(z.units) if "units" in z.attrs else ""
             name = name + unit
             if z.ndim == 1:
                 raise GliderToolsError(
-                    'Please provide gridded DataArray or x and y coordinates'
+                    "Please provide gridded DataArray or x and y coordinates"
                 )
             elif z.ndim == 2:
                 z = z.to_series().unstack()
             elif z.ndim > 2:
                 raise GliderToolsError(
-                    'GliderTools plotting currently only supports 2 '
-                    'dimensional plotting'
+                    "GliderTools plotting currently only supports 2 "
+                    "dimensional plotting"
                 )
         elif isinstance(z, (ndarray, Series)):
             if z.ndim == 2:
                 z = DataFrame(z)
             else:
-                raise IndexError('The input must be a 2D DataFrame or ndarray')
+                raise IndexError("The input must be a 2D DataFrame or ndarray")
 
         x = z.columns.values
         y = z.index.values
@@ -135,22 +125,23 @@ class plot_functions(object):
             - gridding_dz - gridding depth [default 1]
 
         """
-        from matplotlib.pyplot import colorbar, subplots
-        from numpy import datetime64, nanpercentile
         from datetime import datetime
 
-        ax = kwargs.pop('ax', None)
-        robust = kwargs.pop('robust', True)
-        gridding_dz = kwargs.pop('gridding_dz', 1)
+        from matplotlib.pyplot import colorbar, subplots
+        from numpy import datetime64, nanpercentile
+
+        ax = kwargs.pop("ax", None)
+        robust = kwargs.pop("robust", True)
+        gridding_dz = kwargs.pop("gridding_dz", 1)
 
         x, y, z, name = _process_2D_plot_args(args, gridding_dz=gridding_dz)
         m = (~z.mask).any(axis=1)
 
         x_time = isinstance(x[0], (datetime, datetime64))
 
-        if robust & (('vmin' not in kwargs) | ('vmax' not in kwargs)):
-            kwargs['vmin'] = nanpercentile(z.data, 0.5)
-            kwargs['vmax'] = nanpercentile(z.data, 99.5)
+        if robust & (("vmin" not in kwargs) | ("vmax" not in kwargs)):
+            kwargs["vmin"] = nanpercentile(z.data, 0.5)
+            kwargs["vmax"] = nanpercentile(z.data, 99.5)
 
         if ax is None:
             fig, ax = subplots(1, 1, figsize=[9, 3.5], dpi=90)
@@ -162,8 +153,8 @@ class plot_functions(object):
         ylim = nanpercentile(y[m], [100, 0])
         ax.set_ylim(ylim)
         ax.set_xlim(x.min(), x.max())
-        ax.set_ylabel('Depth (m)')
-        ax.set_xlabel('Date' if x_time else 'Dives')
+        ax.set_ylabel("Depth (m)")
+        ax.set_xlabel("Date" if x_time else "Dives")
         if len(name) < 30:
             ax.cb.set_label(name)
         else:
@@ -200,21 +191,22 @@ class plot_functions(object):
         axes
         """
 
-        from matplotlib.pyplot import colorbar, subplots
-        from numpy import nanpercentile, datetime64
         from datetime import datetime
 
-        ax = kwargs.pop('ax', None)
-        robust = kwargs.pop('robust', False)
-        gridding_dz = kwargs.pop('gridding_dz', 1)
+        from matplotlib.pyplot import colorbar, subplots
+        from numpy import datetime64, nanpercentile
+
+        ax = kwargs.pop("ax", None)
+        robust = kwargs.pop("robust", False)
+        gridding_dz = kwargs.pop("gridding_dz", 1)
 
         x, y, z, name = _process_2D_plot_args(args, gridding_dz=gridding_dz)
 
         x_time = isinstance(x[0], (datetime, datetime64))
 
-        if robust & (('vmin' not in kwargs) | ('vmax' not in kwargs)):
-            kwargs['vmin'] = nanpercentile(z[~z.mask], 0.5)
-            kwargs['vmax'] = nanpercentile(z[~z.mask], 99.5)
+        if robust & (("vmin" not in kwargs) | ("vmax" not in kwargs)):
+            kwargs["vmin"] = nanpercentile(z[~z.mask], 0.5)
+            kwargs["vmax"] = nanpercentile(z[~z.mask], 99.5)
 
         if ax is None:
             fig, ax = subplots(1, 1, figsize=[9, 3.5], dpi=90)
@@ -227,8 +219,8 @@ class plot_functions(object):
         m = (~z.mask).any(axis=1)
         ylim = nanpercentile(y[m], [100, 0])
         ax.set_ylim(ylim)
-        ax.set_ylabel('Depth (m)')
-        ax.set_xlabel('Date' if x_time else 'Dives')
+        ax.set_ylabel("Depth (m)")
+        ax.set_xlabel("Date" if x_time else "Dives")
         ax.cb.set_label(name)
 
         [tick.set_rotation(45) for tick in ax.get_xticklabels()]
@@ -264,17 +256,10 @@ class plot_functions(object):
         will ask if you want to continue if more than 10000 points
         """
 
-        from matplotlib.pyplot import colorbar, subplots
-        from numpy import (
-            ma,
-            nanpercentile,
-            datetime64,
-            array,
-            nanmin,
-            nanmax,
-            isnan,
-        )
         from datetime import datetime
+
+        from matplotlib.pyplot import colorbar, subplots
+        from numpy import array, datetime64, isnan, ma, nanmax, nanmin, nanpercentile
 
         z = ma.masked_invalid(z)
         m = ~(z.mask | isnan(y))
@@ -284,19 +269,19 @@ class plot_functions(object):
 
         if y.size >= 1e5:
             carry_on = input(
-                'There are a large number of points to plot ({}). '
-                'This will take a while to plot.\n'
+                "There are a large number of points to plot ({}). "
+                "This will take a while to plot.\n"
                 'Type "y" to continue or "n" to cancel.\n'.format(y.size)
             )
-            if carry_on != 'y':
-                print('You have aborted the scatter plot')
+            if carry_on != "y":
+                print("You have aborted the scatter plot")
                 return None
 
         x_time = isinstance(x[0], (datetime, datetime64))
 
         if robust:
-            kwargs['vmin'] = nanpercentile(z, 0.5)
-            kwargs['vmax'] = nanpercentile(z, 99.5)
+            kwargs["vmin"] = nanpercentile(z, 0.5)
+            kwargs["vmax"] = nanpercentile(z, 99.5)
 
         if ax is None:
             fig, ax = subplots(1, 1, figsize=[9, 3.5], dpi=90)
@@ -307,8 +292,8 @@ class plot_functions(object):
         ax.cb = colorbar(mappable=im, pad=0.02, ax=ax, fraction=0.05)
         ax.set_xlim(x.min(), x.max())
         ax.set_ylim(nanmax(y), nanmin(y))
-        ax.set_ylabel('Depth (m)')
-        ax.set_xlabel('Date' if x_time else 'Dives')
+        ax.set_ylabel("Depth (m)")
+        ax.set_xlabel("Date" if x_time else "Dives")
 
         [tick.set_rotation(45) for tick in ax.get_xticklabels()]
         fig.tight_layout()
@@ -328,6 +313,9 @@ class plot_functions(object):
         ----------
         depth : array, dtype=float, shape=[n, ]
             the head-to-tail concatenated depth readings
+        bins: [array, array]
+            a user defined set of delta depth and depth bins. If
+            unspecified then these bins are automatically chosen.
         hist_kwargs : key-value pairs
             passed to the 2D histogram function.
 
@@ -335,9 +323,9 @@ class plot_functions(object):
         -------
         axes
         """
-        from matplotlib.pyplot import subplots, colorbar
         from matplotlib.colors import LogNorm
-        from numpy import abs, diff, isnan, array, nan, r_
+        from numpy import abs, diff, isnan, array, nan, r_, nanmedian
+        from matplotlib.pyplot import colorbar, subplots
         from .mapping import get_optimal_bins
 
         depth = array(depth)
@@ -350,159 +338,168 @@ class plot_functions(object):
         if bins is None:
             binning_freq = 50
             ybins = get_optimal_bins(depth, binning_freq)[0]
+            xbins = r_[nan, diff(ybins)]
+            bins = binning_freq
+
         else:
-            ybins = bins
-        xbins = r_[nan, diff(ybins)]
+            ybins = bins[1]
+            xbins = []
+            for k in range(len(ybins) - 1):
+                d0 = ybins[k]
+                d1 = ybins[k + 1]
+
+                i = (y > d0) & (y < d1)
+                xbins += (nanmedian(x[i]),)
+            xbins = r_[nan, xbins]
 
         if ax is None:
             fig, ax = subplots(1, 1, figsize=[4, 6])
-
+        
         im = ax.hist2d(
-            x, y, bins=50, norm=LogNorm(), rasterized=True, **hist_kwargs
-        )[-1]
+                x, y, bins=bins, norm=LogNorm(), rasterized=True, **hist_kwargs
+                )[-1]
+
         ax.plot(xbins, ybins, lw=4, ls='-', color='k', label='Bins')
+
         ax.set_ylim(ax.get_ylim()[::-1])
-        ax.set_ylabel('Depth (m)')
-        ax.set_xlabel('$\Delta$ Depth (m)')
+        ax.set_ylabel("Depth (m)")
+        ax.set_xlabel("$\Delta$ Depth (m)")  # noqa: W605
         ax.legend(loc=0)
 
         if add_colorbar:
             cb = colorbar(mappable=im, ax=ax, fraction=0.1, pad=0.05)
-            cb.set_label('Measurement count')
+            cb.set_label("Measurement count")
 
         return ax
 
-    if _plotly_avail:
+    @staticmethod
+    def section3D(
+        dives,
+        depth,
+        x,
+        y,
+        variable,
+        zmin=-1000,
+        zmax=1,
+        vmin=None,
+        vmax=None,
+        cmap=None,
+        aspect_ratio_x=1.5,
+        return_plot=True,
+    ):
+        """
+        Returns an interactive 3D plot in an HTML page.
 
-        @staticmethod
-        def section3D(
-            dives,
-            depth,
-            x,
-            y,
-            variable,
-            zmin=-1000,
-            zmax=1,
-            vmin=None,
-            vmax=None,
-            cmap=None,
-            aspect_ratio_x=1.5,
-            return_plot=True,
-        ):
+        Parameters
+        ----------
+        dives : array, dtype=float, shape=[n, ]
+            timeseries of dive number (or can be pseudo discrete time)
+        depth : array, dtype=float, shape=[n, ]
+            head-to-tail concatenated depth readings
+        x : array, dtype=float, shape=[n, ]
+            the x-coordinate used in the plot (e.g. longitude, time)
+        y : array, dtype=float, shape=[n, ]
+            the y-coordinate used in the plot (e.g. latitude, time)
+        variable : array, dtype=float, shape=[n, ]
+            the variable to grid and plot (e.g. temperature salinity)
+        zmin : int=-1000
+            lower depth limit for the depth axis
+        zmax : int=1
+            upper depth limit for the depth axis
+        vmin : float=None
+            lower color limit of variable. Defaults to 1st percentile
+        vmax : float=None
+            upper color limit of variable. Defaults to 99th percentile
+        cmap : cm.colormap=cm.Spectral_r
+            colorbar used in the plot
+        aspect_ratio : float=1.5
+            the ratio of the plot [1.5] (best to use trail and error)
 
-            """
-            Returns an interactive 3D plot in an HTML page.
+        Returns
+        -------
+        a plotly figure object that can be adjusted if needed
 
-            Parameters
-            ----------
-            dives : array, dtype=float, shape=[n, ]
-                timeseries of dive number (or can be pseudo discrete time)
-            depth : array, dtype=float, shape=[n, ]
-                head-to-tail concatenated depth readings
-            x : array, dtype=float, shape=[n, ]
-                the x-coordinate used in the plot (e.g. longitude, time)
-            y : array, dtype=float, shape=[n, ]
-                the y-coordinate used in the plot (e.g. latitude, time)
-            variable : array, dtype=float, shape=[n, ]
-                the variable to grid and plot (e.g. temperature salinity)
-            zmin : int=-1000
-                lower depth limit for the depth axis
-            zmax : int=1
-                upper depth limit for the depth axis
-            vmin : float=None
-                lower color limit of variable. Defaults to 1st percentile
-            vmax : float=None
-                upper color limit of variable. Defaults to 99th percentile
-            cmap : cm.colormap=cm.Spectral_r
-                colorbar used in the plot
-            aspect_ratio : float=1.5
-                the ratio of the plot [1.5] (best to use trail and error)
+        Example
+        -------
+        >>> fig = gt.plot.section3D(df.dives, df.ctd_depth, df.longitude,
+                                    df.latitude, df.temperature)
+        """
 
-            Returns
-            -------
-            a plotly figure object that can be adjusted if needed
+        try:
+            from plotly.offline import download_plotlyjs, plot  # noqa: F401
+        except ImportError:
+            raise ImportError("You need to install plotly for `section3D` to work")
+        import numpy as np
+        import plotly.graph_objs as go
+        from matplotlib import cm
+        from pandas import Series
 
-            Example
-            -------
-            >>> fig = gt.plot.section3D(df.dives, df.ctd_depth, df.longitude,
-                                        df.latitude, df.temperature)
-            """
+        from .mapping import grid_data
 
-            from plotly.offline import download_plotlyjs, plot
-            import plotly.graph_objs as go
-            from matplotlib import cm
-            from pandas import Series
-            import numpy as np
-            from .mapping import grid_data
+        def matplotlib_to_plotly(cmap, pl_entries=255):
+            if cmap is None:
+                cmap = cm.Spectral_r
+            h = 1.0 / (pl_entries - 1)
+            pl_colorscale = []
 
-            def matplotlib_to_plotly(cmap, pl_entries=255):
-                if cmap is None:
-                    cmap = cm.Spectral_r
-                h = 1.0 / (pl_entries - 1)
-                pl_colorscale = []
+            for k in range(pl_entries):
+                C = list(map(np.uint8, np.array(cmap(k * h)[:3]) * 255))
+                pl_colorscale.append([k * h, "rgb" + str((C[0], C[1], C[2]))])
 
-                for k in range(pl_entries):
-                    C = list(map(np.uint8, np.array(cmap(k * h)[:3]) * 255))
-                    pl_colorscale.append(
-                        [k * h, 'rgb' + str((C[0], C[1], C[2]))]
-                    )
+            return pl_colorscale
 
-                return pl_colorscale
+        d1 = depth.max()
+        ds = 5
+        d1 += ds
 
-            d1 = depth.max()
-            ds = 5
-            d1 += ds
+        if x.dtype.type == np.datetime64:
+            x = x.values.astype(float)  # nanoseconds
+        props = dict(bins=np.arange(0, d1, ds), return_xarray=False, verbose=False)
+        gx = grid_data(dives, depth, x, **props).values
+        gy = grid_data(dives, depth, y, **props).values
+        gz = grid_data(dives, depth, depth, **props).values
+        gf = grid_data(dives, depth, variable, **props)
 
-            if x.dtype.type == np.datetime64:
-                x = x.values.astype(float)  # nanoseconds
-            props = dict(
-                bins=np.arange(0, d1, ds), return_xarray=False, verbose=False
-            )
-            gx = grid_data(dives, depth, x, **props).values
-            gy = grid_data(dives, depth, y, **props).values
-            gz = grid_data(dives, depth, depth, **props).values
-            gf = grid_data(dives, depth, variable, **props)
+        # color range
+        lL = 0.01 if vmin is None else vmin
+        uL = 0.99 if vmax is None else vmax
+        c0, c1 = Series(variable).quantile([lL, uL]).values
 
-            # color range
-            lL = 0.01 if vmin is None else vmin
-            uL = 0.99 if vmax is None else vmax
-            c0, c1 = Series(variable).quantile([lL, uL]).values
+        data = [
+            go.Surface(
+                z=-gz,
+                y=gy,
+                x=gx,
+                name=variable.name.capitalize(),
+                cmin=c0,
+                cmax=c1,
+                colorscale=matplotlib_to_plotly(cmap),
+                colorbar=dict(title=variable.name.capitalize()),
+                surfacecolor=gf.values,
+                text=("c: " + gf.round(2).astype(str)).values,
+                hoverinfo="x+y+z+text+name",
+            ),
+        ]
 
-            data = [
-                go.Surface(
-                    z=-gz,
-                    y=gy,
-                    x=gx,
-                    name=variable.name.capitalize(),
-                    cmin=c0,
-                    cmax=c1,
-                    colorscale=matplotlib_to_plotly(cmap),
-                    colorbar=dict(title=variable.name.capitalize()),
-                    surfacecolor=gf.values,
-                    text=('c: ' + gf.round(2).astype(str)).values,
-                    hoverinfo='x+y+z+text+name',
-                ),
-            ]
+        layout = go.Layout(
+            autosize=True,
+            plot_bgcolor="white",
+            paper_bgcolor="white",
+            margin=dict(l=65, r=50, b=65, t=90),
+            scene=dict(
+                zaxis=dict(range=[zmin, zmax], title="Depth (m)"),
+                xaxis=dict(title=x.name.capitalize()),
+                yaxis=dict(title=y.name.capitalize()),
+                aspectmode="manual",
+                aspectratio=dict(y=1, x=aspect_ratio_x, z=0.5),
+            ),
+        )
 
-            layout = go.Layout(
-                autosize=True,
-                plot_bgcolor='white',
-                paper_bgcolor='white',
-                margin=dict(l=65, r=50, b=65, t=90),
-                scene=dict(
-                    zaxis=dict(range=[zmin, zmax], title='Depth (m)'),
-                    xaxis=dict(title=x.name.capitalize()),
-                    yaxis=dict(title=y.name.capitalize()),
-                    aspectmode='manual',
-                    aspectratio=dict(y=1, x=aspect_ratio_x, z=0.5),
-                ),
-            )
+        fig = go.Figure(data=data, layout=layout)
 
-            fig = go.Figure(data=data, layout=layout)
-
-            if return_plot:
-                plot(fig)
-            return fig
+        if return_plot:
+            plot(fig)
+        return fig
 
     @staticmethod
     def save_figures_to_pdf(fig_list, pdf_name, **savefig_kwargs):
@@ -527,7 +524,7 @@ class plot_functions(object):
         for fig in fig_list:  # will open an empty extra figure :(
             pdf.savefig(fig.number, dpi=120, **savefig_kwargs)
         pdf.close()
-        plt.close('all')
+        plt.close("all")
 
 
 class logo:
@@ -549,10 +546,10 @@ class logo:
 
     @staticmethod
     def profile_dummy_data(n_zigzags=3):
-        import seaborn as sns
         import pandas as pd
+        import seaborn as sns
 
-        sns.set_palette('Spectral', int(n_zigzags * 2))
+        sns.set_palette("Spectral", int(n_zigzags * 2))
 
         zigzags = np.r_[
             np.linspace(-1, -0.03, 100), np.linspace(-0.03, -1, 100)
@@ -600,17 +597,17 @@ class logo:
 
         ax.set_xticks([])
         ax.set_yticks([])
-        ax.axis('off')
+        ax.axis("off")
 
         fig.text(
             0.45,
             0.46,
-            'GLIDER\nTOOLS',
+            "GLIDER\nTOOLS",
             weight=900,
             size=50,
-            color='#606060',
-            ha='left',
-            va='center',
+            color="#606060",
+            ha="left",
+            va="center",
         )
 
         return fig, ax
@@ -623,7 +620,7 @@ class logo:
         interval = int(x.size / (n_zigzags * 2))
         if ax is None:
             fig = plt.figure(figsize=[2.5, 2.5])
-            ax = fig.add_axes([0, 0.2, 1, 0.6], facecolor='#3a3a3a')
+            ax = fig.add_axes([0, 0.2, 1, 0.6], facecolor="#3a3a3a")
 
         for i in range(0, x.size, interval):
             j = i + interval
@@ -639,14 +636,14 @@ class logo:
 
         ax.set_xticks([])
         ax.set_yticks([])
-        ax.axis('off')
+        ax.axis("off")
 
-        c = '#3a3a3a'
+        c = "#3a3a3a"
         ax.set_fc(c)
 
         return fig, ax
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass
-    'fun people'
+    "fun people"

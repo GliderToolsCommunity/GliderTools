@@ -42,5 +42,4 @@ For recommendations or bug reports, please visit https://github.com/GliderToolsC
    package_structure
    authors
    contributing
-   history
    wishlist

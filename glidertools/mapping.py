@@ -151,9 +151,7 @@ class QuadTree:
         args = np.array(args, ndmin=1)
 
         if any(args > 3):
-            raise UserWarning(
-                'A quadtree only has 4 indicies (start locationing at 0)'
-            )
+            raise UserWarning("A quadtree only has 4 indicies (start locationing at 0)")
 
         quadtree = self
         passed = []
@@ -171,38 +169,32 @@ class QuadTree:
         return self.__getitem__(args, fail=fail)
 
     def __repr__(self):
-        return '<{} : {}>'.format(
-            str(self.__class__)[1:-1], str(self.location)
-        )
+        return "<{} : {}>".format(str(self.__class__)[1:-1], str(self.location))
 
     def __str__(self):
 
         location = str(self.location)[1:-1]
-        location = (
-            location
-            if location != ''
-            else '[] - base QuadTree has no location'
-        )
+        location = location if location != "" else "[] - base QuadTree has no location"
 
         # boundaries and spacing to make it pretty
         left, top = self.mins
         right, bot = self.maxs
-        wspace = ' ' * int(np.log1p(left) + 2)
+        wspace = " " * int(np.log1p(left) + 2)
 
         # text output (what youll see when you print the object)
-        about_tree = '\n'.join(
+        about_tree = "\n".join(
             [
-                '',
-                'QuadTree object',
-                '===============',
-                '  location:         {}'.format(location),
-                '  depth:            {}'.format(len(self.location)),
-                '  n_points:         {}'.format(self.n_points),
-                '  boundaries:',
-                '      {}{:.2f}'.format(wspace, top),
-                '    {:.2f}      {:.2f}'.format(left, right),
-                '      {}{:.2f}'.format(wspace, bot),
-                '  children_points:  {}'.format(
+                "",
+                "QuadTree object",
+                "===============",
+                "  location:         {}".format(location),
+                "  depth:            {}".format(len(self.location)),
+                "  n_points:         {}".format(self.n_points),
+                "  boundaries:",
+                "      {}{:.2f}".format(wspace, top),
+                "    {:.2f}      {:.2f}".format(left, right),
+                "      {}{:.2f}".format(wspace, bot),
+                "  children_points:  {}".format(
                     str([c.n_points for c in self.children])
                 ),
             ]
@@ -249,13 +241,7 @@ class QuadTree:
 
         if depth is None or depth == 0:
             rect = plt.Rectangle(
-                self.mins,
-                *self.sizes,
-                zorder=2,
-                alpha=1,
-                lw=1,
-                ec='#cccccc',
-                fc='none'
+                self.mins, *self.sizes, zorder=2, alpha=1, lw=1, ec="#cccccc", fc="none"
             )
             ax.add_patch(rect)
         if depth is None or depth > 0:
@@ -364,11 +350,11 @@ class QuadTree:
             self.root.draw_tree(ax=ax, depth=depth)
 
         x, y = self.root.data.T
-        ax.plot(x, y, c='blue')
+        ax.plot(x, y, c="blue")
 
         for qa in self.neighbours:
-            qa.draw_rectangle(ax, alpha=0.3, lw=0, fc='orange')
-            ax.plot(qa.data[:, 0], qa.data[:, 1], 'o', ms=1, c='orange')
+            qa.draw_rectangle(ax, alpha=0.3, lw=0, fc="orange")
+            ax.plot(qa.data[:, 0], qa.data[:, 1], "o", ms=1, c="orange")
 
         ax.set_ylim(ax.get_ylim()[::-1])
 
@@ -400,17 +386,17 @@ class QuadTree:
             _, ax = plt.subplots(figsize=[7, 4])
             m = uniq[count == duplicate] == y
 
-            ax.plot(x, y, '-b', lw=2)
-            ax.plot(x[m], y[m], '-b', lw=6)
+            ax.plot(x, y, "-b", lw=2)
+            ax.plot(x[m], y[m], "-b", lw=6)
 
-            ax.set_xlabel('Point index')
-            ax.set_ylabel('Variable')
+            ax.set_xlabel("Point index")
+            ax.set_ylabel("Variable")
             plt.show()
 
             raise RecursionError(
-                'Your data has duplicate coordinates '
-                '(as shown by thick line in plot). You '
-                'need to remove these points'
+                "Your data has duplicate coordinates "
+                "(as shown by thick line in plot). You "
+                "need to remove these points"
             )
 
 
@@ -500,16 +486,14 @@ def interp_leaf(
     return nw, zi, ei, ii
 
 
-def _kriging_wrapper(
-    x, y, z, xi, yi, x_length, y_length, partial_sill, nugget, range
-):
+def _kriging_wrapper(x, y, z, xi, yi, x_length, y_length, partial_sill, nugget, range):
     """
     I borrowed heavily from PyKrige
     """
     import numpy as np
 
     def _gaussian(partial_sill, range, nugget, d):
-        expr = 'partial_sill * (1 - exp(-(d*d) / (range * 4 / 7)**2)) + nugget'
+        expr = "partial_sill * (1 - exp(-(d*d) / (range * 4 / 7)**2)) + nugget"
         return evaluate(expr)
 
     def _get_interp_distances(x, y, xp, yp):
@@ -528,7 +512,7 @@ def _kriging_wrapper(
 
         n = x.size
         xy = np.c_[x, y]
-        d = cdist(xy, xy, 'euclidean')
+        d = cdist(xy, xy, "euclidean")
 
         a = np.zeros((n + 1, n + 1))
         a[:n, :n] = -variogram_func(d)
@@ -572,7 +556,7 @@ def _kriging_wrapper(
         return zvalues, sigmasq
 
     no_nans = ~np.any([np.isnan(a) for a in [x, y, z]])
-    assert no_nans, 'your input data has nans - remove them first'
+    assert no_nans, "your input data has nans - remove them first"
 
     x /= x_length
     y /= y_length
@@ -589,7 +573,7 @@ def _kriging_wrapper(
     return zi, ei
 
 
-def interp_obj(
+def interp_obj(  # noqa: C901
     x,
     y,
     z,
@@ -708,19 +692,20 @@ def interp_obj(
 
         return model
 
-    from time import perf_counter as timer
-    import xarray as xr
     import multiprocessing as mp
     from functools import partial
+    from time import perf_counter as timer
+
+    import xarray as xr
     from sklearn import linear_model
 
     if (n_cpus is None) | (n_cpus == 0):
         n_cpus = mp.cpu_count() - 1
 
     if verbose:
-        print('Starting Interpolation with quadtree optimal interpolation')
-        print('----------------------------------------------------------')
-        print('\nPreparing for interpolations:')
+        print("Starting Interpolation with quadtree optimal interpolation")
+        print("----------------------------------------------------------")
+        print("\nPreparing for interpolations:")
 
     zvar = z.copy()
     yvar = y.copy()
@@ -728,10 +713,10 @@ def interp_obj(
 
     is_time_x = np.issubdtype(x.dtype, np.datetime64)
     is_time_xi = np.issubdtype(xi.dtype, np.datetime64)
-    ymessage = 'y-coordinates are not the same type (x={}, xi={})'.format(
+    ymessage = "y-coordinates are not the same type (x={}, xi={})".format(
         y.dtype, yi.dtype
     )
-    xmessage = 'x-coordinates are not the same type (x={}, xi={})'.format(
+    xmessage = "x-coordinates are not the same type (x={}, xi={})".format(
         x.dtype, xi.dtype
     )
     assert y.dtype == yi.dtype, ymessage
@@ -739,53 +724,53 @@ def interp_obj(
 
     if is_time_x:  # convert data to hours
         if verbose:
-            print('\tTime conversion')
-        x = np.array(x).astype('datetime64[s]').astype(float) / 3600
-        xi = np.array(xi).astype('datetime64[s]').astype(float) / 3600
-        units_x = 'hrs'
+            print("\tTime conversion")
+        x = np.array(x).astype("datetime64[s]").astype(float) / 3600
+        xi = np.array(xi).astype("datetime64[s]").astype(float) / 3600
+        units_x = "hrs"
     else:
-        units_x = ''
+        units_x = ""
 
     if verbose:
-        print('\tFinding and removing nans')
+        print("\tFinding and removing nans")
     nans = np.isnan(z) | np.isnan(x) | np.isnan(y)
     x, y, z = [np.array(a)[~nans] for a in [x, y, z]]
 
     # detrend data using linear regression
     if detrend:
         if verbose:
-            print('\tRemoving data trend with linear regression')
+            print("\tRemoving data trend with linear regression")
         model = get_detrend_model(x, y, z)
         z_hat = model.predict(np.c_[x, y])
         z -= z_hat
     else:
         if verbose:
-            print('\tRemoving data mean')
+            print("\tRemoving data mean")
         z_avg = np.nanmean(z)
         z -= z_avg
 
     if verbose:
-        print('\tBuilding QuadTree')
+        print("\tBuilding QuadTree")
     quad_tree = QuadTree(np.c_[x, y], max_points_per_quad=max_points_per_quad)
     xx, yy = np.array(np.meshgrid(xi, yi)).reshape(2, -1)
     leaves = quad_tree.leaves
     n = len(leaves)
 
-    interp_info = '\n'.join(
+    interp_info = "\n".join(
         [
-            '\nInterpolation information:',
-            '\tbasis points:        {}'.format(x.size),
-            '\tinterp grid:         {}, {}'.format(xi.size, yi.size),
-            '\tmax_points_per_quad: {}'.format(max_points_per_quad),
-            '\tmin_points_per_quad: {}'.format(min_points_per_quad),
-            '\tnumber of quads:     {}'.format(n),
-            '\tdetrend_method:      {}'.format(
-                'linear_regression' if detrend else 'mean'
+            "\nInterpolation information:",
+            "\tbasis points:        {}".format(x.size),
+            "\tinterp grid:         {}, {}".format(xi.size, yi.size),
+            "\tmax_points_per_quad: {}".format(max_points_per_quad),
+            "\tmin_points_per_quad: {}".format(min_points_per_quad),
+            "\tnumber of quads:     {}".format(n),
+            "\tdetrend_method:      {}".format(
+                "linear_regression" if detrend else "mean"
             ),
-            '\tpartial_sill:        {}'.format(partial_sill),
-            '\tnugget:              {}'.format(nugget),
-            '\tlengthscales:        X = {} {}'.format(lenscale_x, units_x),
-            '\t                     Y = {} m'.format(lenscale_y),
+            "\tpartial_sill:        {}".format(partial_sill),
+            "\tnugget:              {}".format(nugget),
+            "\tlengthscales:        X = {} {}".format(lenscale_x, units_x),
+            "\t                     Y = {} m".format(lenscale_y),
         ]
     )
 
@@ -819,7 +804,7 @@ def interp_obj(
     n_chunks = chunk_idx.size
     if verbose:
         print(
-            '\nProcessing interpolation in {} parts over {} CPUs:'.format(
+            "\nProcessing interpolation in {} parts over {} CPUs:".format(
                 n_chunks, n_cpus
             )
         )
@@ -836,60 +821,56 @@ def interp_obj(
         # create info for the user
         t1 = timer()
         if verbose:
-            print(
-                '\tchunk {}/{} completed in {:.0f}s'.format(
-                    c + 1, n_chunks, t1 - t0
-                )
-            )
+            print("\tchunk {}/{} completed in {:.0f}s".format(c + 1, n_chunks, t1 - t0))
         t0 = timer()
 
     # completing the interpolation
     if verbose:
-        print('\nFinishing off interoplation')
+        print("\nFinishing off interoplation")
     if detrend:
         if verbose:
-            print('\tAdding back the trend')
+            print("\tAdding back the trend")
         zi = (variable / weights) + model.predict(np.c_[xx, yy])
     else:
         if verbose:
-            print('\tAdding back the average')
+            print("\tAdding back the average")
         zi = (variable / weights) + z_avg
     errors = errors / weights
     if verbose & is_time_x:
-        print('\tTime conversion')
-    xi = (xi * 3600).astype('datetime64[s]') if is_time_x else xi
+        print("\tTime conversion")
+    xi = (xi * 3600).astype("datetime64[s]") if is_time_x else xi
 
     if verbose:
-        print('\tCreating xarray dataset for output')
+        print("\tCreating xarray dataset for output")
     xds = xr.Dataset(
         attrs={
-            'description': (
-                'interpolation output from the GliderTools.interp_obj'
-                'function. Print out mapping_info for more details'
+            "description": (
+                "interpolation output from the GliderTools.interp_obj"
+                "function. Print out mapping_info for more details"
             ),
-            'mapping_info': interp_info,
+            "mapping_info": interp_info,
         }
     )
 
-    props = dict(dims=['y', 'x'], coords={'y': yi, 'x': xi})
-    xds['z'] = xr.DataArray(zi.reshape(yi.size, xi.size), **props)
-    xds['weights'] = xr.DataArray(weights.reshape(yi.size, xi.size), **props)
-    xds['variance'] = xr.DataArray(errors.reshape(yi.size, xi.size), **props)
-    xds.attrs['nugget'] = nugget
-    xds.attrs['partial_sill'] = partial_sill
+    props = dict(dims=["y", "x"], coords={"y": yi, "x": xi})
+    xds["z"] = xr.DataArray(zi.reshape(yi.size, xi.size), **props)
+    xds["weights"] = xr.DataArray(weights.reshape(yi.size, xi.size), **props)
+    xds["variance"] = xr.DataArray(errors.reshape(yi.size, xi.size), **props)
+    xds.attrs["nugget"] = nugget
+    xds.attrs["partial_sill"] = partial_sill
 
-    dummy = transfer_nc_attrs(getframe(), zvar, zvar, '_interp')
+    dummy = transfer_nc_attrs(getframe(), zvar, zvar, "_interp")
     if isinstance(zvar, xr.DataArray):
-        xds['z'].attrs = dummy.attrs
+        xds["z"].attrs = dummy.attrs
         # xds = xds.rename({'z': dummy.name})
 
     if isinstance(yvar, xr.DataArray):
-        xds['y'].attrs = yvar.attrs
-        xds = xds.rename({'y': yvar.name})
+        xds["y"].attrs = yvar.attrs
+        xds = xds.rename({"y": yvar.name})
 
     if isinstance(xvar, xr.DataArray):
-        xds['x'].attrs = xvar.attrs
-        xds = xds.rename({'x': xvar.name})
+        xds["x"].attrs = xvar.attrs
+        xds = xds.rename({"x": xvar.name})
 
     return xds
 
@@ -899,7 +880,7 @@ def grid_data(
     y,
     var,
     bins=None,
-    how='mean',
+    how="mean",
     interp_lim=6,
     verbose=True,
     return_xarray=True,
@@ -939,9 +920,9 @@ def grid_data(
     Userwarning
         Triggers when ``x`` does not have discrete values.
     """
-    from pandas import cut, Series
+    from numpy import array, c_, diff, unique
+    from pandas import Series, cut
     from xarray import DataArray
-    from numpy import array, c_, unique, diff
 
     xvar, yvar = x.copy(), y.copy()
     z = Series(var)
@@ -952,33 +933,35 @@ def grid_data(
     s = x.size
     if (u / s) > 0.2:
         raise UserWarning(
-            'The x input array must be psuedo discrete (dives or dive_time). '
-            '{:.0f}% of x is unique (max 20% unique)'.format(u / s * 100)
+            "The x input array must be psuedo discrete (dives or dive_time). "
+            "{:.0f}% of x is unique (max 20% unique)".format(u / s * 100)
         )
 
-    chunk_depth = 50
+    chunk_depth = 50 
+    # -DB this might not work if the user uses anything other than depth, example density. Chunk_depth would in that case apply to density, which will probably have a range that is much smaller than 50. 
     optimal_bins, avg_sample_freq = get_optimal_bins(y, chunk_depth)
     if bins is None:
         bins = optimal_bins
 
     # warning if bin average is smaller than average bin size
+    # -DB this is not being raised as a warning. Instead just seems like useful information conveyed to user. Further none of this works out if y is not depth, since avg_sample freq will not make sense otherwise.  
     if verbose:
         avg_bin_size = diff(bins).mean()
         print(
             (
-                'Mean bin size = {:.2f}\n'
-                'Mean depth binned ({} m) vertical sampling frequency = {:.2f}'
+                "Mean bin size = {:.2f}\n"
+                "Mean depth binned ({} m) vertical sampling frequency = {:.2f}"
             ).format(avg_bin_size, chunk_depth, avg_sample_freq)
         )
 
-    labels = c_[bins[:-1], bins[1:]].mean(axis=1)
-    bins = cut(y, bins, labels=labels)
+    labels = c_[bins[:-1], bins[1:]].mean(axis=1) # -DB creates the mean bin values 
+    bins = cut(y, bins, labels=labels) # -DB creates a new variable where instead of variable the bin category is mentioned (sort of like a discretization)
 
-    grp = Series(z).groupby([x, bins])
-    grp_agg = getattr(grp, how)()
-    gridded = grp_agg.unstack(level=0)
+    grp = Series(z).groupby([x, bins]) # -DB put z into the many bins (like 2D hist)
+    grp_agg = getattr(grp, how)() # -DB basically does grp.how() or in this case grp.mean()
+    gridded = grp_agg.unstack(level=0) 
     gridded = gridded.reindex(labels.astype(float))
-
+    
     if interp_lim > 0:
         gridded = gridded.interpolate(limit=interp_lim).bfill(limit=interp_lim)
 
@@ -986,9 +969,9 @@ def grid_data(
         return gridded
 
     if return_xarray:
-        dummy = transfer_nc_attrs(getframe(), var, var, '_vert_binned')
+        dummy = transfer_nc_attrs(getframe(), var, var, "_vert_binned")
 
-        xda = gridded.stack().to_xarray()
+        xda = DataArray(gridded)
         if isinstance(var, DataArray):
             xda.attrs = dummy.attrs
             xda.name = dummy.name
@@ -1032,17 +1015,7 @@ def get_optimal_bins(depth, chunk_depth=50, round_up=True):
 
     """
 
-    from numpy import (
-        abs,
-        arange,
-        array,
-        diff,
-        ceil,
-        floor,
-        isnan,
-        nanmax,
-        nanmedian,
-    )
+    from numpy import abs, arange, array, ceil, diff, floor, isnan, nanmax, nanmedian
 
     y = array(depth)
     bins = []
@@ -1095,10 +1068,10 @@ def grid_flat_dataarray(xda, bins=None):
     for key in xda.coords:
         coord = xda[key]
         attrs = coord.attrs
-        if ('Z' in attrs.get('axis', '').upper()) | ('depth' in coord.name):
+        if ("Z" in attrs.get("axis", "").upper()) | ("depth" in coord.name):
             depth = coord
             has_requirements += 1
-        if 'dives' in coord.name:
+        if "dives" in coord.name:
             dives = coord
             has_requirements += 1
     if has_requirements == 2:
@@ -1106,13 +1079,11 @@ def grid_flat_dataarray(xda, bins=None):
         y = depth
         z = xda
 
-        gridded = grid_data(
-            x, y, z, bins=bins, return_xarray=True, verbose=False
-        )
+        gridded = grid_data(x, y, z, bins=bins, return_xarray=True, verbose=False)
         return gridded
     else:
         raise GliderToolsError(
-            'The array coordinates do not contain axis info for gridding'
+            "The array coordinates do not contain axis info for gridding"
         )
 
 
@@ -1212,41 +1183,41 @@ try:
 
             has_dots = np.any(
                 [
-                    getattr(child, 'get_marker', lambda: None)()
+                    getattr(child, "get_marker", lambda: None)()
                     for child in ax.get_children()
                 ]
             )
 
             if not has_dots:
-                ax.plot(x, y, '.k', label='Semivariance')
+                ax.plot(x, y, ".k", label="Semivariance")
 
-            ax.plot(x, yhat, '-', lw=4, label='Gaussian model')[0]
+            ax.plot(x, yhat, "-", lw=4, label="Gaussian model")[0]
             ax.hlines(
                 sill,
                 0,
                 params[1],
-                color='orange',
-                linestyle='--',
+                color="orange",
+                linestyle="--",
                 linewidth=2.5,
-                label='Sill ({:.2g})'.format(sill),
+                label="Sill ({:.2g})".format(sill),
             )
             ax.hlines(
                 nugget,
                 0,
                 params[1],
-                color='red',
-                linestyle='--',
+                color="red",
+                linestyle="--",
                 linewidth=2.5,
-                label='Nugget ({:.2g})'.format(nugget),
+                label="Nugget ({:.2g})".format(nugget),
             )
             ax.vlines(
                 range,
                 0,
                 sill,
-                color='#CCCCCC',
-                linestyle='-',
+                color="#CCCCCC",
+                linestyle="-",
                 zorder=0,
-                label='Range (1.0)',
+                label="Range (1.0)",
             )
 
             ax.set_ylim([0, ax.get_ylim()[1]])
@@ -1277,7 +1248,7 @@ try:
         z = variable[subs]
         y = vert[subs]
         if np.issubdtype(horz.dtype, np.datetime64):
-            x = horz[subs].astype('datetime64[s]').astype(float) / 3600
+            x = horz[subs].astype("datetime64[s]").astype(float) / 3600
         else:
             x = horz[subs].astype(float)
 
@@ -1285,7 +1256,7 @@ try:
         xlen = 1 / xy_ratio
         ylen = 1
         # and finding inital estiamte of range
-        props = dict(weight=True, nlags=40, variogram_model='gaussian')
+        props = dict(weight=True, nlags=40, variogram_model="gaussian")
         gauss = pk.OrdinaryKriging(x / xlen, y / ylen, z, **props)
 
         # scale initial scaling by range
@@ -1302,11 +1273,9 @@ try:
             n_dives = np.unique(dives[subs]).size
             t_dives = np.unique(dives).size
             plot_variogram(gauss, ax, n_dives)
-            ax.set_xlabel(
-                'Scaled lag (x = {:.0f}; y = {:.0f})'.format(xlen, ylen)
-            )
+            ax.set_xlabel("Scaled lag (x = {:.0f}; y = {:.0f})".format(xlen, ylen))
             ax.set_ylabel(
-                'Semivariance\n(using {} of {} dives)'.format(n_dives, t_dives)
+                "Semivariance\n(using {} of {} dives)".format(n_dives, t_dives)
             )
         else:
             ax = None
@@ -1329,8 +1298,8 @@ except ImportError:
     import warnings
 
     message = (
-        'PyKrige is not installed. To enable the variogram function please '
-        'run `pip install pykrige`. Variograms are required for sensible '
-        '2D interpolation.'
+        "PyKrige is not installed. To enable the variogram function please "
+        "run `pip install pykrige`. Variograms are required for sensible "
+        "2D interpolation."
     )
     warnings.warn(message, category=GliderToolsWarning)

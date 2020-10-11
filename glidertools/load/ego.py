@@ -22,15 +22,15 @@ def load_mission_nc(filename):
 
     xds = xr.open_dataset(filename)
 
-    if 'PHASE' in xds:
+    if "PHASE" in xds:
         phase = xds.PHASE.load()
         null_frac = phase.isnull().sum() / phase.size
 
-    if (null_frac > 0.2) | ('PHASE' not in xds):
+    if (null_frac > 0.2) | ("PHASE" not in xds):
         time = xds.TIME.load()
         press = xds.PRES.load()
         phase = calc_dive_phase(time, press)
 
-    xds['DIVES'] = dive_phase_to_number(phase)
+    xds["DIVES"] = dive_phase_to_number(phase)
 
     return xds

@@ -103,7 +103,7 @@ def par_dark_count(par, dives, depth, time):
     par_dark: numpy.ndarray or pandas.Series
         The par data corrected for the in situ dark value in units uE/m2/sec.
     """
-    from numpy import array, ma, nanmedian, isnan, nanpercentile
+    from numpy import array, isnan, ma, nanmedian, nanpercentile
 
     par_arr = array(par)
     dives = array(dives)
@@ -147,7 +147,7 @@ def backscatter_dark_count(bbp, depth):
     bbp: numpy.ndarray or pandas.Series
         The total backscatter data corrected for the in situ dark value.
     """
-    from numpy import nanpercentile, isnan, array
+    from numpy import array, isnan, nanpercentile
 
     bbp_dark = array(bbp)
     mask = (depth > 200) & (depth < 400)
@@ -189,7 +189,7 @@ def fluorescence_dark_count(flr, depth):
         The fluorescence data corrected for the in situ dark value.
 
     """
-    from numpy import nanpercentile, isnan, array
+    from numpy import array, isnan, nanpercentile
 
     mask = (depth > 300) & (depth < 400)
     flr_dark = array(flr)
@@ -268,8 +268,8 @@ def par_fill_surface(par, dives, depth, max_curve_depth=100):
         The par data with the algebraically calculated top 5 metres.
 
     """
-    from scipy.optimize import curve_fit
     import numpy as np
+    from scipy.optimize import curve_fit
 
     def dive_par_fit(depth, par):
         def exp_func(x, a, b):
@@ -439,12 +439,9 @@ def sunset_sunrise(time, lat, lon):
             ast.Observer(latitude=grp_avg.lat[i], longitude=grp_avg.lon[i])
         )
 
-    sunrise = []
+    sunrise, sunset = [], []
     for i in range(len(sunrise_observer)):
         sunrise.append(sun(sunrise_observer[i], date[i])["sunrise"])
-
-    sunset = []
-    for i in range(len(sunrise_observer)):
         sunset.append(sun(sunrise_observer[i], date[i])["sunset"])
 
     grp_avg["sunrise"] = sunrise
@@ -528,6 +525,7 @@ def quenching_correction(
     import numpy as np
     import pandas as pd
     from scipy.interpolate import Rbf
+
     from .cleaning import rolling_window
 
     def grad_min(depth, fluor_diff, surface_layer=5):
@@ -718,8 +716,9 @@ def quenching_report(
         and the quenching layer calculated from the optics.quenching_correction
         function.
     """
-    from matplotlib.pyplot import subplots, cm
+    from matplotlib.pyplot import cm, subplots
     from numpy import array, nanpercentile
+
     from . import plot
 
     y = array(depth)
