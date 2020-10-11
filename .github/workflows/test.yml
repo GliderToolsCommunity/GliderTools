@@ -30,6 +30,6 @@ jobs:
           pipenv install --deploy --dev
 
       - run: pipenv run isort --recursive --diff .
-      - run: pipenv run flake8 --max-line-length=88
+      # - run: pipenv run flake8 --max-line-length=88
       - run: pipenv run pytest --cov --cov-fail-under=20
 
