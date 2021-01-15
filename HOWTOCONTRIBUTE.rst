@@ -9,11 +9,8 @@ reporting `issues <https://github.com/GliderToolsCommunity/GliderTools/issues>`_
 The following sections cover some general guidelines
 regarding development in ``glidertools`` for maintainers and contributors.
 
-Please also review our `Code of Conduct <code_of_conduct.html>`__.
-
 Nothing here is set in stone and can't be changed.
 Feel free to suggest improvements or changes in the workflow.
-
 
 
 .. contents:: Contribution links
@@ -42,15 +39,7 @@ Report bugs
 Report bugs for ``glidertools`` in the `issue tracker <https://github.com/GliderToolsCommunity/GliderTools/issues>`_
 with the label "bug".
 
-If you are reporting a bug, please include:
-
-* Your operating system name and version.
-* Any details about your local setup that might be helpful in troubleshooting,
-  specifically the Python interpreter version, installed libraries, and ``glidertools``
-  version.
-* Detailed steps to reproduce the bug.
-
-If you can write a demonstration test that currently fails but should passm
+If you can write a demonstration test that currently fails but should pass
 that is a very useful commit to make as well, even if you cannot fix the bug itself.
 
 
@@ -68,11 +57,10 @@ Talk to developers to find out how you can fix specific bugs.
 Preparing Pull Requests
 -----------------------
 
-
 #. Fork the
    `glidertools GitHub repository <https://github.com/GliderToolsCommunity/GliderTools>`__.  It's
    fine to use ``glidertools`` as your fork repository name because it will live
-   under your user.
+   under your username.
 
 #. Clone your fork locally using `git <https://git-scm.com/>`_, connect your repository
    to the upstream (main project), and create a branch::
@@ -88,14 +76,12 @@ Preparing Pull Requests
    If you need some help with Git, follow this quick start
    guide: https://git.wiki.kernel.org/index.php/QuickStart
 
-#. Install dependencies into a new conda environment::
+#. Install dependencies into a ``pipenv`` environment::
 
-    $ conda env update -f ci/environment-dev-3.6.yml
-    $ conda activate glidertools-dev
-
-#. Make an editable install of glidertools by running::
-
-    $ pip install -e .
+    $ pip install pipenv
+    $ pipenv install --dev
+    $ pipenv run pre-commit install -t pre-commit
+    $ pipenv run pre-commit install -t pre-push
 
 #. Install `pre-commit <https://pre-commit.com>`_ and its hook on the ``glidertools`` repo::
 
@@ -107,10 +93,6 @@ Preparing Pull Requests
    https://pre-commit.com/ is a framework for managing and maintaining multi-language pre-commit
    hooks to ensure code-style and code formatting is consistent.
 
-    Now you have an environment called ``glidertools-dev`` that you can work in.
-    You’ll need to make sure to activate that environment next time you want
-    to use it after closing the terminal or your system.
-
     You can now edit your local working copy and run/add tests as necessary. Please follow
     PEP-8 for naming. When committing, ``pre-commit`` will modify the files as needed, or
     will generally be quite clear about what you need to do to pass the commit test.
@@ -120,37 +102,18 @@ Preparing Pull Requests
     $ git commit -a -m "<commit message>"
     $ git push -u
 
-#. Run all the tests
+    Committing will run the pre-commit hooks (isort, black and flake8).
+    Pushing will run the pre-push hooks (pytest and coverage)
 
-   Now running tests is as simple as issuing this command::
-
-    $ pytest glidertools
-
-   Check that your contribution is covered by tests and therefore increases the overall test coverage::
-
-    $ coverage run --source glidertools -m py.test
-    $ coverage report
-    $ coveralls
-
-  Please stick to `xarray <http://xarray.pydata.org/en/stable/contributing.html>`_'s testing recommendations.
+    We highly recommend using test driven development, but our coverage requirement is
+    low at the moment due to lack of tests. If you are able to write tests, please
+    stick to `xarray <http://xarray.pydata.org/en/stable/contributing.html>`_'s
+    testing recommendations.
 
 
-#. Create a new changelog entry in ``CHANGELOG.rst``:
-
-   - The entry should be entered as:
-
-    <description> (``:pr:`#<pull request number>```) ```<author's names>`_``
-
-    where ``<description>`` is the description of the PR related to the change and
-    ``<pull request number>`` is the pull request number and ``<author's names>`` are your first
-    and last names.
-
-   - Add yourself to list of authors at the end of ``CHANGELOG.rst`` file if not there yet, in
-     alphabetical order.
-
- #. Add yourself to the
-    `contributors <https://glidertools.readthedocs.io/en/latest/contributors.html>`_
-    list via ``docs/source/contributors.rst``.
+#. Add yourself to the
+    `Project Contributors <https://glidertools.readthedocs.io/en/latest/authors.html>`_
+    list via ``./docs/authors.md``.
 
 #. Finally, submit a pull request through the GitHub website using this data::
 
@@ -160,6 +123,5 @@ Preparing Pull Requests
     base-fork: GliderToolsCommunity/GliderTools
     base: master
 
-Note that you can create the Pull Request while you're working on this. The PR will update
-as you add more commits. ``glidertools`` developers and contributors can then review your code
-and offer suggestions.
+    The merged pull request will undergo the same testing that your local branch
+    had to pass when pushing.
