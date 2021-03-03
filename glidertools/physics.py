@@ -10,15 +10,17 @@ from .helpers import GliderToolsWarning, transfer_nc_attrs
 
 try:
     _gsw_avail = True
-    from gsw import alpha as alpha_thermal, beta as beta_saline
+    from gsw import alpha as alpha_thermal
+    from gsw import beta as beta_saline
 except ImportError:
     _gsw_avail = False
-    from seawater import alpha as alpha_thermal, beta as beta_saline  # noqa
+    from seawater import alpha as alpha_thermal  # noqa: F401
+    from seawater import beta as beta_saline  # noqa: F401
 
     message = (
         "'gsw' could not be imported (Python 2.x is not compatible "
         "with 'gsw'). Reverting to 'seawater'. You will not be able to "
-        'calculate brunt_vaisala and potential_density will not use TEOS-10.'
+        "calculate brunt_vaisala and potential_density will not use TEOS-10."
     )
     warnings.warn(message, category=GliderToolsWarning)
 
@@ -75,10 +77,10 @@ def mixed_layer_depth(
             return mld
 
     arr = np.c_[dens_or_temp, depth, dives]
-    col = ['dens', 'depth', 'dives']
+    col = ["dens", "depth", "dives"]
     df = DataFrame(data=arr, columns=col)
 
-    grp = df.groupby('dives')
+    grp = df.groupby("dives")
     mld = grp.apply(
         lambda g: mld_profile(
             g.dens.values,
@@ -134,8 +136,7 @@ def potential_density(salt_PSU, temp_C, pres_db, lat, lon, pres_ref=0):
         import gsw
 
         salt_abs = gsw.SA_from_SP(salt_PSU, pres_db, lon, lat)
-        temp_pot = gsw.t_from_CT(salt_abs, temp_C, pres_db)
-        pot_dens = gsw.pot_rho_t_exact(salt_abs, temp_pot, pres_db, pres_ref)
+        pot_dens = gsw.pot_rho_t_exact(salt_abs, temp_C, pres_db, pres_ref)
     except ImportError:
         import seawater as sw
 
@@ -145,10 +146,10 @@ def potential_density(salt_PSU, temp_C, pres_db, lat, lon, pres_ref=0):
         getframe(),
         temp_C,
         pot_dens,
-        'potential_density',
-        units='kg/m3',
-        comment='',
-        standard_name='potential_density',
+        "potential_density",
+        units="kg/m3",
+        comment="",
+        standard_name="potential_density",
     )
     return pot_dens
 
@@ -200,10 +201,58 @@ if _gsw_avail:
             getframe(),
             temp,
             n2,
-            'N_squared',
-            units='1/s2',
-            comment='',
-            standard_name='brunt_vaisala_freq',
+            "N_squared",
+            units="1/s2",
+            comment="",
+            standard_name="brunt_vaisala_freq",
         )
 
         return n2
+
+    
+    # compute spice 
+    def spice0(salt_PSU, temp_C, pres_db, lat, lon):
+        """
+        Calculate spiciness from glider measurements of salinity and temperature.
+
+        Parameters
+        ----------
+        salt_PSU : array, dtype=float, shape=[n, ]
+            practical salinty
+        temp_C : array, dtype=float, shape=[n, ]
+        temperature in deg C
+        pres_db : array, dtype=float, shape=[n, ]
+            pressure in decibar
+        lat : array, dtype=float, shape=[n, ]
+            latitude in degrees north
+        lon : array, dtype=float, shape=[n, ]
+            longitude in degrees east
+
+        Returns
+        -------
+        potential_density : array, dtype=float, shape=[n, ]
+
+
+        Note
+        ----
+        Using seawater.dens does not yield the same results as this function. We
+        get very close results to what the SeaGlider Basestation returns with this
+        function. The difference of this function with the basestation is on
+        average ~ 0.003 kg/m3
+        """
+        import gsw
+        salt_abs = gsw.SA_from_SP(salt_PSU, pres_db, lon, lat)
+        cons_temp = gsw.CT_from_t(salt_abs, temp_C, pres_db)
+
+        spice0 = gsw.spiciness0(salt_abs, cons_temp)
+
+        spice0 = transfer_nc_attrs(
+            getframe(),
+            temp_C,
+            spice0,
+            'spiciness0',
+            units=' ',
+            comment='',
+            standard_name='spiciness0',
+        )
+        return spice0

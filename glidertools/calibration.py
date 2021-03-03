@@ -56,9 +56,9 @@ def bottle_matchup(
     # metadata preservation
     var = gld_depth.copy()
     if isinstance(btl_values, Series):
-        var_name = btl_values.name + '_bottle_matchups'
+        var_name = btl_values.name + "_bottle_matchups"
     else:
-        var_name = 'bottle_matchups'
+        var_name = "bottle_matchups"
 
     # make all input variables np.arrays
     args = gld_time, gld_depth, gld_dives, btl_time, btl_depth, btl_values
@@ -79,8 +79,8 @@ def bottle_matchup(
         btl_num = btl_idx.sum()
 
         # string representation of station time
-        t_str = str(t.astype('datetime64[m]')).replace('T', ' ')
-        t_dif = abs(gld_time - t).astype('timedelta64[m]').astype(float)
+        t_str = str(t.astype("datetime64[m]")).replace("T", " ")
+        t_dif = abs(gld_time - t).astype("timedelta64[m]").astype(float)
 
         # loop through depths for the station
         if t_dif.min() < min_time_diff_minutes:
@@ -101,29 +101,27 @@ def bottle_matchup(
                     n_depths += 1
             print(
                 (
-                    '[stn {}/{}] SUCCESS: {} ({} of {} samples) match-up '
-                    'within {} minutes'
-                ).format(
-                    c, stations.size, t_str, n_depths, btl_num, t_dif.min()
-                )
+                    "[stn {}/{}] SUCCESS: {} ({} of {} samples) match-up "
+                    "within {} minutes"
+                ).format(c, stations.size, t_str, n_depths, btl_num, t_dif.min())
             )
         else:
             print(
                 (
                     "[stn {}/{}]  FAILED: {} Couldn't find samples within "
-                    'constraints'
+                    "constraints"
                 ).format(c, stations.size, t_str)
             )
 
-    attrs = dict(units='', positive='', comment='', standard_name='', axis='')
+    attrs = dict(units="", positive="", comment="", standard_name="", axis="")
     gld_cal = transfer_nc_attrs(getframe(), var, gld_cal, var_name, **attrs)
 
     return gld_cal
 
 
 def model_metrics(x, y, model):
-    from sklearn import metrics
     from numpy import array
+    from sklearn import metrics
 
     x = array(x).reshape(-1, 1)
     y = array(y)
@@ -131,7 +129,7 @@ def model_metrics(x, y, model):
     y_hat = model.predict(x).squeeze()
     ol = (
         model.outliers_
-        if hasattr(model, 'outliers_')
+        if hasattr(model, "outliers_")
         else _np.zeros_like(y).astype(bool)
     )
 
@@ -147,8 +145,7 @@ def model_metrics(x, y, model):
     )
 
     params = {
-        'param_' + key: value
-        for key, value in model.__class__().get_params().items()
+        "param_" + key: value for key, value in model.__class__().get_params().items()
     }
 
     results = dict(
@@ -183,54 +180,48 @@ def model_figs(bottle_data, glider_data, model, ax=None):
         A figure showing the fit of the
     """
 
-    from matplotlib.pyplot import subplots
     from matplotlib.offsetbox import AnchoredText
+    from matplotlib.pyplot import subplots
+    from numpy import array, isnan, linspace, nanmax, nanmin
     from sklearn import metrics
-    from numpy import linspace, array, nanmin, nanmax, isnan
 
     y = array(bottle_data)
     x = array(glider_data).reshape(-1, 1)
 
-    assert not any(isnan(x)), 'There are nans in glider_data'
-    assert not any(isnan(y)), 'There are nans in bottle_data'
-    assert (
-        x.size == y.size
-    ), 'glider_data and bottle_data are not the same size'
+    assert not any(isnan(x)), "There are nans in glider_data"
+    assert not any(isnan(y)), "There are nans in bottle_data"
+    assert x.size == y.size, "glider_data and bottle_data are not the same size"
     assert (
         x.size == model.outliers_.size
-    ), 'model.outliers_ is a different size to bottle_data'
+    ), "model.outliers_ is a different size to bottle_data"
 
     xf = linspace(nanmin(x), nanmax(x), 100).reshape(-1, 1)
     y_hat = model.predict(x).squeeze()
     ol = (
         model.outliers_
-        if hasattr(model, 'outliers_')
+        if hasattr(model, "outliers_")
         else _np.zeros_like(y).astype(bool)
     )
-    formula = '$f(x) = {:.2g}x + {:.2g}$'.format(
-        model.coef_[0], model.intercept_
-    )
-    formula = formula if not formula.endswith('+ 0$') else formula[:-5] + '$'
+    formula = "$f(x) = {:.2g}x + {:.2g}$".format(model.coef_[0], model.intercept_)
+    formula = formula if not formula.endswith("+ 0$") else formula[:-5] + "$"
 
     print(x.shape, xf.shape)
     # PLOTTING FROM HERE ON #############
     if ax is None:
         _, ax = subplots(1, 1, figsize=[6, 5], dpi=120)
-    ax.plot(x, y, 'o', c='k', zorder=99, label='Samples ({})'.format(x.size))[
-        0
-    ]
-    ax.plot(xf, model.predict(xf), c='#AAAAAA', label='{}'.format(formula))
+    ax.plot(x, y, "o", c="k", zorder=99, label="Samples ({})".format(x.size))[0]
+    ax.plot(xf, model.predict(xf), c="#AAAAAA", label="{}".format(formula))
     ax.plot(
         x[ol],
         y[ol],
-        'ow',
+        "ow",
         visible=ol.any(),
         mew=1,
-        mec='k',
+        mec="k",
         zorder=100,
-        label='Outliers ({})'.format(ol.sum()),
+        label="Outliers ({})".format(ol.sum()),
     )
-    ax.legend(fontsize=10, loc='upper left')
+    ax.legend(fontsize=10, loc="upper left")
 
     # Additional info about the model displayed from here on
     params = model.get_params()
@@ -246,32 +237,30 @@ def model_figs(bottle_data, glider_data, model, ax=None):
     rmse_robust = metrics.mean_squared_error(y[~ol], y_hat[~ol]) ** 0.5
 
     # string formatting
-    m_name = 'Huber Regresion'
-    r2_str = '$r^2$ score: {:.2g} ({:.2g})\n'
-    rmse_str = 'RMSE: {:.2g} ({:.2g})'
-    placeholder = u'{}: {}\n'
+    m_name = "Huber Regresion"
+    r2_str = "$r^2$ score: {:.2g} ({:.2g})\n"
+    rmse_str = "RMSE: {:.2g} ({:.2g})"
+    placeholder = "{}: {}\n"
 
     # formatting the strings to be displayed
-    params_str = '{} Params\n'.format(m_name)
-    params_str += ''.join(
-        [placeholder.format(key, params[key]) for key in params]
-    )
-    params_str += '\nResults (robust)\n'
+    params_str = "{} Params\n".format(m_name)
+    params_str += "".join([placeholder.format(key, params[key]) for key in params])
+    params_str += "\nResults (robust)\n"
     params_str += r2_str.format(r2_all, r2_robust)
     params_str += rmse_str.format(rmse_all, rmse_robust)
 
     # placing the text box
     anchored_text = AnchoredText(
-        params_str, loc=4, prop=dict(size=10, family='monospace'), frameon=True
+        params_str, loc=4, prop=dict(size=10, family="monospace"), frameon=True
     )
-    anchored_text.patch.set_boxstyle('round, pad=0.3, rounding_size=0.2')
+    anchored_text.patch.set_boxstyle("round, pad=0.3, rounding_size=0.2")
     anchored_text.patch.set_linewidth(0.2)
     ax.add_artist(anchored_text)
 
     # axes labelling
-    ax.set_ylabel('Bottle sample')
-    ax.set_xlabel('Glider sample')
-    ax.set_title('Calibration curve using {}'.format(m_name))
+    ax.set_ylabel("Bottle sample")
+    ax.set_xlabel("Glider sample")
+    ax.set_title("Calibration curve using {}".format(m_name))
 
     return ax
 
@@ -308,8 +297,9 @@ def robust_linear_fit(
         output.
     """
 
-    from sklearn import linear_model
     from pandas import Series
+    from sklearn import linear_model
+
     from .helpers import GliderToolsError
 
     # make all input arguments numpy arrays
@@ -317,7 +307,7 @@ def robust_linear_fit(
     gld_var, gld_var_cal = map(_np.array, args)
 
     if _np.isnan(gld_var_cal).all():
-        raise GliderToolsError('There are no matches in your bottle data')
+        raise GliderToolsError("There are no matches in your bottle data")
 
     gld_var = Series(gld_var).interpolate(limit=interpolate_limit).values
 
@@ -326,8 +316,8 @@ def robust_linear_fit(
     y = gld_var_cal[i]
     x = gld_var[i][:, None]
 
-    if 'fit_intercept' not in kwargs:
-        kwargs['fit_intercept'] = False
+    if "fit_intercept" not in kwargs:
+        kwargs["fit_intercept"] = False
     model = linear_model.HuberRegressor(**kwargs)
     model.fit(x, y)
 
@@ -350,9 +340,9 @@ def robust_linear_fit(
         x = x[i].reshape(-1, 1)
         out[i.squeeze()] = self._predict(x).squeeze()
 
-        out = transfer_nc_attrs(getframe(), var, out, '_calibrated')
-        if hasattr(self, 'info') & isinstance(out, DataArray):
-            out.attrs['model_info'] = str(self.info)
+        out = transfer_nc_attrs(getframe(), var, out, "_calibrated")
+        if hasattr(self, "info") & isinstance(out, DataArray):
+            out.attrs["model_info"] = str(self.info)
 
         return out
 
