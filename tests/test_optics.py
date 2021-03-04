@@ -25,7 +25,7 @@ def test_sunrise_sunset():
     assert len(sunrise) == len(lat)
 
     # sunrise will be earlier for the SH in January
-    assert sunrise[0] < sunrise[1]
+    assert sunrise[0][0] < sunrise[1][0]
 
 
 def test_sunrise_sunset_fail():
