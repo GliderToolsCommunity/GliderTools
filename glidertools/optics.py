@@ -423,6 +423,9 @@ def sunset_sunrise(time, lat, lon):
     import astral as ast
     from astral.sun import sun
     from pandas import DataFrame
+    import datetime
+    import numpy as np
+    import pandas as pd
 
     df = DataFrame.from_dict(dict([("time", time), ("lat", lat), ("lon", lon)]))
 
@@ -435,20 +438,42 @@ def sunset_sunrise(time, lat, lon):
 
     sunrise_observer = []
     for i in range(len(grp_avg.lat)):
-        sunrise_observer.append(
-            ast.Observer(latitude=grp_avg.lat[i], longitude=grp_avg.lon[i])
-        )
+            sunrise_observer.append(
+                ast.Observer(latitude=grp_avg.lat[i], longitude=grp_avg.lon[i])
+            )
 
     sunrise, sunset = [], []
     for i in range(len(sunrise_observer)):
-        sun_info = sun(sunrise_observer[i], date[i])
-        sunrise.append(sun_info["sunrise"])
-        sunset.append(sun_info["sunset"])
+        if (grp_avg.lat[i] >= -60) & (grp_avg.lat[i] <= 60):
+            sun_info = sun(sunrise_observer[i], date[i])
+            sunrise.append(pd.Series(pd.to_datetime(sun_info["sunrise"])).astype("datetime64[ns]"))
+            sunset.append(pd.Series(pd.to_datetime(sun_info["sunset"])).astype("datetime64[ns]"))
+         
+        elif ((grp_avg.lat[i] < 0)&(date[i]<=pd.to_datetime(date[i].strftime('%Y')+'-09-21'))&(date[i]>=pd.to_datetime(date[i].strftime('%Y')+'-03-21'))):   # Southern Hemisphere, dark
+
+                sunrise.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d'))+ datetime.timedelta(hours=11,minutes=59)))
+                sunset.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d'))+ datetime.timedelta(hours=12)))
+
+        elif ((grp_avg.lat[i] < 0)&(date[i]>pd.to_datetime(date[i].strftime('%Y')+'-09-21'))|(date[i]<pd.to_datetime(date[i].strftime('%Y')+'-03-21'))):   # Southern Hemisphere, light
+
+                sunrise.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d'))+ datetime.timedelta(minutes=1)))
+                sunset.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d'))+ datetime.timedelta(hours=23,minutes=59)))
+
+        elif ((grp_avg.lat[i] > 0)&(date[i]>pd.to_datetime(date[i].strftime('%Y')+'-09-21'))|(date[i]<pd.to_datetime(date[i].strftime('%Y')+'-03-21'))):   # Northern Hemisphere, dark
+                
+                sunrise.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d'))+ datetime.timedelta(minutes=1)))
+                sunset.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d'))+ datetime.timedelta(hours=23,minutes=59)))
+
+        elif ((grp_avg.lat[i] > 0)&(date[i]<=pd.to_datetime(date[i].strftime('%Y')+'-09-21'))&(date[i]>=pd.to_datetime(date[i].strftime('%Y')+'-03-21'))):   # Northern Hemisphere, light
+
+                sunrise.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d'))+ datetime.timedelta(hours=11,minutes=59)))
+                sunset.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d'))+ datetime.timedelta(hours=12)))
 
     grp_avg["sunrise"] = sunrise
     grp_avg["sunset"] = sunset
-    # reindex days to original dataframe as night
-    df_reidx = grp_avg.reindex(df.index).astype("datetime64[ns]")
+
+    # # # reindex days to original dataframe as night
+    df_reidx = grp_avg.reindex(df.index)#.astype("datetime64[ns]")
     sunrise, sunset = df_reidx[["sunrise", "sunset"]].values.T
 
     return sunrise, sunset
