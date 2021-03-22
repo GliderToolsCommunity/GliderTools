@@ -397,7 +397,7 @@ def sunset_sunrise(time, lat, lon):
     """
     Calculates the local sunrise/sunset of the glider location.
 
-    The function uses the Astral package to calculate the sunrise and sunset
+    The function uses the Skyfield package to calculate the sunrise and sunset
     times using the date, latitude and longitude. The times are returned
     rather than day or night indices, as it is more flexible for the quenching
     correction.
@@ -420,61 +420,72 @@ def sunset_sunrise(time, lat, lon):
         An array of the sunset times.
 
     """
-    import astral as ast
-    from astral.sun import sun
+
     from pandas import DataFrame
     import datetime
     import numpy as np
     import pandas as pd
+
+    from skyfield import api
+    ts = api.load.timescale()
+    eph = api.load('de421.bsp')
+    from skyfield import almanac
 
     df = DataFrame.from_dict(dict([("time", time), ("lat", lat), ("lon", lon)]))
 
     # set days as index
     df = df.set_index(df.time.values.astype("datetime64[D]"))
 
-    # groupby days and find sunrise for unique days
+    # groupby days and find sunrise/sunset for unique days
     grp_avg = df.groupby(df.index).mean()
-    date = grp_avg.index.to_pydatetime()
+    date = grp_avg.index
+    time_utc = ts.utc(date.year,date.month,date.day,date.hour)   
 
-    sunrise_observer = []
+    bluffton = []
     for i in range(len(grp_avg.lat)):
-            sunrise_observer.append(
-                ast.Observer(latitude=grp_avg.lat[i], longitude=grp_avg.lon[i])
-            )
+        bluffton.append(api.wgs84.latlon(grp_avg.lat[i], grp_avg.lon[i]))
 
     sunrise, sunset = [], []
-    for i in range(len(sunrise_observer)):
-        if (grp_avg.lat[i] >= -60) & (grp_avg.lat[i] <= 60):
-            sun_info = sun(sunrise_observer[i], date[i])
-            sunrise.append(pd.Series(pd.to_datetime(sun_info["sunrise"])).astype("datetime64[ns]"))
-            sunset.append(pd.Series(pd.to_datetime(sun_info["sunset"])).astype("datetime64[ns]"))
-         
-        elif ((grp_avg.lat[i] < 0)&(date[i]<=pd.to_datetime(date[i].strftime('%Y')+'-09-21'))&(date[i]>=pd.to_datetime(date[i].strftime('%Y')+'-03-21'))):   # Southern Hemisphere, dark
+    for i in range(len(date)):    
+        if i != (len(date)-1):            
+            f = almanac.sunrise_sunset(eph,  bluffton[i])
+            t, y = almanac.find_discrete(time_utc[i], time_utc[i+1], f)
 
-                sunrise.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d'))+ datetime.timedelta(hours=11,minutes=59)))
-                sunset.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d'))+ datetime.timedelta(hours=12)))
+            if (grp_avg.lat[i] >= 68) | (grp_avg.lat[i] <= -67): # northern hemisphere |southern hemisphere
+                if f(time_utc[i]) == True:  # polar day
+                    sunrise.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d')) + datetime.timedelta(minutes=1)))
+                    sunset.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d')) + datetime.timedelta(hours=23,minutes=59)))
+                else:   # polar night
+                    sunrise.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d')) + datetime.timedelta(hours=11,minutes=59)))
+                    sunset.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d')) + datetime.timedelta(hours=12,minutes=0)))
+            else: 
+                sunrise.append(pd.Series(pd.to_datetime(np.array(t.utc_iso())[y==1]).tz_convert(None)))
+                sunset.append(pd.Series(pd.to_datetime(np.array(t.utc_iso())[y==0]).tz_convert(None)))
+        
+        else:     # Note: there must be a better way to do this :/ 
+            t0 = ts.utc(date[i].year,date[i].month,date[i].day,date[i].hour)  
+            t1 = ts.utc(date[i].year,date[i].month,date[i].day+1,date[i].hour)  
+            f = almanac.sunrise_sunset(eph,  bluffton[i])
+            t, y = almanac.find_discrete(t0,t1,f)
 
-        elif ((grp_avg.lat[i] < 0)&(date[i]>pd.to_datetime(date[i].strftime('%Y')+'-09-21'))|(date[i]<pd.to_datetime(date[i].strftime('%Y')+'-03-21'))):   # Southern Hemisphere, light
+            if (grp_avg.lat[i] >= 68) | (grp_avg.lat[i] <= -67): # northern hemisphere |southern hemisphere
+                if f(time_utc[i]) == True:  # polar day
+                    sunrise.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d')) + datetime.timedelta(minutes=1)))
+                    sunset.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d')) + datetime.timedelta(hours=23,minutes=59)))
+                else:   # polar night
+                    sunrise.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d')) + datetime.timedelta(hours=11,minutes=59)))
+                    sunset.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d')) + datetime.timedelta(hours=12,minutes=0)))
+            else: 
+                sunrise.append(pd.Series(pd.to_datetime(np.array(t.utc_iso())[y==1]).tz_convert(None)))
+                sunset.append(pd.Series(pd.to_datetime(np.array(t.utc_iso())[y==0]).tz_convert(None)))
 
-                sunrise.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d'))+ datetime.timedelta(minutes=1)))
-                sunset.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d'))+ datetime.timedelta(hours=23,minutes=59)))
-
-        elif ((grp_avg.lat[i] > 0)&(date[i]>pd.to_datetime(date[i].strftime('%Y')+'-09-21'))|(date[i]<pd.to_datetime(date[i].strftime('%Y')+'-03-21'))):   # Northern Hemisphere, dark
-                
-                sunrise.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d'))+ datetime.timedelta(minutes=1)))
-                sunset.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d'))+ datetime.timedelta(hours=23,minutes=59)))
-
-        elif ((grp_avg.lat[i] > 0)&(date[i]<=pd.to_datetime(date[i].strftime('%Y')+'-09-21'))&(date[i]>=pd.to_datetime(date[i].strftime('%Y')+'-03-21'))):   # Northern Hemisphere, light
-
-                sunrise.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d'))+ datetime.timedelta(hours=11,minutes=59)))
-                sunset.append(pd.Series(pd.to_datetime(date[i].strftime('%Y-%m-%d'))+ datetime.timedelta(hours=12)))
 
     grp_avg["sunrise"] = sunrise
     grp_avg["sunset"] = sunset
 
-    # # # reindex days to original dataframe as night
-    df_reidx = grp_avg.reindex(df.index)#.astype("datetime64[ns]")
-    sunrise, sunset = df_reidx[["sunrise", "sunset"]].values.T
+    # # # # reindex days to original dataframe as night
+    df_reidx = grp_avg.reindex(df.index)
+    sunrise, sunset = df_reidx[["sunrise", "sunset"]].values.T    
 
     return sunrise, sunset
 
