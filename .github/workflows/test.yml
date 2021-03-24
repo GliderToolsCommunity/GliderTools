@@ -31,5 +31,14 @@ jobs:
 
       - run: pipenv run isort --recursive --diff .
       # - run: pipenv run flake8 --max-line-length=88
-      - run: pipenv run pytest --cov --cov-fail-under=20
+      - run: pipenv run pytest --cov=./ --cov-report=xml --cov-fail-under=20
+      
+      - name: Upload code coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          env_vars: OS,PYTHON
+          name: codecov-umbrella
+          fail_ci_if_error: false
 
