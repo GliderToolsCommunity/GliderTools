@@ -18,5 +18,6 @@ The following people have made contributions to the project (in alphabetical ord
 - [Luke Gregor](https://github.com/luke-gregor) - Environmental Physics, ETH Zuerich: Zurich, Switzerland. (ORCID: [0000-0001-6071-1857](https://orcid.org/0000-0001-6071-1857))
 - Sarah-Anne Nicholson - Council for Scientific and Industrial Research: Cape Town, South Africa
 - Marcel du Plessis - University of Cape Town: Cape Town, Western Cape, South Africa. (ORCID : [0000-0003-2759-2467](https://orcid.org/0000-0003-2759-2467))
+- [Callum Rollo](https://callumrollo.github.io/) University of East Anglia, UK.
 - Tommy Ryan-Keogh - Council for Scientific and Industrial Research: Cape Town, South Africa. (ORCID : [0000-0001-5144-171X](https://orcid.org/0000-0001-5144-171X))
 - Sebastiaan Swart - University of Gothenburg: Gothenburg, Sweden. (ORCID : [0000-0002-2251-8826](https://orcid.org/0000-0002-2251-8826))
