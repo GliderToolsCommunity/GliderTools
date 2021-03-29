@@ -1,0 +1,19 @@
+name: test_env_glidertools
+dependencies:
+  - python=3.6
+  - numexpr
+  - netCDF4
+  - pandas
+  - xarray
+  - numpy
+  - scikit-learn
+  - scipy
+  - tqdm
+  - seawater
+  - matplotlib
+  - pip
+  - pip:
+    - astral
+    - codecov
+    - pytest-cov
+    - pytest-xdist
