@@ -50,7 +50,7 @@ These should install automatically with ``pip install package_name``:
 
 How you can contribute
 ----------------------
-- Join the community by introducing yourself here: https://github.com/GliderToolsCommunity/GliderTools/discussions/47 (no need to be a Python or or Git guru! Just say what you are working with and join the discussion
+- Join the community by introducing yourself here: https://github.com/GliderToolsCommunity/GliderTools/discussions/47 (no need to be a Python or or Git guru! Just say what you are working with and join the discussion)
 - Error reporting with using GitLab (https://github.com/GliderToolsCommunity/GliderTools/issues/new). Please copy the entire error message (even if it's long).
 - Detailed error reporting so users know where the fault lies.
 - Oxygen processing is rudimentary as we do not have the expertise in our group to address this
