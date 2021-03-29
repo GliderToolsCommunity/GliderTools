@@ -9,10 +9,10 @@ dependencies:
   - scikit-learn
   - scipy
   - tqdm
-  - seawater
   - matplotlib
   - pip
   - pip:
+    - seawater
     - astral
     - codecov
     - pytest-cov
