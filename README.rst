@@ -18,7 +18,7 @@ glidertools
 .. image:: https://codecov.io/gh/GliderToolsCommunity/GliderTools/branch/master/graph/badge.svg?token=FPUJ29TMSH
         :target: https://codecov.io/gh/GliderToolsCommunity/GliderTools
 
-Glider tools is a Python 3.7 package designed to process data from the first level of processing to a science ready dataset. The package is designed to easily import data to a standard column format (numpy.ndarray or pandas.DataFrame). Cleaning and smoothing functions are flexible and can be applied as required by the user. We provide examples and demonstrate best practices as developed by the SOCCO Group (http://socco.org.za/).
+Glider tools is a Python 3.6+ package designed to process data from the first level of processing to a science ready dataset. The package is designed to easily import data to a standard column format (numpy.ndarray or pandas.DataFrame). Cleaning and smoothing functions are flexible and can be applied as required by the user. We provide examples and demonstrate best practices as developed by the SOCCO Group (http://socco.org.za/).
 
 Please cite the original publication of this package (https://doi.org/10.3389/fmars.2019.00738) and the software package (https://doi.org/10.5281/zenodo.4075238).
 
@@ -49,6 +49,7 @@ These should install automatically with ``pip install package_name``:
 
 How you can contribute
 ----------------------
+- Join the community by introducing yourself here: https://github.com/GliderToolsCommunity/GliderTools/discussions/47 
 - Error reporting with using GitLab (https://github.com/GliderToolsCommunity/GliderTools/issues/new). Please copy the entire error message (even if it's long).
 - Join our slack group:  https://join.slack.com/t/glidertools/shared_invite/zt-mz1akvfr-5k5mzuL~Z44JGPo8v~L0qg
 - Detailed error reporting so users know where the fault lies.
