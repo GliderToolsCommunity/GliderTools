@@ -53,7 +53,7 @@ How you can contribute
 - Join the community by introducing yourself here: https://github.com/GliderToolsCommunity/GliderTools/discussions/47 (no need to be a Python or Git guru! Just say what you are working with and join the discussion)
 - Error reporting with using GitLab (https://github.com/GliderToolsCommunity/GliderTools/issues/new). Please copy the entire error message (even if it's long).
 - Detailed error reporting so users know where the fault lies.
-- Oxygen processing is rudimentary as we do not have the expertise in our group to address this
+- Oxygen processing is rudimentary so far but we are on it and happy to get your support (https://github.com/GliderToolsCommunity/GliderTools/discussions/74)
 
 For contributing follow the instructions here: https://glidertools.readthedocs.io/en/latest/contributing.html
 
