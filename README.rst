@@ -53,7 +53,7 @@ How you can contribute
 - Error reporting with using GitLab (https://github.com/GliderToolsCommunity/GliderTools/issues/new). Please copy the entire error message (even if it's long).
 - Join our slack group:  https://join.slack.com/t/glidertools/shared_invite/zt-mz1akvfr-5k5mzuL~Z44JGPo8v~L0qg
 - Detailed error reporting so users know where the fault lies.
-- Oxygen processing is rudimentary as we do not have the expertise in our group to address this
+- Oxygen processing is rudimentary so far but we are on it and happy to get your support (https://github.com/GliderToolsCommunity/GliderTools/discussions/74)
 
 For contributing follow the instructions here: https://glidertools.readthedocs.io/en/latest/contributing.html
 
