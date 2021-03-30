@@ -8,7 +8,7 @@ What's New
 
     Breaking changes
     ~~~~~~~~~~~~~~~~
-    Description. (:pull:`ii`, :issue:`jj`). By `Name <https://github.com/github_username>`_.
+    Description. (:pull:`ii`, :issue:`ii`). By `Name <https://github.com/github_username>`_.
 
     New Features
     ~~~~~~~~~~~~
