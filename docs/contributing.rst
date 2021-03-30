@@ -76,12 +76,26 @@ Preparing Pull Requests
    If you need some help with Git, follow this quick start
    guide: https://git.wiki.kernel.org/index.php/QuickStart
 
-#. Install dependencies into a ``pipenv`` environment::
+#. Set up a [conda](environment) with all necessary dependencies::
 
-    $ pip install pipenv
-    $ pipenv install --dev
-    $ pipenv run pre-commit install -t pre-commit
-    $ pipenv run pre-commit install -t pre-push
+    $ conda env create -f ci/environment-py3.8.yml
+    
+#. Activate your environment::
+   
+   $ conda activate test_env_glidertools
+    
+#. Install the GliderTools package::
+
+   $ pip install -e . --no-deps
+   
+#. Before you modify anything, ensure that the setup works by executing all tests::
+
+   $ pytest
+   
+   You want to see an output indicating no failures, like this::
+   
+   $ ========================== n passed, j warnings in 17.07s ===========================
+   
 
 #. Install `pre-commit <https://pre-commit.com>`_ and its hook on the ``glidertools`` repo::
 
