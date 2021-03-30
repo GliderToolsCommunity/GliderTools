@@ -40,6 +40,7 @@ For recommendations or bug reports, please visit https://github.com/GliderToolsC
    GitHub Repo <https://github.com/GliderToolsCommunity/GliderTools>
    api
    package_structure
+   whats-new
    authors
    contributing
    wishlist
