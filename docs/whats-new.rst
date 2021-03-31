@@ -27,7 +27,9 @@ v2021.xx (unreleased)
 
 .. _whats-new.2021.xx: 
 
-
+Documentation
+~~~~~~~~~~~~~
+- Added conda installation instructions + badge. (:pull:`94`) By `Julius Busecke <https://github.com/jbusecke>`_.
 
 v2021.03 (2021/3/30)
 -------------------------
@@ -36,7 +38,7 @@ v2021.03 (2021/3/30)
 
 Documentation
 ~~~~~~~~~~~~~
-- Updated contributor guide for conda based workflwo. (:pull:`81`) By `Julius Busecke <https://github.com/jbusecke>`_.
+- Updated contributor guide for conda based workflow. (:pull:`81`) By `Julius Busecke <https://github.com/jbusecke>`_.
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
