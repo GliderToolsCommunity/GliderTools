@@ -25,6 +25,9 @@ Please cite the original publication of this package (https://doi.org/10.3389/fm
 
 Installation
 ------------
+Conda
+.....
+To install the core package from conda-forge run: ``conda install -c conda-forge glidertools``
 
 PyPI
 ....
