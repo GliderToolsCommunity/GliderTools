@@ -4,6 +4,8 @@ glidertools
 
 .. image:: https://github.com/GliderToolsCommunity/GliderTools/actions/workflows/ci.yml/badge.svg
         :target: https://github.com/GliderToolsCommunity/GliderTools/actions/workflows/ci.yml
+.. image:: https://img.shields.io/conda/vn/conda-forge/glidertools.svg
+        :target: https://anaconda.org/conda-forge/glidertools
 .. image:: https://badgen.net/pypi/v/glidertools
         :target: https://pypi.org/project/glidertools
 .. image:: https://pepy.tech/badge/glidertools
