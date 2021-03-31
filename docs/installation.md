@@ -3,6 +3,8 @@ Installation
 
 Notes on how to install
 
+##### Conda
+To install the core package run: `conda install -c conda-forge glidertools`.
 
 ##### PyPI
 To install the core package run: `pip install glidertools`.
