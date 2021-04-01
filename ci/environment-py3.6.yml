@@ -10,6 +10,7 @@ dependencies:
   - scipy
   - tqdm
   - matplotlib
+  - gsw # TODO: We should consider making this optional?
   - pip
   - pip:
     - seawater

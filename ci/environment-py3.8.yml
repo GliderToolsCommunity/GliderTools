@@ -10,6 +10,7 @@ dependencies:
   - scipy
   - tqdm
   - matplotlib
+  - gsw
   - pip
   - pip:
     - seawater
