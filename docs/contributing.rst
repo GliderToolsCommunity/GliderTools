@@ -102,7 +102,12 @@ Preparing Pull Requests
      $ pip install --user pre-commit
      $ pre-commit install
 
-   Afterwards ``pre-commit`` will run whenever you commit.
+   Afterwards ``pre-commit`` will run whenever you commit. If some errors are reported by pre-commit 
+   you should format the code by running::
+     
+     $ pre-commit run --all-files
+     
+   and then try to commit again.
 
    https://pre-commit.com/ is a framework for managing and maintaining multi-language pre-commit
    hooks to ensure code-style and code formatting is consistent.
@@ -110,6 +115,10 @@ Preparing Pull Requests
     You can now edit your local working copy and run/add tests as necessary. Please follow
     PEP-8 for naming. When committing, ``pre-commit`` will modify the files as needed, or
     will generally be quite clear about what you need to do to pass the commit test.
+   
+   
+    
+    
 
 #. Break your edits up into reasonably sized commits::
 
