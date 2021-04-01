@@ -3,10 +3,11 @@ Installation
 
 Notes on how to install
 
+##### Conda
+The easiest way to install the packge is with [conda](https://docs.conda.io/en/latest/): `conda install -c conda-forge glidertools`.
 
 ##### PyPI
-To install the core package run: `pip install glidertools`.
-Check that you are using the correct version of `pip`.
+You can also install with pip: `pip install glidertools`.
 
 ##### GitHub
 For the most up to date version of GliderTools, you can install directly from the online repository hosted on GitLab.

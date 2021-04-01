@@ -4,6 +4,8 @@ glidertools
 
 .. image:: https://github.com/GliderToolsCommunity/GliderTools/actions/workflows/ci.yml/badge.svg
         :target: https://github.com/GliderToolsCommunity/GliderTools/actions/workflows/ci.yml
+.. image:: https://img.shields.io/conda/vn/conda-forge/glidertools.svg
+        :target: https://anaconda.org/conda-forge/glidertools
 .. image:: https://badgen.net/pypi/v/glidertools
         :target: https://pypi.org/project/glidertools
 .. image:: https://pepy.tech/badge/glidertools
@@ -19,12 +21,15 @@ glidertools
 .. image:: https://codecov.io/gh/GliderToolsCommunity/GliderTools/branch/master/graph/badge.svg?token=FPUJ29TMSH
         :target: https://codecov.io/gh/GliderToolsCommunity/GliderTools
 
-Glider tools is a Python 3.6+ package designed to process data from the first level of processing to a science ready dataset. The package is designed to easily import data to a standard column format (numpy.ndarray or pandas.DataFrame). Cleaning and smoothing functions are flexible and can be applied as required by the user. We provide examples and demonstrate best practices as developed by the SOCCO Group (http://socco.org.za/).
+Glider tools is a Python 3.6+ package designed to process data from the first level of processing to a science ready dataset (delayed mode quality control). The package is designed to easily import data to a standard column format (numpy.ndarray or pandas.DataFrame). Cleaning and smoothing functions are flexible and can be applied as required by the user. We provide examples and demonstrate best practices as developed by the SOCCO Group (http://socco.org.za/).
 
 Please cite the original publication of this package (https://doi.org/10.3389/fmars.2019.00738) and the software package (https://doi.org/10.5281/zenodo.4075238).
 
 Installation
 ------------
+Conda
+.....
+To install the core package from conda-forge run: ``conda install -c conda-forge glidertools``
 
 PyPI
 ....
@@ -32,9 +37,9 @@ To install the core package run: ``pip install glidertools``.
 
 GitHub
 ......
-1. Clone glidertools to your local machine: `git clone https://github.com/GliderToolsCommunity/GliderTools`
+1. Clone glidertools to your local machine: ``git clone https://github.com/GliderToolsCommunity/GliderTools``
 2. Change to the parent directory of GliderTools
-3. Install glidertools with `pip install -e ./GliderTools`. This will allow
+3. Install glidertools with ``pip install -e ./GliderTools``. This will allow
    changes you make locally, to be reflected when you import the package in Python
 
 Recommended, but optional packages

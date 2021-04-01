@@ -116,13 +116,13 @@ Preparing Pull Requests
     $ git commit -a -m "<commit message>"
     $ git push -u
 
-    Committing will run the pre-commit hooks (isort, black and flake8).
-    Pushing will run the pre-push hooks (pytest and coverage)
+   Committing will run the pre-commit hooks (isort, black and flake8).
+   Pushing will run the pre-push hooks (pytest and coverage)
 
-    We highly recommend using test driven development, but our coverage requirement is
-    low at the moment due to lack of tests. If you are able to write tests, please
-    stick to `xarray <http://xarray.pydata.org/en/stable/contributing.html>`_'s
-    testing recommendations.
+   We highly recommend using test driven development, but our coverage requirement is
+   low at the moment due to lack of tests. If you are able to write tests, please
+   stick to `xarray <http://xarray.pydata.org/en/stable/contributing.html>`_'s
+   testing recommendations.
 
 
 #. Add yourself to the
@@ -137,5 +137,5 @@ Preparing Pull Requests
     base-fork: GliderToolsCommunity/GliderTools
     base: master
 
-    The merged pull request will undergo the same testing that your local branch
-    had to pass when pushing.
+   The merged pull request will undergo the same testing that your local branch
+   had to pass when pushing.
