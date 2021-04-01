@@ -40,9 +40,9 @@ from __future__ import absolute_import as _ai
 from __future__ import print_function as _pf
 from __future__ import unicode_literals as _ul
 
-import numexpr as ne
 import numpy as np
 
+import numexpr as ne
 
 def flo_bback_total(beta, degC, psu, theta, wlngth, xfactor):
     """
