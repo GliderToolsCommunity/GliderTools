@@ -2,6 +2,7 @@ import inspect
 
 from pkg_resources import DistributionNotFound, get_distribution
 
+
 try:
     version = get_distribution("glidertools").version
 except DistributionNotFound:

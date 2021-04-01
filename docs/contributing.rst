@@ -79,34 +79,34 @@ Preparing Pull Requests
 #. Set up a [conda](environment) with all necessary dependencies::
 
     $ conda env create -f ci/environment-py3.8.yml
-    
+
 #. Activate your environment::
-   
+
    $ conda activate test_env_glidertools
-    
+
 #. Install the GliderTools package::
 
    $ pip install -e . --no-deps
-   
+
 #. Before you modify anything, ensure that the setup works by executing all tests::
 
    $ pytest
-   
+
    You want to see an output indicating no failures, like this::
-   
+
    $ ========================== n passed, j warnings in 17.07s ===========================
-   
+
 
 #. Install `pre-commit <https://pre-commit.com>`_ and its hook on the ``glidertools`` repo::
 
      $ pip install --user pre-commit
      $ pre-commit install
 
-   Afterwards ``pre-commit`` will run whenever you commit. If some errors are reported by pre-commit 
+   Afterwards ``pre-commit`` will run whenever you commit. If some errors are reported by pre-commit
    you should format the code by running::
-     
+
      $ pre-commit run --all-files
-     
+
    and then try to commit again.
 
    https://pre-commit.com/ is a framework for managing and maintaining multi-language pre-commit
@@ -115,10 +115,10 @@ Preparing Pull Requests
     You can now edit your local working copy and run/add tests as necessary. Please follow
     PEP-8 for naming. When committing, ``pre-commit`` will modify the files as needed, or
     will generally be quite clear about what you need to do to pass the commit test.
-   
-   
-    
-    
+
+
+
+
 
 #. Break your edits up into reasonably sized commits::
 

@@ -21,11 +21,11 @@ What's New
 
     Bug fixes
     ~~~~~~~~~
-   
+
 v2021.xx (unreleased)
 -------------------------
 
-.. _whats-new.2021.xx: 
+.. _whats-new.2021.xx:
 
 Documentation
 ~~~~~~~~~~~~~

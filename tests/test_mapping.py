@@ -1,14 +1,13 @@
 from glidertools.mapping import (
+    get_optimal_bins,
+    grid_data,
+    grid_flat_dataarray,
     interp_leaf,
     interp_obj,
-    grid_data,
-    get_optimal_bins,
-    grid_flat_dataarray,
     variogram,
 )
 
-"""WE REALLY NEED TO ADD TESTS!!! THESE JUST TEST THE BASIC IMPORT!!!"""
-
 
 def test_dummy():
+    """WE REALLY NEED TO ADD TESTS!!! THESE JUST TEST THE BASIC IMPORT!!!"""
     assert 1 == 1

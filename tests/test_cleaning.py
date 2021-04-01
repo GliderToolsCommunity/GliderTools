@@ -1,5 +1,6 @@
+from glidertools.cleaning import horizontal_diff_outliers, outlier_bounds_iqr
 from glidertools.load import seaglider_basestation_netCDFs
-from glidertools.cleaning import outlier_bounds_iqr, horizontal_diff_outliers
+
 
 filenames = "./tests/data/p542*.nc"
 names = [
