@@ -98,6 +98,8 @@ def calc_oxygen(
     pressure,
     salinity,
     temperature,
+    lat,
+    lon,
     auto_conversion=True,
     spike_window=7,
     spike_method="median",
@@ -123,6 +125,10 @@ def calc_oxygen(
     pressure : array, dtype=float, shape=[n, ]
     salinity : array, dtype=float, shape=[n, ]
     temperature : array, dtype=float, shape=[n, ]
+    lat: np.array / pd.Series, dtype=float, shape=[n, ]
+        The latitude of the glider position.
+    lon: np.array / pd.Series, dtype=float, shape=[n, ]
+        The longitude of the glider position.
     conversion : bool=True
         tries to determine the unit of oxygen based on ``o2raw`` values.
         The user needs to do a manual conversion if False
@@ -151,8 +157,7 @@ def calc_oxygen(
     To Do: Oxygen processing should have its own section to be consistent
 
     """
-
-    import seawater as sw
+    import gsw
     from numpy import abs, array, c_, isnan, median, ones
     from pandas import Series
 
@@ -187,8 +192,11 @@ def calc_oxygen(
         )
         o2raw = savitzky_golay(o2raw, savitzky_golay_window, savitzky_golay_order)
 
-    o2sat = sw.satO2(salinity, temperature)
-    density = sw.dens(salinity, temperature, pressure)
+    absolute_salinity = gsw.SA_from_SP(salinity, pressure, lon, lat)
+    conservative_temperature = gsw.conversions.CT_from_t(absolute_salinity, temperature, pressure)
+    density = gsw.density.rho(absolute_salinity, conservative_temperature, pressure)
+    # Conversion constant of 1.025 as gsw function returns oxygen solubility in µmol/kg rather than µmol/l
+    o2sat = gsw.O2sol(absolute_salinity, conservative_temperature, pressure, lon, lat) * 1.025
 
     if auto_conversion:
         # use linear regression to determine the oxygen unit
