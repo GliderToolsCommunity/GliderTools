@@ -21,11 +21,15 @@ What's New
 
     Bug fixes
     ~~~~~~~~~
-   
+
 v2021.xx (unreleased)
 -------------------------
 
-.. _whats-new.2021.xx: 
+.. _whats-new.2021.xx:
+
+Internal Changes
+~~~~~~~~~~~~~~~~
+- Implemented code linting as part of the CI (:pull:`100`) By `Julius Busecke <https://github.com/jbusecke>`_.
 
 Documentation
 ~~~~~~~~~~~~~
