@@ -1,9 +1,9 @@
 import xarray as xr
 from glidertools.load import seaglider_basestation_netCDFs
 from glidertools.physics import (
+    brunt_vaisala,
     mixed_layer_depth,
     potential_density,
-    brunt_vaisala,
     spice0,
 )
 

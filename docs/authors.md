@@ -13,7 +13,7 @@ Project Contributors
 
 The following people have made contributions to the project (in alphabetical order by last name) and are considered "The GliderTools Developers". These contributors will be added as authors upon the next major release of GliderTools (i.e. new DOI release).
 - [Dhruv Balwada](https://dhruvbalwada.github.io/) University of Washington, USA. (ORCID: [0000-0001-6632-0187](https://orcid.org/0000-0001-6632-0187))
-- [Julius Busecke](http://jbusecke.github.io/) Columbia University, USA. 
+- [Julius Busecke](http://jbusecke.github.io/) Columbia University, USA.
 - Isabelle Giddy - University of Cape Town: Cape Town, Western Cape, South Africa. (ORCID : [0000-0002-8926-3311](https://orcid.org/0000-0002-8926-3311))
 - [Luke Gregor](https://github.com/luke-gregor) - Environmental Physics, ETH Zuerich: Zurich, Switzerland. (ORCID: [0000-0001-6071-1857](https://orcid.org/0000-0001-6071-1857))
 - Sarah-Anne Nicholson - Council for Scientific and Industrial Research: Cape Town, South Africa
