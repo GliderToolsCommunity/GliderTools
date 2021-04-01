@@ -27,6 +27,10 @@ v2021.xx (unreleased)
 
 .. _whats-new.2021.xx:
 
+Internal Changes
+~~~~~~~~~~~~~~~~
+- Implemented code linting as part of the CI (:pull:`100`) By `Julius Busecke <https://github.com/jbusecke>`_.
+
 Documentation
 ~~~~~~~~~~~~~
 - Added conda installation instructions + badge. (:pull:`94`) By `Julius Busecke <https://github.com/jbusecke>`_.
