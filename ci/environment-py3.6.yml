@@ -1,5 +1,6 @@
 name: test_env_glidertools
-channels: conda-forge
+channels: 
+  - conda-forge
 dependencies:
   - python=3.6
   - numexpr
