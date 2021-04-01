@@ -1099,8 +1099,8 @@ try:
     import pykrige as pk
 except ImportError:
     pk = None
-    
-    
+
+
 def variogram(
     variable,
     horz,
@@ -1163,15 +1163,15 @@ def variogram(
                              xy_ratio=0.5, max_points=6000)
 
     """
-    
+
     if pk is None:
         import warnings
 
         message = (
-            'PyKrige is not installed. To enable the variogram function please '
-            'run `pip install pykrige`. Variograms are required for sensible '
-            '2D interpolation.'
-            )
+            "PyKrige is not installed. To enable the variogram function please "
+            "run `pip install pykrige`. Variograms are required for sensible "
+            "2D interpolation."
+        )
         warnings.warn(message, category=GliderToolsWarning)
 
     def make_subset_index(dives, max_points):
@@ -1204,41 +1204,41 @@ def variogram(
 
         has_dots = np.any(
             [
-                getattr(child, 'get_marker', lambda: None)()
+                getattr(child, "get_marker", lambda: None)()
                 for child in ax.get_children()
             ]
         )
 
         if not has_dots:
-            ax.plot(x, y, '.k', label='Semivariance')
+            ax.plot(x, y, ".k", label="Semivariance")
 
-        ax.plot(x, yhat, '-', lw=4, label='Gaussian model')[0]
+        ax.plot(x, yhat, "-", lw=4, label="Gaussian model")[0]
         ax.hlines(
             sill,
             0,
             params[1],
-            color='orange',
-            linestyle='--',
+            color="orange",
+            linestyle="--",
             linewidth=2.5,
-            label='Sill ({:.2g})'.format(sill),
+            label="Sill ({:.2g})".format(sill),
         )
         ax.hlines(
             nugget,
             0,
             params[1],
-            color='red',
-            linestyle='--',
+            color="red",
+            linestyle="--",
             linewidth=2.5,
-            label='Nugget ({:.2g})'.format(nugget),
+            label="Nugget ({:.2g})".format(nugget),
         )
         ax.vlines(
             range,
             0,
             sill,
-            color='#CCCCCC',
-            linestyle='-',
+            color="#CCCCCC",
+            linestyle="-",
             zorder=0,
-            label='Range (1.0)',
+            label="Range (1.0)",
         )
 
         ax.set_ylim([0, ax.get_ylim()[1]])
@@ -1269,7 +1269,7 @@ def variogram(
     z = variable[subs]
     y = vert[subs]
     if np.issubdtype(horz.dtype, np.datetime64):
-        x = horz[subs].astype('datetime64[s]').astype(float) / 3600
+        x = horz[subs].astype("datetime64[s]").astype(float) / 3600
     else:
         x = horz[subs].astype(float)
 
@@ -1277,7 +1277,7 @@ def variogram(
     xlen = 1 / xy_ratio
     ylen = 1
     # and finding inital estiamte of range
-    props = dict(weight=True, nlags=40, variogram_model='gaussian')
+    props = dict(weight=True, nlags=40, variogram_model="gaussian")
     gauss = pk.OrdinaryKriging(x / xlen, y / ylen, z, **props)
 
     # scale initial scaling by range
@@ -1294,12 +1294,8 @@ def variogram(
         n_dives = np.unique(dives[subs]).size
         t_dives = np.unique(dives).size
         plot_variogram(gauss, ax, n_dives)
-        ax.set_xlabel(
-            'Scaled lag (x = {:.0f}; y = {:.0f})'.format(xlen, ylen)
-        )
-        ax.set_ylabel(
-            'Semivariance\n(using {} of {} dives)'.format(n_dives, t_dives)
-        )
+        ax.set_xlabel("Scaled lag (x = {:.0f}; y = {:.0f})".format(xlen, ylen))
+        ax.set_ylabel("Semivariance\n(using {} of {} dives)".format(n_dives, t_dives))
     else:
         ax = None
 

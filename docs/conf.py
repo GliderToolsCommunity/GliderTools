@@ -103,7 +103,6 @@ exclude_patterns = ["_build"]
 # add_module_names = True
 
 
-
 # If true, sectionauthor and moduleauthor directives will be shown in the
 # output. They are ignored by default.
 # show_authors = False

@@ -193,10 +193,16 @@ def calc_oxygen(
         o2raw = savitzky_golay(o2raw, savitzky_golay_window, savitzky_golay_order)
 
     absolute_salinity = gsw.SA_from_SP(salinity, pressure, lon, lat)
-    conservative_temperature = gsw.conversions.CT_from_t(absolute_salinity, temperature, pressure)
+    conservative_temperature = gsw.conversions.CT_from_t(
+        absolute_salinity, temperature, pressure
+    )
     density = gsw.density.rho(absolute_salinity, conservative_temperature, pressure)
-    # Conversion constant of 1.025 as gsw function returns oxygen solubility in µmol/kg rather than µmol/l
-    o2sat = gsw.O2sol(absolute_salinity, conservative_temperature, pressure, lon, lat) * 1.025
+    # Conversion constant of 1.025 as gsw function returns oxygen solubility in
+    # µmol/kg rather than µmol/l
+    o2sat = (
+        gsw.O2sol(absolute_salinity, conservative_temperature, pressure, lon, lat)
+        * 1.025
+    )
 
     if auto_conversion:
         # use linear regression to determine the oxygen unit

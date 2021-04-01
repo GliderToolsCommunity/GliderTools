@@ -9,7 +9,7 @@ from .helpers import transfer_nc_attrs
 
 
 def mixed_layer_depth(
-        dives, depth, dens_or_temp, thresh=0.01, ref_depth=10, return_as_mask=False
+    dives, depth, dens_or_temp, thresh=0.01, ref_depth=10, return_as_mask=False
 ):
     """
     Calculates the MLD for ungridded glider array.
@@ -108,6 +108,7 @@ def potential_density(salt_PSU, temp_C, pres_db, lat, lon, pres_ref=0):
     """
 
     import gsw
+
     salt_abs = gsw.SA_from_SP(salt_PSU, pres_db, lon, lat)
     pot_dens = gsw.pot_rho_t_exact(salt_abs, temp_C, pres_db, pres_ref)
     pot_dens = transfer_nc_attrs(
@@ -199,6 +200,7 @@ def spice0(salt_PSU, temp_C, pres_db, lat, lon):
     potential_density : array, dtype=float, shape=[n, ]
     """
     import gsw
+
     salt_abs = gsw.SA_from_SP(salt_PSU, pres_db, lon, lat)
     cons_temp = gsw.CT_from_t(salt_abs, temp_C, pres_db)
 
@@ -208,9 +210,9 @@ def spice0(salt_PSU, temp_C, pres_db, lat, lon):
         getframe(),
         temp_C,
         spice0,
-        'spiciness0',
-        units=' ',
-        comment='',
-        standard_name='spiciness0',
+        "spiciness0",
+        units=" ",
+        comment="",
+        standard_name="spiciness0",
     )
     return spice0
