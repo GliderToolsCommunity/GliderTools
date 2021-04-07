@@ -195,7 +195,7 @@ if _gsw_avail:
         from numpy import nan, r_
 
         def pad_nan(a):
-            r_[a, nan]
+            return r_[a, nan]
 
         n2 = pad_nan(Nsquared(salt, temp, pres)[0])
 
