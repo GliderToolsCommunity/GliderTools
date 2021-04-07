@@ -1,3 +1,5 @@
+import xarray as xr
+
 from glidertools.load import seaglider_basestation_netCDFs
 from glidertools.physics import (
     brunt_vaisala,
@@ -46,7 +48,33 @@ dat = merged.rename(
 )
 
 
+def test_is_dataset():
+    assert isinstance(dat, xr.core.dataset.Dataset)
+
+
+def test_mixed_layer_depth():
+    mld = mixed_layer_depth(dat.dives, dat.depth, dat.temp_raw)
+    assert mld.min() > 10
+    assert mld.max() < 40
+
+
+def test_potential_density():
+    pot_den = potential_density(
+        dat.salt_raw, dat.temp_raw, dat.pressure, dat.latitude, dat.longitude
+    )
+    assert pot_den.min() > 1020
+    assert pot_den.max() < 1040
+
+
 def test_brunt_vaisala():
     brunt_val = brunt_vaisala(dat.salt_raw, dat.temp_raw, dat.pressure)
     assert brunt_val.min() > -0.002
     assert brunt_val.max() < 0.002
+
+
+def test_spice0():
+    spice = spice0(
+        dat.salt_raw, dat.temp_raw, dat.pressure, dat.latitude, dat.longitude
+    )
+    assert spice.min() > -1
+    assert spice.max() < 1
