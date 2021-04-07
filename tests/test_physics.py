@@ -1,4 +1,5 @@
 import xarray as xr
+
 from glidertools.load import seaglider_basestation_netCDFs
 from glidertools.physics import (
     brunt_vaisala,
@@ -77,4 +78,3 @@ def test_spice0():
     )
     assert spice.min() > -1
     assert spice.max() < 1
-
