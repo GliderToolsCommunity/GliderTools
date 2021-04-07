@@ -71,3 +71,4 @@ def test_spice0():
     spice = spice0(dat.salt_raw, dat.temp_raw, dat.pressure, dat.latitude, dat.longitude)
     assert spice.min() > -1
     assert spice.max() < 1
+
