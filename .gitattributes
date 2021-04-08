@@ -1,3 +1,0 @@
-glidertools/_version.py export-subst
-* text=auto eol=lf
-notebooks/Demo_GT.ipynb filter=lfs diff=lfs merge=lfs -text

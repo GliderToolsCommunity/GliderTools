@@ -4,9 +4,11 @@ from __future__ import print_function as _pf
 from __future__ import unicode_literals as _ul
 
 import warnings
+
 from inspect import currentframe as getframe
 
 from .helpers import GliderToolsWarning, transfer_nc_attrs
+
 
 try:
     _gsw_avail = True
@@ -193,7 +195,7 @@ if _gsw_avail:
         from numpy import nan, r_
 
         def pad_nan(a):
-            r_[a, nan]
+            return r_[a, nan]
 
         n2 = pad_nan(Nsquared(salt, temp, pres)[0])
 
@@ -208,3 +210,51 @@ if _gsw_avail:
         )
 
         return n2
+
+    # compute spice
+    def spice0(salt_PSU, temp_C, pres_db, lat, lon):
+        """
+        Calculate spiciness from glider measurements of salinity and temperature.
+
+        Parameters
+        ----------
+        salt_PSU : array, dtype=float, shape=[n, ]
+            practical salinty
+        temp_C : array, dtype=float, shape=[n, ]
+        temperature in deg C
+        pres_db : array, dtype=float, shape=[n, ]
+            pressure in decibar
+        lat : array, dtype=float, shape=[n, ]
+            latitude in degrees north
+        lon : array, dtype=float, shape=[n, ]
+            longitude in degrees east
+
+        Returns
+        -------
+        potential_density : array, dtype=float, shape=[n, ]
+
+
+        Note
+        ----
+        Using seawater.dens does not yield the same results as this function. We
+        get very close results to what the SeaGlider Basestation returns with this
+        function. The difference of this function with the basestation is on
+        average ~ 0.003 kg/m3
+        """
+        import gsw
+
+        salt_abs = gsw.SA_from_SP(salt_PSU, pres_db, lon, lat)
+        cons_temp = gsw.CT_from_t(salt_abs, temp_C, pres_db)
+
+        spice0 = gsw.spiciness0(salt_abs, cons_temp)
+
+        spice0 = transfer_nc_attrs(
+            getframe(),
+            temp_C,
+            spice0,
+            "spiciness0",
+            units=" ",
+            comment="",
+            standard_name="spiciness0",
+        )
+        return spice0

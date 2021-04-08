@@ -4,9 +4,11 @@ from __future__ import print_function as _pf
 from __future__ import unicode_literals as _ul
 
 import numpy as np
+
 from netCDF4 import Dataset
 
 from ..helpers import GliderToolsWarning
+
 
 # TODO: fix dives indexing (merge dim if same size as other more populated dim)
 # TODO: when dims merge dives are sometimes taken from the wrong dataframe

@@ -1,45 +1,30 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
-
-name: Python package
+name: Upload Python Package
 
 on:
   release:
-    types:
-      - created
-      - edited
+    types: [created]
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.7]
-
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up Python ${{ matrix.python-version }}
+      - uses: actions/checkout@v1
+      - name: Set up Python
         uses: actions/setup-python@v1
         with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install dependencies with pipenv
+          python-version: '3.x'
+      - name: Check git status
+        run: git status
+      - name: Check version
+        run:  python setup.py --version
+      - name: Install dependencies
         run: |
-          pip install pipenv
-          pipenv install --deploy --dev
-
-      - name: Linting and testing
+          python -m pip install --upgrade pip
+          pip install setuptools setuptools-scm wheel twine
+      - name: Build and publish
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERS }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
-          pipenv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          pipenv run flake8 . --count --exit-zero --max-complexity=50 --max-line-length=90 --statistics
-          pipenv run pytest --cov --cov-fail-under=20
-
-      - name: build
-        run: |
-          pipenv run python setup.py sdist bdist_wheel
-
-      - name: pypi-publish
-        uses: pypa/gh-action-pypi-publish@v1.1.0
-        with:
-          password: ${{ secrets.PYPI_PASSWORD }}
+          python setup.py sdist bdist_wheel
+          python -m twine upload dist/* --skip-existing

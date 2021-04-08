@@ -1,0 +1,22 @@
+name: test_env_glidertools
+channels:
+  - conda-forge
+dependencies:
+  - python=3.6
+  - numexpr
+  - netCDF4
+  - pandas
+  - xarray
+  - numpy
+  - scikit-learn
+  - scipy
+  - tqdm
+  - matplotlib
+  - gsw # TODO: We should consider making this optional?
+  - pip
+  - pip:
+    - seawater
+    - astral
+    - codecov
+    - pytest-cov
+    - pytest-xdist

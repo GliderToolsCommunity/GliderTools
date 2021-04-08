@@ -1,0 +1,22 @@
+name: test_env_glidertools
+channels:
+  - conda-forge
+dependencies:
+  - python=3.8
+  - numexpr
+  - netCDF4
+  - pandas
+  - xarray
+  - numpy
+  - scikit-learn
+  - scipy
+  - tqdm
+  - matplotlib
+  - gsw
+  - pip
+  - pip:
+    - seawater
+    - astral
+    - codecov
+    - pytest-cov
+    - pytest-xdist
