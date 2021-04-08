@@ -148,3 +148,12 @@ Preparing Pull Requests
 
    The merged pull request will undergo the same testing that your local branch
    had to pass when pushing.
+
+#. After your pull request is merged into the `GliderTools/master`, you will need
+   to fetch those changes and rebase your master so that your master reflects the latest
+   version of GliderTools.
+
+    $ git checkout master
+    $ git fetch upstream
+    $ git rebase upstream/master
+    $ git branch -d your-bugfix-feature-branch-name  ## to delete the branch
