@@ -53,3 +53,26 @@ def test_sunrise_sunset_fail():
 
     with pytest.raises(ValueError):
         sunrise, sunset = gt.optics.sunset_sunrise(time, lat, lon)
+
+@pytest.mark.parametrize(percentile, [95, 85, 50]) 
+def test_backscatter_dark_count(percentile):
+    # create some synthetic data
+    bbp = np.array([0.002,0.0006,0.0005,0.0005, 0.0005]) 
+    depth = np.array([50,150,210,310,350])     
+    #select only depths between 200 and 400
+    mask = (depth > 200) & (depth < 400)  
+    #expected output
+    expected_bbp_dark = bbp - np.nanpercentile(bbp[mask], percentile) 
+    bbp_dark = gt.optics.backscatter_dark_count(bbp, depth, percentile)
+    np.testing.assert_allclose(expected_bbp_dark, bbp_dark)
+
+@pytest.mark.parametrize(percentile, [95, 75, 50]) 
+def test_backscatter_dark_count_negative(percentile):
+    # create some synthetic data
+    bbp = np.array([0.002,0.0006,0.005,0.005, 0.0004])  # this will result in negative values that should be zeroed out
+    depth = np.array([50,150,210,310,350]) 
+    mask = (depth > 200) & (depth < 400)
+
+    bbp_dark = gt.optics.backscatter_dark_count(bbp, depth, percentile)
+    # in this case we just want to check if none of the values is negative!
+    assert np.all(bbp_dark >=0)
