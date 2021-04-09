@@ -167,7 +167,7 @@ def backscatter_dark_count(bbp, depth, percentile=95):
     return bbp_dark
 
 
-def fluorescence_dark_count(flr, depth):
+def fluorescence_dark_count(flr, depth,percentile=95):
     """
     Calculates an in situ dark count from the fluorescence sensor.
 
@@ -200,10 +200,11 @@ def fluorescence_dark_count(flr, depth):
             "300 and 400 metres.\nThe dark count correction "
             "cannot be made and fluorescence data can't be processed."
         )
-    dark_pctl5 = nanpercentile(flr_dark[mask], 5)
+    dark_pctl = nanpercentile(flr_dark[mask], percentile)
 
-    flr_dark -= dark_pctl5
+    flr_dark -= dark_pctl
     flr_dark[flr_dark < 0] = 0
+
     flr_dark = transfer_nc_attrs(getframe(), flr, flr_dark, "_dark")
 
     return flr_dark
