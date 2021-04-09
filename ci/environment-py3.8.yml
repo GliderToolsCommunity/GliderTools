@@ -1,5 +1,5 @@
 name: test_env_glidertools
-channels: 
+channels:
   - conda-forge
 dependencies:
   - python=3.8

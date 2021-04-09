@@ -14,6 +14,7 @@
 
 from pkg_resources import get_distribution
 
+
 release = get_distribution("glidertools").version
 version = ".".join(release.split(".")[:2])
 
@@ -101,7 +102,6 @@ exclude_patterns = ["_build"]
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
 # add_module_names = True
-
 
 
 # If true, sectionauthor and moduleauthor directives will be shown in the

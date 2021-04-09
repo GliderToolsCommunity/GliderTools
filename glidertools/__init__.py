@@ -22,6 +22,7 @@ from .plot import logo as make_logo
 from .plot import plot_functions as plot
 from .processing import *
 
+
 try:
     __version__ = get_distribution("glidertools").version
 except DistributionNotFound:

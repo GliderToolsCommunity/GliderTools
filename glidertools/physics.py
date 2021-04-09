@@ -4,9 +4,11 @@ from __future__ import print_function as _pf
 from __future__ import unicode_literals as _ul
 
 import warnings
+
 from inspect import currentframe as getframe
 
 from .helpers import GliderToolsWarning, transfer_nc_attrs
+
 
 try:
     _gsw_avail = True
@@ -193,7 +195,7 @@ if _gsw_avail:
         from numpy import nan, r_
 
         def pad_nan(a):
-            r_[a, nan]
+            return r_[a, nan]
 
         n2 = pad_nan(Nsquared(salt, temp, pres)[0])
 
@@ -209,8 +211,7 @@ if _gsw_avail:
 
         return n2
 
-    
-    # compute spice 
+    # compute spice
     def spice0(salt_PSU, temp_C, pres_db, lat, lon):
         """
         Calculate spiciness from glider measurements of salinity and temperature.
@@ -241,6 +242,7 @@ if _gsw_avail:
         average ~ 0.003 kg/m3
         """
         import gsw
+
         salt_abs = gsw.SA_from_SP(salt_PSU, pres_db, lon, lat)
         cons_temp = gsw.CT_from_t(salt_abs, temp_C, pres_db)
 
@@ -250,9 +252,9 @@ if _gsw_avail:
             getframe(),
             temp_C,
             spice0,
-            'spiciness0',
-            units=' ',
-            comment='',
-            standard_name='spiciness0',
+            "spiciness0",
+            units=" ",
+            comment="",
+            standard_name="spiciness0",
         )
         return spice0
