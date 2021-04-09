@@ -55,7 +55,7 @@ def test_sunrise_sunset_fail():
         sunrise, sunset = gt.optics.sunset_sunrise(time, lat, lon)
 
 
-@pytest.mark.parametrize('percentile', [95, 85, 50])
+@pytest.mark.parametrize("percentile", [95, 85, 50])
 def test_backscatter_dark_count(percentile):
     # create some synthetic data
     bbp = np.array([0.002, 0.0006, 0.0005, 0.0005, 0.0005])
@@ -68,7 +68,7 @@ def test_backscatter_dark_count(percentile):
     np.testing.assert_allclose(expected_bbp_dark, bbp_dark)
 
 
-@pytest.mark.parametrize('percentile', [95, 75, 50])
+@pytest.mark.parametrize("percentile", [95, 75, 50])
 def test_backscatter_dark_count_negative(percentile):
     # create some synthetic data
     bbp = np.array(
@@ -82,7 +82,7 @@ def test_backscatter_dark_count_negative(percentile):
     assert np.all(bbp_dark >= 0)
 
 
-@pytest.mark.parametrize('percentile', [95, 75, 50])
+@pytest.mark.parametrize("percentile", [95, 75, 50])
 def test_flr_dark_count(percentile):
     # create some synthetic data
     flr = np.array([200.0, 100.0, 52.0, 52.0])
@@ -95,7 +95,7 @@ def test_flr_dark_count(percentile):
     np.testing.assert_allclose(expected_flr_dark, flr_dark)
 
 
-@pytest.mark.parametrize('percentile', [95, 75, 50])
+@pytest.mark.parametrize("percentile", [95, 75, 50])
 def test_flr_dark_count_negative(percentile):
     # create some synthetic data
     flr = np.array(
