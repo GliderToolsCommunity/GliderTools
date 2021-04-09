@@ -126,7 +126,7 @@ def par_dark_count(par, dives, depth, time):
     return par_dark
 
 
-def backscatter_dark_count(bbp, depth,percentile=95):
+def backscatter_dark_count(bbp, depth, percentile=95):
     """
     Calculates an in situ dark count from the backscatter sensor.
 
@@ -158,7 +158,6 @@ def backscatter_dark_count(bbp, depth,percentile=95):
             "made and backscatter data can't be processed."
         )
 
-    
     dark_pctl = nanpercentile(bbp_dark[mask], percentile)
     bbp_dark -= dark_pctl
     bbp_dark[bbp_dark < 0] = 0
