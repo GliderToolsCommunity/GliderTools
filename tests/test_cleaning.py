@@ -1,4 +1,6 @@
-import glidertools as gt
+from glidertools.cleaning import horizontal_diff_outliers, outlier_bounds_iqr
+from glidertools.load import seaglider_basestation_netCDFs
+
 
 filenames = "./tests/data/p542*.nc"
 names = [
@@ -14,7 +16,7 @@ names = [
     "eng_qsp_PARuV",
 ]
 
-sg542 = gt.load.seaglider_basestation_netCDFs(
+sg542 = seaglider_basestation_netCDFs(
     filenames, names, return_merged=True, keep_global_attrs=False
 )
 
@@ -24,12 +26,12 @@ sg542_dat = sg542["sg_data_point"]
 def test_outlier_bounds():
     # does not test for soft bugs
     salt = sg542_dat["salinity"]
-    gt.cleaning.outlier_bounds_iqr(salt, multiplier=1.5)
+    outlier_bounds_iqr(salt, multiplier=1.5)
 
 
 def test_horizontal_outliers():
     # does not test for soft bugs
-    gt.cleaning.horizontal_diff_outliers(
+    horizontal_diff_outliers(
         sg542_dat["dives"],
         sg542_dat["ctd_depth"],
         sg542_dat["salinity"],

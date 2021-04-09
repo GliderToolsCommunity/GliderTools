@@ -14,6 +14,7 @@
 
 from pkg_resources import get_distribution
 
+
 release = get_distribution("glidertools").version
 version = ".".join(release.split(".")[:2])
 
