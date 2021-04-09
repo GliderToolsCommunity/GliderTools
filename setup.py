@@ -1,5 +1,6 @@
 from setuptools import setup
 
+
 setup(
     use_scm_version={
         "write_to": "glidertools/_version.py",
