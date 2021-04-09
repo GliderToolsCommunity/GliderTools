@@ -76,3 +76,26 @@ def test_backscatter_dark_count_negative(percentile):
     bbp_dark = gt.optics.backscatter_dark_count(bbp, depth, percentile)
     # in this case we just want to check if none of the values is negative!
     assert np.all(bbp_dark >=0)
+
+@pytest.mark.parametrize(percentile, [95, 75, 50]) 
+def test_flr_dark_count(percentile):
+    # create some synthetic data
+    flr = np.array([200.,100.,52.,52.]) 
+    depth = np.array([20,50,310,350])     
+    #select only depths between 200 and 400
+    mask = (depth > 300) & (depth < 400)  
+    #expected output
+    expected_flr_dark = flr - np.nanpercentile(flr[mask], percentile) 
+    flr_dark = gt.optics.fluorescence_dark_count(flr, depth, percentile)
+    np.testing.assert_allclose(expected_flr_dark, flr_dark)
+
+@pytest.mark.parametrize(percentile, [95, 75, 50]) 
+def test_flr_dark_count_negative(percentile):
+    # create some synthetic data
+    flr = np.array([200.,100.,152.,151.])  # this will result in negative values that should be zeroed out
+    depth = np.array([20,50,310,350])
+    mask = (depth > 300) & (depth < 400)
+    expected_flr_dark = flr - np.nanpercentile(flr[mask], percentile) 
+    flr_dark = gt.optics.fluorescence_dark_count(flr, depth, percentile)
+    # in this case we just want to check if none of the values is negative!
+    assert np.all(flr_dark >=0)
