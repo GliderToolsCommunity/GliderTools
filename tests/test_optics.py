@@ -1,7 +1,7 @@
-import pytest
 import numpy as np
-import glidertools as gt
+import pytest
 
+import glidertools as gt
 
 
 def test_sunrise_sunset():
