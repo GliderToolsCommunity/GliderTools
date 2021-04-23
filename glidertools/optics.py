@@ -112,7 +112,7 @@ def par_dark_count(par, depth, time, depth_percentile=90):
     hrs = time.astype("datetime64[h]") - time.astype("datetime64[D]")
     xi = ma.masked_inside(hrs.astype(int), 22, 2)  # find 23:01 hours
     yi = ma.masked_outside(
-        depth, *nanpercentile(depth[~isnan(par)], [depth_percentile, 100])
+        depth, *nanpercentile(depth[~isnan(par_arr)], [depth_percentile, 100])
     )  # pctl of depth
     i = ~(xi.mask | yi.mask)
     dark = nanmedian(par_arr[i])
