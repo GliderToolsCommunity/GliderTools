@@ -113,19 +113,19 @@ def par_dark_count(par, depth, time, depth_percentile=90):
     xi = ma.masked_inside(hrs.astype(int), 22, 2)  # find 23:01 hours
     yi = ma.masked_outside(
         depth, *nanpercentile(depth[~isnan(par)], [depth_percentile, 100])
-    ) # pctl of depth
+    )  # pctl of depth
     i = ~(xi.mask | yi.mask)
     dark = nanmedian(par_arr[i])
     par_dark = par_arr - dark
     par_dark[par_dark < 0] = 0
 
 
-def backscatter_dark_count(bbp, depth, percentile=95):
+def backscatter_dark_count(bbp, depth, percentile=5):
     """
     Calculates an in situ dark count from the backscatter sensor.
 
     The in situ dark count for the backscatter sensor is calculated from the
-    selected percentile between 200 and 400m. 
+    user-defined percentile between 200 and 400m.
 
     Parameters
     ----------
@@ -161,12 +161,12 @@ def backscatter_dark_count(bbp, depth, percentile=95):
     return bbp_dark
 
 
-def fluorescence_dark_count(flr, depth, percentile=95):
+def fluorescence_dark_count(flr, depth, percentile=5):
     """
     Calculates an in situ dark count from the fluorescence sensor.
 
     The in situ dark count for the fluorescence sensor is calculated from the
-    selected percentile between 300 and 400m.
+    user-defined percentile between 300 and 400m.
 
     Parameters
     ----------
