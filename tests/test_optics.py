@@ -113,6 +113,7 @@ def test_flr_dark_count_negative(percentile):
     assert np.all(flr_dark >= 0)
 
 
+@pytest.mark.parametrize("percentile", [90])
 def test_par_dark_count(percentile):
     #   from glidertools.optics import par_dark_count
     from pandas import date_range
