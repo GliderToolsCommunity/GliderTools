@@ -119,6 +119,8 @@ def par_dark_count(par, depth, time, depth_percentile=90):
     par_dark = par_arr - dark
     par_dark[par_dark < 0] = 0
 
+    return par_dark
+
 
 def backscatter_dark_count(bbp, depth, percentile=5):
     """
