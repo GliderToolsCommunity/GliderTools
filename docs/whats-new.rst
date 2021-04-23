@@ -21,6 +21,7 @@ What's New
 
     Bug fixes
     ~~~~~~~~~
+    - Dark count corrections for optical sensors(:pull:'110'). By 'Isabelle Giddy <https://github.com/isgiddy>'_.
 
 v2021.xx (unreleased)
 -------------------------
