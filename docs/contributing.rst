@@ -3,8 +3,9 @@ Contribution Guide
 =====================
 
 Contributions are highly welcomed and appreciated.  Every little help counts,
-so do not hesitate! You can make a high impact on ``glidertools`` just by using it and
-reporting `issues <https://github.com/GliderToolsCommunity/GliderTools/issues>`__.
+so do not hesitate! You can make a high impact on ``glidertools`` just by using it, being
+involved in `discussions <https://github.com/GliderToolsCommunity/GliderTools/discussions>`_
+ and reporting `issues <https://github.com/GliderToolsCommunity/GliderTools/issues>`__.
 
 The following sections cover some general guidelines
 regarding development in ``glidertools`` for maintainers and contributors.
@@ -24,12 +25,12 @@ Feature requests and feedback
 -----------------------------
 
 We are eager to hear about your requests for new features and any suggestions about the
-API, infrastructure, and so on. Feel free to start a discussion about these on the 
-`discussions tab <https://github.com/GliderToolsCommunity/GliderTools/discussions>`_ on github 
+API, infrastructure, and so on. Feel free to start a discussion about these on the
+`discussions tab <https://github.com/GliderToolsCommunity/GliderTools/discussions>`_ on github
 under the "ideas" section.
 
 After discussion with a few community members, and agreement that the feature should be added and who will work on it,
-a new issue should be opened. In the issue, please make sure to explain in detail how the feature should work and keep 
+a new issue should be opened. In the issue, please make sure to explain in detail how the feature should work and keep
 the scope as narrow as possible. This will make it easier to implement in small PRs.
 
 
@@ -68,8 +69,8 @@ Preparing Pull Requests
    to the upstream (main project), and create a branch::
 
     $ git clone git@github.com:YOUR_GITHUB_USERNAME/glidertools.git # clone to local machine
-    $ cd glidertools 
-    $ git remote add upstream git@github.com:GliderToolsCommunity/GliderTools.git # connect to upstream remote 
+    $ cd glidertools
+    $ git remote add upstream git@github.com:GliderToolsCommunity/GliderTools.git # connect to upstream remote
 
     # now, to fix a bug or add feature create your own branch off "master":
 
@@ -80,13 +81,13 @@ Preparing Pull Requests
 
 #. Set up a [conda](environment) with all necessary dependencies::
 
-    $ conda env create -f ci/environment-py3.8.yml 
+    $ conda env create -f ci/environment-py3.8.yml
 
 #. Activate your environment::
 
    $ conda activate test_env_glidertools
    *Make sure you are in this environment when working on changes in the future too.*
-   
+
 #. Install the GliderTools package::
 
    $ pip install -e . --no-deps
@@ -154,7 +155,7 @@ Preparing Pull Requests
 
 #. After your pull request is merged into the `GliderTools/master`, you will need
    to fetch those changes and rebase your master so that your master reflects the latest
-   version of GliderTools. The changes should be fetched and incorporated (rebase) also right 
+   version of GliderTools. The changes should be fetched and incorporated (rebase) also right
    before you are planning to introduce changes.::
 
      $ git checkout master # switch back to master branch
