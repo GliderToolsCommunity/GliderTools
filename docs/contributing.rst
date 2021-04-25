@@ -24,10 +24,13 @@ Feature requests and feedback
 -----------------------------
 
 We are eager to hear about your requests for new features and any suggestions about the
-API, infrastructure, and so on. Feel free to start a discussion about these on the `discussions tab <https://github.com/GliderToolsCommunity/GliderTools/discussions>`_ on github under the "ideas" section.
+API, infrastructure, and so on. Feel free to start a discussion about these on the 
+`discussions tab <https://github.com/GliderToolsCommunity/GliderTools/discussions>`_ on github 
+under the "ideas" section.
 
 After discussion with a few community members, and agreement that the feature should be added and who will work on it,
-a new issue should be opened. In the issue, please make sure to explain in detail how the feature should work and keep the scope as narrow as possible. This will make it easier to implement in small PRs.
+a new issue should be opened. In the issue, please make sure to explain in detail how the feature should work and keep 
+the scope as narrow as possible. This will make it easier to implement in small PRs.
 
 
 .. _reportbugs:
@@ -151,10 +154,11 @@ Preparing Pull Requests
 
 #. After your pull request is merged into the `GliderTools/master`, you will need
    to fetch those changes and rebase your master so that your master reflects the latest
-   version of GliderTools. The changes should be fetched and incorporated (rebase) also right before you are planning 
-   to introduce changes.::
+   version of GliderTools. The changes should be fetched and incorporated (rebase) also right 
+   before you are planning to introduce changes.::
 
      $ git checkout master # switch back to master branch
      $ git fetch upstream  # Download all changes from central upstream repo
-     $ git rebase upstream/master  # Apply the changes that have been made to central repo, since your last fetch, onto you master.
+     $ git rebase upstream/master  # Apply the changes that have been made to central repo,
+     $ # since your last fetch, onto you master.
      $ git branch -d your-bugfix-feature-branch-name  # to delete the branch
