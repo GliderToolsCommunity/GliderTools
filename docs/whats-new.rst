@@ -27,6 +27,12 @@ v2021.xx (unreleased)
 
 .. _whats-new.2021.xx:
 
+
+Breaking changes
+~~~~~~~~~~~~~~~~
+- Fixed processing/calc_oxygen (:pull: `116`, :issue: `112`) By `Callum Rollo <https://github.com/callumrollo>`_.
+
+
 Internal Changes
 ~~~~~~~~~~~~~~~~
 - Implemented code linting as part of the CI (:pull:`100`) By `Julius Busecke <https://github.com/jbusecke>`_.
