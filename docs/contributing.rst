@@ -141,7 +141,7 @@ Preparing Pull Requests
     `Project Contributors <https://glidertools.readthedocs.io/en/latest/authors.html>`_
     list via ``./docs/authors.md``.
 
-#. Finally, submit a pull request through the GitHub website using this data::
+#. Finally, submit a pull request (PR) through the GitHub website using this data::
 
     head-fork: YOUR_GITHUB_USERNAME/glidertools
     compare: your-branch-name
@@ -161,4 +161,4 @@ Preparing Pull Requests
      $ git fetch upstream  # Download all changes from central upstream repo
      $ git rebase upstream/master  # Apply the changes that have been made to central repo,
      $ # since your last fetch, onto you master.
-     $ git branch -d your-bugfix-feature-branch-name  # to delete the branch
+     $ git branch -d your-bugfix-feature-branch-name  # to delete the branch after PR is approved
