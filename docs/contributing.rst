@@ -3,8 +3,9 @@ Contribution Guide
 =====================
 
 Contributions are highly welcomed and appreciated.  Every little help counts,
-so do not hesitate! You can make a high impact on ``glidertools`` just by using it and
-reporting `issues <https://github.com/GliderToolsCommunity/GliderTools/issues>`__.
+so do not hesitate! You can make a high impact on ``glidertools`` just by using it, being
+involved in `discussions <https://github.com/GliderToolsCommunity/GliderTools/discussions>`_
+ and reporting `issues <https://github.com/GliderToolsCommunity/GliderTools/issues>`__.
 
 The following sections cover some general guidelines
 regarding development in ``glidertools`` for maintainers and contributors.
@@ -24,11 +25,13 @@ Feature requests and feedback
 -----------------------------
 
 We are eager to hear about your requests for new features and any suggestions about the
-API, infrastructure, and so on. Feel free to submit these as
-`issues <https://github.com/GliderToolsCommunity/GliderTools/issues/new>`__ with the label "feature request."
+API, infrastructure, and so on. Feel free to start a discussion about these on the
+`discussions tab <https://github.com/GliderToolsCommunity/GliderTools/discussions>`_ on github
+under the "ideas" section.
 
-Please make sure to explain in detail how the feature should work and keep the scope as
-narrow as possible. This will make it easier to implement in small PRs.
+After discussion with a few community members, and agreement that the feature should be added and who will work on it,
+a new issue should be opened. In the issue, please make sure to explain in detail how the feature should work and keep
+the scope as narrow as possible. This will make it easier to implement in small PRs.
 
 
 .. _reportbugs:
@@ -65,13 +68,13 @@ Preparing Pull Requests
 #. Clone your fork locally using `git <https://git-scm.com/>`_, connect your repository
    to the upstream (main project), and create a branch::
 
-    $ git clone git@github.com:YOUR_GITHUB_USERNAME/glidertools.git
+    $ git clone git@github.com:YOUR_GITHUB_USERNAME/glidertools.git # clone to local machine
     $ cd glidertools
-    $ git remote add upstream git@github.com:GliderToolsCommunity/GliderTools.git
+    $ git remote add upstream git@github.com:GliderToolsCommunity/GliderTools.git # connect to upstream remote
 
     # now, to fix a bug or add feature create your own branch off "master":
 
-    $ git checkout -b your-bugfix-feature-branch-name master
+    $ git checkout -b your-bugfix-feature-branch-name master # Create a new branch where you will make changes
 
    If you need some help with Git, follow this quick start
    guide: https://git.wiki.kernel.org/index.php/QuickStart
@@ -83,6 +86,7 @@ Preparing Pull Requests
 #. Activate your environment::
 
    $ conda activate test_env_glidertools
+   *Make sure you are in this environment when working on changes in the future too.*
 
 #. Install the GliderTools package::
 
@@ -138,7 +142,7 @@ Preparing Pull Requests
     `Project Contributors <https://glidertools.readthedocs.io/en/latest/authors.html>`_
     list via ``./docs/authors.md``.
 
-#. Finally, submit a pull request through the GitHub website using this data::
+#. Finally, submit a pull request (PR) through the GitHub website using this data::
 
     head-fork: YOUR_GITHUB_USERNAME/glidertools
     compare: your-branch-name
@@ -148,3 +152,14 @@ Preparing Pull Requests
 
    The merged pull request will undergo the same testing that your local branch
    had to pass when pushing.
+
+#. After your pull request is merged into the `GliderTools/master`, you will need
+   to fetch those changes and rebase your master so that your master reflects the latest
+   version of GliderTools. The changes should be fetched and incorporated (rebase) also right
+   before you are planning to introduce changes.::
+
+     $ git checkout master # switch back to master branch
+     $ git fetch upstream  # Download all changes from central upstream repo
+     $ git rebase upstream/master  # Apply the changes that have been made to central repo,
+     $ # since your last fetch, onto you master.
+     $ git branch -d your-bugfix-feature-branch-name  # to delete the branch after PR is approved
