@@ -13,10 +13,6 @@ ds_dict = seaglider_basestation_netCDFs(filenames, names, keep_global_attrs=Fals
 
 dat = ds_dict["sg_data_point"]
 
-# start tests
-def test_dummy():
-    """WE REALLY NEED TO ADD TESTS!!! THESE JUST TEST THE BASIC IMPORT!!!"""
-    assert 1 == 1
 
 
 def test_no_warms():
