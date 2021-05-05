@@ -134,6 +134,10 @@ class plot_functions(object):
         robust = kwargs.pop("robust", True)
         gridding_dz = kwargs.pop("gridding_dz", 1)
 
+        # set default shading and rasterized for pcolormesh (can be overriden by user)
+        kwargs.setdefault("shading", "nearest")
+        kwargs.setdefault("rasterized", "True")
+
         x, y, z, name = _process_2D_plot_args(args, gridding_dz=gridding_dz)
         m = (~z.mask).any(axis=1)
 
@@ -148,7 +152,7 @@ class plot_functions(object):
         else:
             fig = ax.get_figure()
 
-        im = ax.pcolormesh(x, y, z, rasterized=True, **kwargs)
+        im = ax.pcolormesh(x, y, z, **kwargs)
         ax.cb = colorbar(mappable=im, pad=0.02, ax=ax, fraction=0.05)
         ylim = nanpercentile(y[m], [100, 0])
         ax.set_ylim(ylim)
