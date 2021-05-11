@@ -23,7 +23,7 @@ glidertools
 
 Glider tools is a Python 3.6+ package designed to process data from the first level of processing to a science ready dataset (delayed mode quality control). The package is designed to easily import data to a standard column format (numpy.ndarray or pandas.DataFrame). Cleaning and smoothing functions are flexible and can be applied as required by the user. We provide examples and demonstrate best practices as developed by the SOCCO Group (http://socco.org.za/).
 
-Please cite the original publication of this package (https://doi.org/10.3389/fmars.2019.00738) and the software package (https://doi.org/10.5281/zenodo.4075238).
+Please cite the original publication of this `package <https://doi.org/10.3389/fmars.2019.00738>`_ and the software `package <https://doi.org/10.5281/zenodo.4075238>`_.
 
 Installation
 ------------
@@ -56,8 +56,7 @@ These should install automatically with ``pip install package_name``:
 How you can contribute
 ----------------------
 - Join the community by introducing yourself `here <https://github.com/GliderToolsCommunity/GliderTools/discussions/47>`_ (no need to be a Python or Git guru! Just say what you are working with and join the discussion)
-- Error reporting with using GitLab (https://github.com/GliderToolsCommunity/GliderTools/issues/new). Please copy the entire error message (even if it's long).
-- Detailed error reporting so users know where the fault lies.
+- If you find an error, please report it on `Github <https://github.com/GliderToolsCommunity/GliderTools/issues/new>`_. Please copy the entire error message (even if it's long).
 - Oxygen processing is rudimentary so far but we are on it and happy to get your support `here <https://github.com/GliderToolsCommunity/GliderTools/discussions/74>`_
 
 For contributing follow the `instructions <https://glidertools.readthedocs.io/en/latest/contributing.html>`_
