@@ -13,7 +13,7 @@ dependencies:
   - tqdm
   - matplotlib
   - gsw # TODO: We should consider making this optional?
-  - skyfield 
+  - skyfield
   - pip
   - pip:
     - seawater
