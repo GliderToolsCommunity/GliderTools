@@ -48,3 +48,4 @@ Internal Changes
 ~~~~~~~~~~~~~~~~
 - Migration of CI to conda based workflow with multiple python versions. (:pull:`54`)  By `Julius Busecke <https://github.com/jbusecke>`_.
 - Revamp distribution actions. (:pull:`82`) By `Julius Busecke <https://github.com/jbusecke>`_.
+- Migrate from astral to skyfield (:pull:'121') By 'Isabelle Giddy <https://github.com/isgiddy>'_.
