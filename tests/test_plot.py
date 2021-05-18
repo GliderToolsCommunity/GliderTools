@@ -18,9 +18,9 @@ def test_no_warns():
     """Check gt_plt() raises no warnings in pcolormesh."""
     with pytest.warns(None) as warnings:
         import warnings
-        warnings.warn(UserWarning, 'Just Testing')
+        warnings.warn('Just Testing', UserWarning)
         gt_plt(dat.dives, dat.ctd_pressure, dat.salinity)
-     
+    
     if len(record) > 0:
         raise AssertionError(
                 "Warnings were raised: " + ", ".join([str(w) for w in warnings])
