@@ -18,4 +18,13 @@ def test_no_warns():
     """Check gt_plt() raises no warnings in pcolormesh."""
     with pytest.warns(None) as record:
         gt_plt(dat.dives, dat.ctd_pressure, dat.salinity)
-    assert not record
+
+    # print warnings that were captured
+    if len(record) > 0:
+        print("Warnings were raised: " + ", ".join([str(w) for w in record]))
+
+    # Check the warning messages for statements we do not want to see
+    fail_message = (
+        "shading='flat' when X and Y have the same dimensions as C is deprecated"
+    )
+    assert not any([fail_message in str(r) for r in record])
