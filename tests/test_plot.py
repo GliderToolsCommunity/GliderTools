@@ -16,6 +16,12 @@ dat = ds_dict["sg_data_point"]
 
 def test_no_warns():
     """Check gt_plt() raises no warnings in pcolormesh."""
-    with pytest.warns(None) as record:
+    with pytest.warns(None) as warnings:
+        import warnings
+        warnings.warn(UserWarning, 'Just Testing')
         gt_plt(dat.dives, dat.ctd_pressure, dat.salinity)
-    assert not record
+     
+    if len(record) > 0:
+        raise AssertionError(
+                "Warnings were raised: " + ", ".join([str(w) for w in warnings])
+            )
