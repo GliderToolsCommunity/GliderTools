@@ -135,7 +135,7 @@ class plot_functions(object):
         gridding_dz = kwargs.pop("gridding_dz", 1)
 
         # set default shading and rasterized for pcolormesh (can be overriden by user)
-        # kwargs.setdefault("shading", "nearest")
+        kwargs.setdefault("shading", "nearest")
         kwargs.setdefault("rasterized", "True")
 
         x, y, z, name = _process_2D_plot_args(args, gridding_dz=gridding_dz)

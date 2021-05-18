@@ -19,7 +19,7 @@ def test_no_warns():
     with pytest.warns(None) as record:
         import warnings
 
-        warnings.warn("Some random warning")
+        warnings.warn("Some random warning")  # this should just be ignored.
         gt_plt(dat.dives, dat.ctd_pressure, dat.salinity)
 
     # print warnings that were captured
