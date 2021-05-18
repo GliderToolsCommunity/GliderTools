@@ -17,9 +17,6 @@ dat = ds_dict["sg_data_point"]
 def test_no_warns():
     """Check gt_plt() raises no warnings in pcolormesh."""
     with pytest.warns(None) as record:
-        import warnings
-
-        warnings.warn("Some random warning")  # this should just be ignored.
         gt_plt(dat.dives, dat.ctd_pressure, dat.salinity)
 
     # print warnings that were captured
