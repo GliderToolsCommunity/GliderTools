@@ -421,9 +421,6 @@ def sunset_sunrise(time, lat, lon):
 
     """
 
-
-def sunset_sunrise(time, lat, lon):
-
     from pandas import DataFrame
     import datetime
     import numpy as np
