@@ -525,6 +525,7 @@ def sunset_sunrise(time, lat, lon):
 
     return sunrise, sunset
 
+
 def quenching_correction(
     flr,
     bbp,
