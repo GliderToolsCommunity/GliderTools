@@ -27,12 +27,12 @@ def test_sunrise_sunset():
 
     # sunrise will be earlier in the SH in January
     assert sunrise[0] < sunrise[2]
-    
+
     # expect sunrise at the 4am, 7am and 11am for these times and latitudes
     # high latitude should output polar night default 11:59 for sunrise and 12:01 for sunset
     assert pd.to_datetime(sunrise[0]).hour == 4
     assert pd.to_datetime(sunrise[1]).hour == 7
-    assert pd.to_datetime(sunrise[2]).hour == 11 
+    assert pd.to_datetime(sunrise[2]).hour == 11
 
     # high latitude should output polar night default 11:59 for sunrise and 12:01 for sunset
     assert pd.to_datetime(sunrise[2]).hour == 11
