@@ -1,7 +1,7 @@
 import pytest
 
 
-def test_sunrise_sunset_skyfield():
+def test_sunrise_sunset():
     """
     Tests if sunrise/sunset:
         1. can run
