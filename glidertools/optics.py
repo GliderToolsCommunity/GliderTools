@@ -524,8 +524,6 @@ def sunset_sunrise(time, lat, lon):
     sunrise, sunset = df_reidx[["sunrise", "sunset"]].values.T
 
     return sunrise, sunset
-    return sunrise, sunset
-
 
 def quenching_correction(
     flr,
