@@ -103,6 +103,7 @@ def par_dark_count(par, depth, time, depth_percentile=90):
         The par data corrected for the in situ dark value in units uE/m2/sec.
     """
     from numpy import array, isnan, ma, nanmedian, nanpercentile
+    import warnings
 
     par_arr = array(par)
     depth = array(depth)
@@ -110,7 +111,14 @@ def par_dark_count(par, depth, time, depth_percentile=90):
 
     # DARK CORRECTION FOR PAR
     hrs = time.astype("datetime64[h]") - time.astype("datetime64[D]")
-    xi = ma.masked_inside(hrs.astype(int), 22, 2)  # find 23:01 hours
+    xi = ma.masked_inside(hrs.astype(int), 21, 5)  # find hours between 22:00 and 3:00
+    if ma.sum(xi) < 1:
+        warnings.warn(
+            "There are no reliable night time measurements. This dark count correction cannot be "
+            "cannot be trusted",
+            UserWarning,
+        )
+
     yi = ma.masked_outside(
         depth, *nanpercentile(depth[~isnan(par_arr)], [depth_percentile, 100])
     )  # pctl of depth
@@ -144,14 +152,16 @@ def backscatter_dark_count(bbp, depth, percentile=5):
         The total backscatter data corrected for the in situ dark value.
     """
     from numpy import array, isnan, nanpercentile
+    import warnings
 
     bbp_dark = array(bbp)
     mask = (depth > 200) & (depth < 400)
     if (~isnan(bbp[mask])).sum() == 0:
-        raise UserWarning(
+        warnings.warn(
             "There are no backscatter measurements between 200 "
             "and 400 metres.The dark count correction cannot be "
-            "made and backscatter data can't be processed."
+            "made and backscatter data can't be processed.",
+            UserWarning,
         )
 
     dark_pctl = nanpercentile(bbp_dark[mask], percentile)
@@ -186,15 +196,17 @@ def fluorescence_dark_count(flr, depth, percentile=5):
 
     """
     from numpy import array, isnan, nanpercentile
+    import warnings
 
     mask = (depth > 300) & (depth < 400)
     flr_dark = array(flr)
 
     if (~isnan(flr_dark[mask])).sum() == 0:
-        raise UserWarning(
+        warnings.warn(
             "\nThere are no fluorescence measurements between "
             "300 and 400 metres.\nThe dark count correction "
-            "cannot be made and fluorescence data can't be processed."
+            "cannot be made and fluorescence data can't be processed.",
+            UserWarning,
         )
     dark_pctl = nanpercentile(flr_dark[mask], percentile)
     flr_dark -= dark_pctl
