@@ -87,6 +87,7 @@ def test_backscatter_dark_count_negative(percentile):
 
 def test_backscatter_dark_count_warning():
     from glidertools.optics import backscatter_dark_count
+    import warnings
 
     # create some synthetic data
     percentile = 50
@@ -157,3 +158,20 @@ def test_par_dark_count(percentile):
     )  # only use values in the 90% percentile of depths and between 23:00 and 01:00
     par_dark = par_dark_count(par, depth, time, percentile)
     np.testing.assert_allclose(expected_par_dark, par_dark)
+
+
+def test_par_dark_count_warning():
+    from glidertools.optics import par_dark_count
+    from pandas import date_range
+    import warnings
+
+    # create some synthetic data
+    percentile = 90
+    par = np.array([34, 23.0, 0.89, 0.89])
+    depth = np.array([10, 20, 310, 350])
+    time = date_range("2018-12-01 10:00", "2018-12-03 20:00", 4)
+    # this will trigger the warning  (no values between 200 and 400m)
+    with pytest.warns(
+        UserWarning
+    ):  # this line will fail if the command below does not actually raise a warning!
+        par_dark_count(par, depth, time, percentile)
