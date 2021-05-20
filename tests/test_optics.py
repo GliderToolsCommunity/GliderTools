@@ -85,6 +85,21 @@ def test_backscatter_dark_count_negative(percentile):
     assert np.all(bbp_dark >= 0)
 
 
+def test_backscatter_dark_count_warning():
+    from glidertools.optics import backscatter_dark_count
+
+    # create some synthetic data
+    percentile = 50
+    bbp = np.array([0.002, 0.0006, 0.005, 0.005])
+    depth = np.array(
+        [50, 60, 70, 110]
+    )  # this will trigger the warning  (no values between 200 and 400m)
+    with pytest.warns(
+        UserWarning
+    ):  # this line will fail if the command below does not actually raise a warning!
+        backscatter_dark_count(bbp, depth, percentile)
+
+
 @pytest.mark.parametrize("percentile", [5, 50, 95])
 def test_flr_dark_count(percentile):
     from glidertools.optics import fluorescence_dark_count
@@ -111,6 +126,20 @@ def test_flr_dark_count_negative(percentile):
     flr_dark = fluorescence_dark_count(flr, depth, percentile)
     # in this case we just want to check if none of the values is negative!
     assert np.all(flr_dark >= 0)
+
+
+def test_flr_dark_count_warning():
+    from glidertools.optics import fluorescence_dark_count
+
+    # create some synthetic data
+    percentile = 50
+    flr = np.array([200.0, 100.0, 52.0, 52.0])
+    depth = np.array([20, 50, 210, 250])
+
+    with pytest.warns(
+        UserWarning
+    ):  # this line will fail if the command below does not actually raise a warning!
+        fluorescence_dark_count(flr, depth, percentile)
 
 
 @pytest.mark.parametrize("percentile", [90])
