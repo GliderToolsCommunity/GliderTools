@@ -35,6 +35,10 @@ Documentation
 ~~~~~~~~~~~~~
 - Added conda installation instructions + badge. (:pull:`94`) By `Julius Busecke <https://github.com/jbusecke>`_.
 
+Bug fixes
+~~~~~~~~~
+- Replaced `skyfield` dependency with `astral`, fixing sunrise/sunset problems at high latitudes.  By `Isabelle Sindiswa Giddy <https://github.com/isgiddy>`_.
+
 v2021.03 (2021/3/30)
 -------------------------
 
