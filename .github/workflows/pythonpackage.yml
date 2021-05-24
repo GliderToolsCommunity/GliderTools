@@ -30,7 +30,6 @@ jobs:
       - name: Test the artifacts
         run: |
           python -m twine check dist/*
-          
       - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@v1.4.2
         with:
