@@ -13,10 +13,10 @@ dependencies:
   - tqdm
   - matplotlib
   - gsw
+  - skyfield
   - pip
   - pip:
     - seawater
-    - astral
     - codecov
     - pytest-cov
     - pytest-xdist
