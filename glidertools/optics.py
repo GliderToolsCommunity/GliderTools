@@ -78,20 +78,19 @@ def find_bad_profiles(
         return bad_dive_idx, bad_dive
 
 
-def par_dark_count(par, dives, depth, time):
+def par_dark_count(par, depth, time, depth_percentile=90):
     """
     Calculates an in situ dark count from the PAR sensor.
 
     The in situ dark count for the PAR sensor is calculated from the median,
-    with masking applied for values before 23:01 and outside the 90th %
+    selecting only observations in the nighttime and in the 90th percentile of
+    the depth sampled (i.e. the deepest depths measured)
 
     Parameters
     ----------
 
     par: numpy.ndarray or pandas.Series
         The par array after factory calibration in units uE/m2/sec.
-    dives: numpy.ndarray or pandas.Series
-        The dive count (round is down dives, 0.5 is up dives).
     depth: numpy.ndarray or pandas.Series
         The depth array in metres.
     time: numpy.ndarray or pandas.Series
@@ -104,34 +103,39 @@ def par_dark_count(par, dives, depth, time):
         The par data corrected for the in situ dark value in units uE/m2/sec.
     """
     from numpy import array, isnan, ma, nanmedian, nanpercentile
+    import warnings
 
     par_arr = array(par)
-    dives = array(dives)
     depth = array(depth)
     time = array(time)
 
     # DARK CORRECTION FOR PAR
     hrs = time.astype("datetime64[h]") - time.astype("datetime64[D]")
-    xi = ma.masked_inside(hrs.astype(int), 22, 2)  # find 23:01 hours
+    xi = ma.masked_inside(hrs.astype(int), 21, 5)  # find hours between 22:00 and 3:00
+    if ma.sum(xi) < 1:
+        warnings.warn(
+            "There are no reliable night time measurements. This dark count correction cannot be "
+            "cannot be trusted",
+            UserWarning,
+        )
+
     yi = ma.masked_outside(
-        depth, *nanpercentile(depth[~isnan(par)], [90, 100])
-    )  # 90th pctl of depth
+        depth, *nanpercentile(depth[~isnan(par_arr)], [depth_percentile, 100])
+    )  # pctl of depth
     i = ~(xi.mask | yi.mask)
     dark = nanmedian(par_arr[i])
     par_dark = par_arr - dark
     par_dark[par_dark < 0] = 0
 
-    par_dark = transfer_nc_attrs(getframe(), par, par_dark, "_dark")
-
     return par_dark
 
 
-def backscatter_dark_count(bbp, depth):
+def backscatter_dark_count(bbp, depth, percentile=5):
     """
     Calculates an in situ dark count from the backscatter sensor.
 
     The in situ dark count for the backscatter sensor is calculated from the
-    95th percentile between 200 and 400m.
+    user-defined percentile between 200 and 400m.
 
     Parameters
     ----------
@@ -148,31 +152,33 @@ def backscatter_dark_count(bbp, depth):
         The total backscatter data corrected for the in situ dark value.
     """
     from numpy import array, isnan, nanpercentile
+    import warnings
 
     bbp_dark = array(bbp)
     mask = (depth > 200) & (depth < 400)
     if (~isnan(bbp[mask])).sum() == 0:
-        raise UserWarning(
+        warnings.warn(
             "There are no backscatter measurements between 200 "
             "and 400 metres.The dark count correction cannot be "
-            "made and backscatter data can't be processed."
+            "made and backscatter data can't be processed.",
+            UserWarning,
         )
-    dark_pctl5 = nanpercentile(bbp_dark[mask], 5)
 
-    bbp_dark -= dark_pctl5
+    dark_pctl = nanpercentile(bbp_dark[mask], percentile)
+    bbp_dark -= dark_pctl
     bbp_dark[bbp_dark < 0] = 0
 
     bbp_dark = transfer_nc_attrs(getframe(), bbp, bbp_dark, "_dark")
 
-    return bbp
+    return bbp_dark
 
 
-def fluorescence_dark_count(flr, depth):
+def fluorescence_dark_count(flr, depth, percentile=5):
     """
     Calculates an in situ dark count from the fluorescence sensor.
 
     The in situ dark count for the fluorescence sensor is calculated from the
-    95th percentile between 300 and 400m.
+    user-defined percentile between 300 and 400m.
 
     Parameters
     ----------
@@ -190,20 +196,22 @@ def fluorescence_dark_count(flr, depth):
 
     """
     from numpy import array, isnan, nanpercentile
+    import warnings
 
     mask = (depth > 300) & (depth < 400)
     flr_dark = array(flr)
 
     if (~isnan(flr_dark[mask])).sum() == 0:
-        raise UserWarning(
+        warnings.warn(
             "\nThere are no fluorescence measurements between "
             "300 and 400 metres.\nThe dark count correction "
-            "cannot be made and fluorescence data can't be processed."
+            "cannot be made and fluorescence data can't be processed.",
+            UserWarning,
         )
-    dark_pctl5 = nanpercentile(flr_dark[mask], 5)
-
-    flr_dark -= dark_pctl5
+    dark_pctl = nanpercentile(flr_dark[mask], percentile)
+    flr_dark -= dark_pctl
     flr_dark[flr_dark < 0] = 0
+
     flr_dark = transfer_nc_attrs(getframe(), flr, flr_dark, "_dark")
 
     return flr_dark
