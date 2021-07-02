@@ -13,10 +13,10 @@ dependencies:
   - tqdm
   - matplotlib
   - gsw # TODO: We should consider making this optional?
+  - skyfield
   - pip
   - pip:
     - seawater
-    - astral
     - codecov
     - pytest-cov
     - pytest-xdist

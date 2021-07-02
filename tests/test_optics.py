@@ -10,33 +10,36 @@ def test_sunrise_sunset():
         3. if the output is correct-ish
     """
     import numpy as np
+    import pandas as pd
 
-    import glidertools as gt
+    from glidertools.optics import sunset_sunrise
 
     time = [
         np.datetime64("2000-01-01"),
         np.datetime64("2000-01-02"),
         np.datetime64("2000-01-03"),
     ]
-    lat = -35, 35, 45
+    lat = -35, 45, 80
     lon = 0, 0, 0
-    sunrise, sunset = gt.optics.sunset_sunrise(time, lat, lon)
+    sunrise, sunset = sunset_sunrise(time, lat, lon)
 
-    # Two entries, there should be two outputs
+    # Three entries, there should be three outputs
     assert len(sunrise) == len(lat)
 
-    # sunrise will be earlier for the SH in January
-    assert sunrise[0] < sunrise[1]
+    # sunrise will be earlier in the SH in January
+    assert sunrise[0] < sunrise[2]
 
+    # expect sunrise at the 4am, 7am and 11am for these times and latitudes
+    # high latitude should output polar night default 11:59 for sunrise and 12:01 for sunset
+    assert pd.to_datetime(sunrise[0]).hour == 4
+    assert pd.to_datetime(sunrise[1]).hour == 7
+    assert pd.to_datetime(sunrise[2]).hour == 11
 
-def test_sunrise_sunset_fail():
-    """
-    This is a test to make us aware that the astropy will fail if
-    the latitude is beyond where the sun sets or rises.
-    Perhaps we should add a length of day catch?
-    """
-    import numpy as np
+    # high latitude should output polar night default 11:59 for sunrise and 12:01 for sunset
+    assert pd.to_datetime(sunrise[2]).hour == 11
+    assert pd.to_datetime(sunrise[2]).minute == 59
 
+<<<<<<< HEAD
     import glidertools as gt
 
     time = [
@@ -175,3 +178,7 @@ def test_par_dark_count_warning():
         UserWarning
     ):  # this line will fail if the command below does not actually raise a warning!
         par_dark_count(par, depth, time, percentile)
+=======
+    assert pd.to_datetime(sunset[2]).hour == 12
+    assert pd.to_datetime(sunset[2]).minute == 1
+>>>>>>> 5db12d687b3b74152c4c351b58826336c0455021

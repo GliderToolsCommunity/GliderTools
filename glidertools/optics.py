@@ -405,7 +405,7 @@ def sunset_sunrise(time, lat, lon):
     """
     Calculates the local sunrise/sunset of the glider location.
 
-    The function uses the Astral package to calculate the sunrise and sunset
+    The function uses the Skyfield package to calculate the sunrise and sunset
     times using the date, latitude and longitude. The times are returned
     rather than day or night indices, as it is more flexible for the quenching
     correction.
@@ -428,9 +428,17 @@ def sunset_sunrise(time, lat, lon):
         An array of the sunset times.
 
     """
-    import astral as ast
-    from astral.sun import sun
+
     from pandas import DataFrame
+    import datetime
+    import numpy as np
+    import pandas as pd
+
+    from skyfield import api
+
+    ts = api.load.timescale()
+    eph = api.load("de421.bsp")
+    from skyfield import almanac
 
     df = DataFrame.from_dict(dict([("time", time), ("lat", lat), ("lon", lon)]))
 
@@ -438,25 +446,89 @@ def sunset_sunrise(time, lat, lon):
     df = df.set_index(df.time.values.astype("datetime64[D]"))
 
     # groupby days and find sunrise for unique days
+    # groupby days and find sunrise/sunset for unique days
     grp_avg = df.groupby(df.index).mean()
     date = grp_avg.index.to_pydatetime()
+    date = grp_avg.index
 
-    sunrise_observer = []
+    time_utc = ts.utc(date.year, date.month, date.day, date.hour)
+    time_utc_offset = ts.utc(
+        date.year, date.month, date.day + 1, date.hour
+    )  # add one day for each unique day to compute sunrise and sunset pairs
+
+    bluffton = []
     for i in range(len(grp_avg.lat)):
-        sunrise_observer.append(
-            ast.Observer(latitude=grp_avg.lat[i], longitude=grp_avg.lon[i])
-        )
+        bluffton.append(api.wgs84.latlon(grp_avg.lat[i], grp_avg.lon[i]))
+    bluffton = np.array(bluffton)
 
-    sunrise, sunset = [], []
-    for i in range(len(sunrise_observer)):
-        sun_info = sun(sunrise_observer[i], date[i])
-        sunrise.append(sun_info["sunrise"])
-        sunset.append(sun_info["sunset"])
+    sunrise = []
+    sunset = []
+    for n in range(len(bluffton)):
+
+        f = almanac.sunrise_sunset(eph, bluffton[n])
+        t, y = almanac.find_discrete(time_utc[n], time_utc_offset[n], f)
+
+        if not t:
+            if f(time_utc[n]):  # polar day
+                sunrise.append(
+                    pd.Timestamp(
+                        date[n].year, date[n].month, date[n].day, 0, 1
+                    ).to_datetime64()
+                )
+                sunset.append(
+                    pd.Timestamp(
+                        date[n].year, date[n].month, date[n].day, 23, 59
+                    ).to_datetime64()
+                )
+            else:  # polar night
+                sunrise.append(
+                    pd.Timestamp(
+                        date[n].year, date[n].month, date[n].day, 11, 59
+                    ).to_datetime64()
+                )
+                sunset.append(
+                    pd.Timestamp(
+                        date[n].year, date[n].month, date[n].day, 12, 1
+                    ).to_datetime64()
+                )
+
+        else:
+            sr = t[y == 1]  # y=1 sunrise
+            sn = t[y == 0]  # y=0 sunset
+
+            sunup = pd.to_datetime(sr.utc_iso()).tz_localize(None)
+            sundown = pd.to_datetime(sn.utc_iso()).tz_localize(None)
+
+            # this doesnt look very efficient at the moment, but I was having issues with getting the datetime64
+            # to be compatible with the above code to handle polar day and polar night
+
+            su = pd.Timestamp(
+                sunup.year[0],
+                sunup.month[0],
+                sunup.day[0],
+                sunup.hour[0],
+                sunup.minute[0],
+            ).to_datetime64()
+
+            sd = pd.Timestamp(
+                sundown.year[0],
+                sundown.month[0],
+                sundown.day[0],
+                sundown.hour[0],
+                sundown.minute[0],
+            ).to_datetime64()
+
+            sunrise.append(su)
+            sunset.append(sd)
+
+    sunrise = np.array(sunrise).squeeze()
+    sunset = np.array(sunset).squeeze()
 
     grp_avg["sunrise"] = sunrise
     grp_avg["sunset"] = sunset
+
     # reindex days to original dataframe as night
-    df_reidx = grp_avg.reindex(df.index).astype("datetime64[ns]")
+    df_reidx = grp_avg.reindex(df.index)
     sunrise, sunset = df_reidx[["sunrise", "sunset"]].values.T
 
     return sunrise, sunset
