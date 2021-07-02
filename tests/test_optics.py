@@ -54,6 +54,7 @@ def test_sunrise_sunset():
         0,
     )
 
+
 @pytest.mark.parametrize("percentile", [5, 50, 95])
 def test_backscatter_dark_count(percentile):
     from glidertools.optics import backscatter_dark_count
