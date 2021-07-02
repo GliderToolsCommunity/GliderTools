@@ -39,6 +39,21 @@ def test_sunrise_sunset():
     assert pd.to_datetime(sunrise[2]).hour == 11
     assert pd.to_datetime(sunrise[2]).minute == 59
 
+    import glidertools as gt
+
+    time = [
+        np.datetime64("2000-12-21"),
+        np.datetime64("2000-06-21"),
+    ]
+    lat = (
+        -80,
+        80,
+    )
+    lon = (
+        0,
+        0,
+    )
+
 @pytest.mark.parametrize("percentile", [5, 50, 95])
 def test_backscatter_dark_count(percentile):
     from glidertools.optics import backscatter_dark_count
