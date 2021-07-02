@@ -39,26 +39,6 @@ def test_sunrise_sunset():
     assert pd.to_datetime(sunrise[2]).hour == 11
     assert pd.to_datetime(sunrise[2]).minute == 59
 
-<<<<<<< HEAD
-    import glidertools as gt
-
-    time = [
-        np.datetime64("2000-12-21"),
-        np.datetime64("2000-06-21"),
-    ]
-    lat = (
-        -80,
-        80,
-    )
-    lon = (
-        0,
-        0,
-    )
-
-    with pytest.raises(ValueError):
-        sunrise, sunset = gt.optics.sunset_sunrise(time, lat, lon)
-
-
 @pytest.mark.parametrize("percentile", [5, 50, 95])
 def test_backscatter_dark_count(percentile):
     from glidertools.optics import backscatter_dark_count
@@ -178,7 +158,5 @@ def test_par_dark_count_warning():
         UserWarning
     ):  # this line will fail if the command below does not actually raise a warning!
         par_dark_count(par, depth, time, percentile)
-=======
     assert pd.to_datetime(sunset[2]).hour == 12
     assert pd.to_datetime(sunset[2]).minute == 1
->>>>>>> 5db12d687b3b74152c4c351b58826336c0455021
