@@ -168,7 +168,7 @@ def calc_glider_vert_velocity(time, depth):
     return velocity
 
 
-def calc_dive_phase(time, depth):
+def calc_dive_phase(time, depth, dive_depth_threshold=15):
     """
     Determine the glider dive phase
 
@@ -178,6 +178,8 @@ def calc_dive_phase(time, depth):
         glider time dimension
     depth : np.array [float]
         depth (m) or pressure (dbar) if depth not avail
+    dive_depth_threshold : int
+        minimum dive depth (m or dbar), should be less than your most shallow dive
 
     Returns
     -------
@@ -195,15 +197,17 @@ def calc_dive_phase(time, depth):
 
     phase[velocity > 0.5] = 1  # down dive
     phase[velocity < -0.5] = 4  # up dive
-    phase[(depth > 200) & (velocity >= -0.5) & (velocity <= 0.5)] = 3  # inflexion
-    phase[depth <= 200] = 0  # surface drift
+    phase[
+        (depth > dive_depth_threshold) & (velocity >= -0.5) & (velocity <= 0.5)
+    ] = 3  # inflexion
+    phase[depth <= dive_depth_threshold] = 0  # surface drift
     phase[isnan(phase)] = 6
     phase = phase.astype(int)
 
     return phase
 
 
-def calc_dive_number(time, depth):
+def calc_dive_number(time, depth, dive_depth_threshold=15):
     """
     Determine the glider dive number (based on dive phase)
 
@@ -213,6 +217,8 @@ def calc_dive_number(time, depth):
         glider time dimension
     depth : np.array [float]
         depth (m) or pressure (dbar) if depth not avail
+    dive_depth_threshold : int
+        minimum dive depth (m or dbar), should be less than your most shallow dive
 
     Returns
     -------
@@ -220,7 +226,7 @@ def calc_dive_number(time, depth):
         the dive number where down dives are x.0 and up dives are x.5
     """
 
-    phase = calc_dive_phase(time, depth)
+    phase = calc_dive_phase(time, depth, dive_depth_threshold)
 
     dive = dive_phase_to_number(phase)
 
