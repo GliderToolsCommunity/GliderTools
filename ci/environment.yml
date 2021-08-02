@@ -4,7 +4,7 @@ channels:
 dependencies:
   - numexpr
   - netCDF4
-  - pandas<1.3.0 #temporary fix see #https://github.com/GliderToolsCommunity/GliderTools/issues/136
+  - pandas
   - xarray
   - numpy
   - scikit-learn
