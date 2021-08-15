@@ -26,6 +26,7 @@ v2021.xx (unreleased)
 ---------------------
 
 .. _whats-new.2021.xx:
+- Changed the behavior of `find_dive_phase` and `calc_dive_number` to use a smaller depth threshold when determining a valid dive (15 dbar down from 200 dbar).  this is also now adjusteable. (:pull:`134`) By `Tom Hull <https://github.com/tomhull>`_.
 
 v2021.05 (2021/5/21)
 --------------------
