@@ -178,7 +178,7 @@ def calc_dive_phase(time, depth, dive_depth_threshold=15):
         glider time dimension
     depth : np.array [float]
         depth (m) or pressure (dbar) if depth not avail
-    dive_depth_threshold : int
+    dive_depth_threshold : [float]
         minimum dive depth (m or dbar), should be less than your most shallow dive
 
     Returns
@@ -217,7 +217,7 @@ def calc_dive_number(time, depth, dive_depth_threshold=15):
         glider time dimension
     depth : np.array [float]
         depth (m) or pressure (dbar) if depth not avail
-    dive_depth_threshold : int
+    dive_depth_threshold : [float]
         minimum dive depth (m or dbar), should be less than your most shallow dive
 
     Returns
