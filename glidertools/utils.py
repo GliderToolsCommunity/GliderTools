@@ -116,6 +116,7 @@ def merge_dimensions(df1, df2, interp_lim=3):
     """
 
     import xarray as xr
+    import pandas as pd
 
     from .helpers import GliderToolsError
 
@@ -129,7 +130,15 @@ def merge_dimensions(df1, df2, interp_lim=3):
 
     if same_type:
         df = df1.join(df2, sort=True, how="outer", rsuffix="_drop")
+        # Temporarily remove columns that are dtype datetime64 as these break the interpolation
+        df_no_interpolate = pd.DataFrame()
+        for key in list(df):
+            if pd.api.types.is_datetime64_dtype(df[key]):
+                df_no_interpolate[key] = df[key]
+                df = df.drop(key, axis=1)
         df = df.interpolate(limit=interp_lim).bfill(limit=interp_lim)
+        # Return removed datetime64 columns to dataframe
+        df = df.join(df_no_interpolate)
         return df.loc[df1.index]
     else:
         raise UserWarning("Both dataframe indicies need to be same dtype")
