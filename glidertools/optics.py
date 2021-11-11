@@ -98,7 +98,7 @@ def par_dark_count(par, depth, time, depth_percentile=90):
     depth_percentile: int
         User defined percentile for minimum dark depth. Defaults to 90
         so that samples from deepest 10 % of profile are used in correction
-        
+
     Returns
     -------
 
