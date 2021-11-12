@@ -1,1 +1,2 @@
 glidertools
+docutils<0.18
