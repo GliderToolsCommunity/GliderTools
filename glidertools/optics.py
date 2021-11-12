@@ -95,6 +95,9 @@ def par_dark_count(par, depth, time, depth_percentile=90):
         The depth array in metres.
     time: numpy.ndarray or pandas.Series
         The date & time array in a numpy.datetime64 format.
+    depth_percentile: int
+        User defined percentile for minimum dark depth. Defaults to 90
+        so that samples from deepest 10 % of profile are used in correction
 
     Returns
     -------
