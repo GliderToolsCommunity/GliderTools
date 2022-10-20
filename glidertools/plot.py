@@ -368,7 +368,7 @@ class plot_functions(object):
 
         ax.set_ylim(ax.get_ylim()[::-1])
         ax.set_ylabel("Depth (m)")
-        ax.set_xlabel("$\Delta$ Depth (m)")  # noqa: W605
+        ax.set_xlabel(r"$\Delta$ Depth (m)")  # noqa: W605
         ax.legend(loc=0)
 
         if add_colorbar:
@@ -436,6 +436,7 @@ class plot_functions(object):
             raise ImportError("You need to install plotly for `section3D` to work")
         import numpy as np
         import plotly.graph_objs as go
+
         from matplotlib import cm
         from pandas import Series
 
@@ -523,6 +524,7 @@ class plot_functions(object):
         savefig_kwargs : key-value pairs passed to ``Figure.savefig``
         """
         import matplotlib.backends.backend_pdf
+
         from matplotlib import pyplot as plt
 
         pdf = matplotlib.backends.backend_pdf.PdfPages(pdf_name)

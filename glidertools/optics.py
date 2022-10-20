@@ -105,8 +105,9 @@ def par_dark_count(par, depth, time, depth_percentile=90):
     par_dark: numpy.ndarray or pandas.Series
         The par data corrected for the in situ dark value in units uE/m2/sec.
     """
-    from numpy import array, isnan, ma, nanmedian, nanpercentile
     import warnings
+
+    from numpy import array, isnan, ma, nanmedian, nanpercentile
 
     par_arr = array(par)
     depth = array(depth)
@@ -154,8 +155,9 @@ def backscatter_dark_count(bbp, depth, percentile=5):
     bbp: numpy.ndarray or pandas.Series
         The total backscatter data corrected for the in situ dark value.
     """
-    from numpy import array, isnan, nanpercentile
     import warnings
+
+    from numpy import array, isnan, nanpercentile
 
     bbp_dark = array(bbp)
     mask = (depth > 200) & (depth < 400)
@@ -198,8 +200,9 @@ def fluorescence_dark_count(flr, depth, percentile=5):
         The fluorescence data corrected for the in situ dark value.
 
     """
-    from numpy import array, isnan, nanpercentile
     import warnings
+
+    from numpy import array, isnan, nanpercentile
 
     mask = (depth > 300) & (depth < 400)
     flr_dark = array(flr)
@@ -280,6 +283,7 @@ def par_fill_surface(par, dives, depth, max_curve_depth=100):
 
     """
     import numpy as np
+
     from scipy.optimize import curve_fit
 
     def dive_par_fit(depth, par):
@@ -348,6 +352,7 @@ def photic_depth(par, dives, depth, return_mask=False, ref_percentage=1):
     """
     import numpy as np
     import pandas as pd
+
     from scipy.stats import linregress
 
     def dive_slope(par, depth):
@@ -431,12 +436,10 @@ def sunset_sunrise(time, lat, lon):
         An array of the sunset times.
 
     """
-
-    from pandas import DataFrame
-    import datetime
     import numpy as np
     import pandas as pd
 
+    from pandas import DataFrame
     from skyfield import api
 
     ts = api.load.timescale()
@@ -608,6 +611,7 @@ def quenching_correction(
 
     import numpy as np
     import pandas as pd
+
     from scipy.interpolate import Rbf
 
     from .cleaning import rolling_window
@@ -737,7 +741,7 @@ def quenching_correction(
     # apply the minimum gradient algorithm to each dive
     quench_mask = grp.apply(lambda df: grad_min(df.depth, df.flr_dif))
     # fill the quench_layer subscripted to the photic layer
-    quenching_layer[photic_layer] = np.concatenate([l for l in quench_mask])
+    quenching_layer[photic_layer] = np.concatenate([el for el in quench_mask])
 
     # ################################### #
     #  DO THE QUENCHING CORRECTION MAGIC  #

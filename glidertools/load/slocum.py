@@ -26,6 +26,7 @@ def slocum_geomar_matfile(filename, verbose=True):
 
     import numpy as np
     import pandas as pd
+
     from scipy.io import loadmat
 
     mat = loadmat(filename)
