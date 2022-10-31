@@ -1,4 +1,4 @@
-from glidertools.mapping import (
+from glidertools.mapping import (  # noqa
     get_optimal_bins,
     grid_data,
     grid_flat_dataarray,

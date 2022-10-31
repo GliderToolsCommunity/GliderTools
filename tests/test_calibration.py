@@ -1,4 +1,4 @@
-from glidertools.calibration import (
+from glidertools.calibration import (  # noqa
     bottle_matchup,
     model_figs,
     model_metrics,
