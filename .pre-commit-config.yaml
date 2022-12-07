@@ -9,7 +9,7 @@ repos:
     - id: check-docstring-first
     - id: check-added-large-files
 
-- repo: https://gitlab.com/pycqa/flake8
+- repo: https://github.com/PyCQA/flake8
   rev: 3.7.9
   hooks:
     - id: flake8
