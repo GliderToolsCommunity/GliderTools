@@ -5,7 +5,7 @@ dependencies:
   - numexpr
   - netCDF4
   - pandas
-  - xarray >=v2022.10.0
+  - xarray >=2022.10.0
   - numpy
   - scikit-learn
   - scipy
