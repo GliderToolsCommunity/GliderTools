@@ -315,7 +315,7 @@ class QuadTree:
 
         #############
         # DIAGONALS #
-        xs, ys = (root.sizes / 2 ** root.max_depth) / 2
+        xs, ys = (root.sizes / 2**root.max_depth) / 2
         neighbours += [
             root.query_xy(self.xlim[0] - xs, self.ylim[0] - ys),  # TL
             root.query_xy(self.xlim[1] + xs, self.ylim[0] - ys),  # TR
@@ -464,13 +464,13 @@ def interp_leaf(
 
     # BASIS POINTS ###################################
     # xb is the flat basis points
-    xb, yb = np.concatenate([l.data for l in interp_leaves]).T
-    zb = z[np.concatenate([l.index for l in interp_leaves])]
+    xb, yb = np.concatenate([el.data for el in interp_leaves]).T
+    zb = z[np.concatenate([el.index for el in interp_leaves])]
 
     # NEIGHBOURHOOD WEIGHTS ###########################
     # note that neighbourhood weights are calculated only with
     # the basis points and not with the interpolation
-    ii = [get_leaf_interp_points(l, xi, yi) for l in interp_leaves]
+    ii = [get_leaf_interp_points(el, xi, yi) for el in interp_leaves]
     ii = np.array(ii).any(axis=0)
     xn = xi[ii]
     yn = yi[ii]
@@ -694,10 +694,12 @@ def interp_obj(  # noqa: C901
         return model
 
     import multiprocessing as mp
+
     from functools import partial
     from time import perf_counter as timer
 
     import xarray as xr
+
     from sklearn import linear_model
 
     if (n_cpus is None) | (n_cpus == 0):
