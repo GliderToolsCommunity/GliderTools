@@ -327,7 +327,7 @@ def read_nc_files_strings(files, keys, verbose=True):
         df[col] = df[col].str.encode("ascii", "ignore").str.decode("ascii")
         try:
             df[col] = df[col].values.astype(float)
-        except:
+        except ValueError:
             pass
     df["dives"] = idx
 
@@ -584,11 +584,11 @@ def make_xr_dataset(
             coords[i] = coord + "_dt64"
 
     xds = (
-        df.reset_index(drop=True)
-        .to_xarray()
-        .drop("index")
-        .rename({"index": index_name})
+        df.to_xarray()
+        .drop_indexes(df.index.name)
+        .reset_coords()
         .set_coords(coords)
+        .rename_dims({df.index.name: index_name})
         .assign_attrs(global_attrs)
     )
 

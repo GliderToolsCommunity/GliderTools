@@ -74,7 +74,6 @@ def test_backscatter_dark_count_negative(percentile):
 
 def test_backscatter_dark_count_warning():
     from glidertools.optics import backscatter_dark_count
-    import warnings
 
     # create some synthetic data
     percentile = 50
@@ -132,8 +131,9 @@ def test_flr_dark_count_warning():
 
 @pytest.mark.parametrize("percentile", [90])
 def test_par_dark_count(percentile):
-    from glidertools.optics import par_dark_count
     from pandas import date_range
+
+    from glidertools.optics import par_dark_count
 
     # create some synthetic data
     par = np.array([34, 23.0, 0.89, 0.89])
@@ -148,9 +148,9 @@ def test_par_dark_count(percentile):
 
 
 def test_par_dark_count_warning():
-    from glidertools.optics import par_dark_count
     from pandas import date_range
-    import warnings
+
+    from glidertools.optics import par_dark_count
 
     # create some synthetic data
     percentile = 90
