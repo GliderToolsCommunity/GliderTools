@@ -19,7 +19,7 @@ The following people have made contributions to the project (in alphabetical ord
 - [Martin Mohrmann](https://github.com/MartinMohrmann) - Voice of the Ocean Foundation, Gothenburg, Sweden. (ORCID: [0000-0001-8056-4866](https://orcid.org/0000-0001-8056-4866))
 - [Sarah-Anne Nicholson](https://github.com/sarahnicholson) - Council for Scientific and Industrial Research: Cape Town, South Africa. (ORCID: [0000-0002-1226-1828](https://orcid.org/0000-0002-1226-1828))
 - [Marcel du Plessis](https://mduplessis.com) - University of Cape Town: Cape Town, Western Cape, South Africa. (ORCID: [0000-0003-2759-2467](https://orcid.org/0000-0003-2759-2467))
-- [Callum Rollo](https://callumrollo.github.io/) -  University of East Anglia, UK. (ORCID: [0000-0002-5134-7886](https://orcid.org/0000-0002-5134-7886))
+- [Callum Rollo](https://callumrollo.github.io/) - Voice of the Ocean Foundation, Gothenburg, Sweden. (ORCID: [0000-0002-5134-7886](https://orcid.org/0000-0002-5134-7886))
 - [Tommy Ryan-Keogh](https://github.com/tjryankeogh) - Council for Scientific and Industrial Research: Cape Town, South Africa. (ORCID: [0000-0001-5144-171X](https://orcid.org/0000-0001-5144-171X))
 - [Sebastiaan Swart](https://sebswart.com) - University of Gothenburg: Gothenburg, Sweden. (ORCID: [0000-0002-2251-8826](https://orcid.org/0000-0002-2251-8826))
 - [Soeren Thomsen](https://github.com/soerenthomsen) - LOCEAN/IPSL/CNRS/Sorbonne University: Paris, France. (ORCID: [0000-0002-0598-8340](https://orcid.org/0000-0002-0598-8340))
