@@ -2,7 +2,7 @@
 Glider Tools: profile data processing
 =====================================
 
-Glider tools is a Python 3.6+ package designed to process data from the first level of processing to a science ready dataset.
+Glider tools is a Python 3.8+ package designed to process data from the first level of processing to a science ready dataset.
 The package is designed to easily import data to a standard column format:
 ``numpy.ndarray``, ``pandas.DataFrame`` or ``xarray.DataArray`` (we recommend
 the latter which has full support for metadata).
