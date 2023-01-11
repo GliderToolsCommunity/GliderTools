@@ -17,7 +17,7 @@ glidertools
 .. image:: https://img.shields.io/badge/Journal-10.3389%2Ffmars.2019.00738-blue
         :target: https://doi.org/10.3389/fmars.2019.00738
 .. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.3360280.svg
-        :target: https://zenodo.org/badge/DOI/10.5281/zenodo.3360280.svg
+        :target: https://zenodo.org/record/4075239
 .. image:: https://codecov.io/gh/GliderToolsCommunity/GliderTools/branch/master/graph/badge.svg?token=FPUJ29TMSH
         :target: https://codecov.io/gh/GliderToolsCommunity/GliderTools
 
