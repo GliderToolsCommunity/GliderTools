@@ -1,4 +1,4 @@
-from glidertools.flo_functions import (
+from glidertools.flo_functions import (  # noqa
     flo_bback_total,
     flo_beta,
     flo_cdom,

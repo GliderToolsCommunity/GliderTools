@@ -21,9 +21,9 @@ glidertools
 .. image:: https://codecov.io/gh/GliderToolsCommunity/GliderTools/branch/master/graph/badge.svg?token=FPUJ29TMSH
         :target: https://codecov.io/gh/GliderToolsCommunity/GliderTools
 
-Glider tools is a Python 3.6+ package designed to process data from the first level of processing to a science ready dataset (delayed mode quality control). The package is designed to easily import data to a standard column format (numpy.ndarray or pandas.DataFrame). Cleaning and smoothing functions are flexible and can be applied as required by the user. We provide examples and demonstrate best practices as developed by the `SOCCO Group <http://socco.org.za/>`_.
+Glider tools is a Python 3.8+ package designed to process data from the first level of processing to a science ready dataset (delayed mode quality control). The package is designed to easily import data to a standard column format (numpy.ndarray or pandas.DataFrame). Cleaning and smoothing functions are flexible and can be applied as required by the user. We provide examples and demonstrate best practices as developed by the `SOCCO Group <http://socco.org.za/>`_, with early contributions from `Polar Gliders <https://sebswart.com/>`_ at the University of Gothenburg. GliderTools includes contributions from `VOTO <https://voiceoftheocean.org//>`_. We aim to implement Best Practices developed by `OceanGliders <https://www.oceangliders.org/>`_ in the ongoing `discussions <https://github.com/OceanGlidersCommunity>`_.
 
-Please cite the original publication of this `package <https://doi.org/10.3389/fmars.2019.00738>`_ and the software `package <https://doi.org/10.5281/zenodo.4075238>`_.
+Please cite the `original publication <https://doi.org/10.3389/fmars.2019.00738>`_ of this package and `the package itself <https://doi.org/10.5281/zenodo.4075238>`_.
 
 Installation
 ------------
@@ -55,9 +55,9 @@ These should install automatically with ``pip install package_name``:
 
 How you can contribute
 ----------------------
-- Join the community by introducing yourself `here <https://github.com/GliderToolsCommunity/GliderTools/discussions/47>`_ (no need to be a Python or Git guru! Just say what you are working with and join the discussion)
-- If you find an error, please report it on `Github <https://github.com/GliderToolsCommunity/GliderTools/issues/new>`_. Please copy the entire error message (even if it's long).
-- Oxygen processing is rudimentary so far but we are on it and happy to get your support `here <https://github.com/GliderToolsCommunity/GliderTools/discussions/74>`_
+- Join the community `by introducing yourself <https://github.com/GliderToolsCommunity/GliderTools/discussions/47>`_ (no need to be a Python or Git guru! Just say what you are working with and join the discussion)
+- If you find an error, please report it on `as a Github issue <https://github.com/GliderToolsCommunity/GliderTools/issues/new>`_. Please copy the entire error message (even if it's long).
+- Oxygen processing is rudimentary so far but we are on it and happy to get your support `in this discussion <https://github.com/GliderToolsCommunity/GliderTools/discussions/74>`_
 
 For contributing follow the `instructions <https://glidertools.readthedocs.io/en/latest/contributing.html>`_
 

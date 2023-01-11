@@ -115,6 +115,7 @@ def merge_dimensions(df1, df2, interp_lim=3):
         )
     """
 
+    import numpy as np
     import xarray as xr
 
     from .helpers import GliderToolsError
@@ -126,11 +127,20 @@ def merge_dimensions(df1, df2, interp_lim=3):
         raise GliderToolsError(msg)
 
     same_type = type(df1.index) == type(df2.index)  # noqa: E721
+    # turning datetime64[ns] to int64 first,
+    # because interpolate doesn't work on datetime-objects
 
     if same_type:
         df = df1.join(df2, sort=True, how="outer", rsuffix="_drop")
+        df.index = df1.index.astype(np.int64)
+        keys = df.select_dtypes(include=["datetime64[ns]"]).keys()
+        for key in keys:
+            df[key] = df[key].astype(np.int64)
         df = df.interpolate(limit=interp_lim).bfill(limit=interp_lim)
-        return df.loc[df1.index]
+        df.index = df1.index.astype("datetime64[ns]")
+        for key in keys:
+            df[key] = df[key].astype("datetime64[ns]")
+        return df.loc[df1.index.astype("datetime64[ns]")]
     else:
         raise UserWarning("Both dataframe indicies need to be same dtype")
 

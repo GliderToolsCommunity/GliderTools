@@ -2,11 +2,10 @@ name: test_env_glidertools
 channels:
   - conda-forge
 dependencies:
-  - python=3.8
   - numexpr
   - netCDF4
   - pandas
-  - xarray
+  - xarray >=2022.10.0
   - numpy
   - scikit-learn
   - scipy
