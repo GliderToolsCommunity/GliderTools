@@ -30,7 +30,7 @@ ds_dict = seaglider_basestation_netCDFs(
 
 merged = ds_dict["merged"]
 if "time" in merged:
-    merged = merged.drop(["time", "time_dt64"])
+    merged = merged.drop_vars(["time", "time_dt64"])
 dat = merged.rename(
     {
         "salinity": "salt_raw",
