@@ -58,6 +58,7 @@ def mixed_layer_depth(
         number of unique dives.
     """
     import numpy as np
+
     from pandas import DataFrame
 
     def mld_profile(dens_or_temp, depth, thresh, ref_depth, mask=False):
@@ -94,7 +95,7 @@ def mixed_layer_depth(
     )
 
     if return_as_mask:
-        return np.concatenate([l for l in mld])
+        return np.concatenate([el for el in mld])
     else:
         return mld
 

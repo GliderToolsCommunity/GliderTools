@@ -38,7 +38,7 @@ def rebuild_func_call(frame):
         if len(arg_valu) < 25:
             try:
                 float(arg_valu)
-            except:
+            except ValueError:
                 if (arg_valu == "True") | (arg_valu == "False"):
                     pass
                 else:

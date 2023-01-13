@@ -60,8 +60,8 @@ napoleon_numpy_docstring = True
 master_doc = "index"
 
 # General information about the project.
-project = u"GliderTools"
-copyright = u"GliderTools, 2019"
+project = "GliderTools"
+copyright = "GliderTools, 2019"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -230,8 +230,8 @@ latex_documents = [
     (
         "index",
         "ReadtheDocsTemplate.tex",
-        u"Read the Docs Template Documentation",
-        u"Read the Docs",
+        "Read the Docs Template Documentation",
+        "Read the Docs",
         "manual",
     ),
 ]
@@ -265,8 +265,8 @@ man_pages = [
     (
         "index",
         "readthedocstemplate",
-        u"Read the Docs Template Documentation",
-        [u"Read the Docs"],
+        "Read the Docs Template Documentation",
+        ["Read the Docs"],
         1,
     )
 ]
@@ -284,8 +284,8 @@ texinfo_documents = [
     (
         "index",
         "ReadtheDocsTemplate",
-        u"Read the Docs Template Documentation",
-        u"Read the Docs",
+        "Read the Docs Template Documentation",
+        "Read the Docs",
         "ReadtheDocsTemplate",
         "Miscellaneous",
     ),

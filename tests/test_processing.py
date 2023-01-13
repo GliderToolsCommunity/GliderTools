@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from glidertools.processing import (
+from glidertools.processing import (  # noqa
     calc_backscatter,
     calc_fluorescence,
     calc_oxygen,
