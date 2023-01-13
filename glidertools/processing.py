@@ -152,10 +152,10 @@ def calc_oxygen(
 
     """
 
+    import numpy as np
     import seawater as sw
 
     from numpy import abs, array, c_, isnan, median, ones
-    import numpy as np
     from pandas import Series
 
     from .cleaning import despike, outlier_bounds_iqr, savitzky_golay
