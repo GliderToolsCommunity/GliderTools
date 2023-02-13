@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+from __future__ import absolute_import as _ai
+from __future__ import print_function as _pf
+from __future__ import unicode_literals as _ul
 
 
 def slocum_geomar_matfile(filename, verbose=True):
