@@ -53,7 +53,7 @@ def test_is_dataset():
 
 
 def test_mixed_layer_depth():
-    mld = mixed_layer_depth(dat.dives, dat.depth, dat.temp_raw)
+    mld = mixed_layer_depth(dat, "temp_raw")
     assert mld.min() > 10
     assert mld.max() < 40
 

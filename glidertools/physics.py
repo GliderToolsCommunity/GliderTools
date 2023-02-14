@@ -7,6 +7,8 @@ import warnings
 
 from inspect import currentframe as getframe
 
+import numpy as np
+
 from .helpers import GliderToolsWarning, transfer_nc_attrs
 
 
@@ -27,9 +29,7 @@ except ImportError:
     warnings.warn(message, category=GliderToolsWarning)
 
 
-def mixed_layer_depth(
-    dives, depth, dens_or_temp, thresh=0.01, ref_depth=10, return_as_mask=False
-):
+def mixed_layer_depth(ds, variable, thresh=0.01, ref_depth=10, return_as_mask=False):
     """
     Calculates the MLD for ungridded glider array.
 
@@ -38,64 +38,64 @@ def mixed_layer_depth(
 
     Parameters
     ----------
-    dens_or_temp : array, dtype=float, shape=[n, ]
-        temperature/density of the entire dataset
-    depth : array, dtype=float, shape=[n, ]
-        depth for each measurement
-    dives : array, dtype=float, shape=[n, ]
-        will be used to calculate MLD per dive
-    thresh : float=0.01
-        threshold for difference
-    ref_depth : float=10
-        reference depth for difference
-    return_as_mask : bool=False
-        sets output to be a mask or an array of depth values
+    ds : xarray.Dataset Glider dataset
+    variable : str
+         variable that will be used for the threshold criteria
+    thresh : float=0.01 threshold for difference of variable
+    ref_depth : float=10 reference depth for difference
 
     Return
     ------
     mld : array
-        will be a mask of shape=[n, ] or an array of depths the length of the
+        will be an array of depths the length of the
         number of unique dives.
     """
-    import numpy as np
-
-    from pandas import DataFrame
-
-    def mld_profile(dens_or_temp, depth, thresh, ref_depth, mask=False):
-
-        i = np.nanargmin(np.abs(depth - ref_depth))
-
-        if np.isnan(dens_or_temp[i]):
-            mld = np.nan
-        else:
-            dd = dens_or_temp - dens_or_temp[i]  # density difference
-            dd[depth < ref_depth] = np.nan
-            abs_dd = abs(dd - thresh)
-            depth_idx = np.nanargmin(abs_dd)
-            mld = depth[depth_idx]
-
-        if mask:
-            return depth <= mld
-        else:
-            return mld
-
-    arr = np.c_[dens_or_temp, depth, dives]
-    col = ["dens", "depth", "dives"]
-    df = DataFrame(data=arr, columns=col)
-
-    grp = df.groupby("dives")
-    mld = grp.apply(
-        lambda g: mld_profile(
-            g.dens.values,
-            g.depth.values,
-            thresh,
-            ref_depth,
-            mask=return_as_mask,
-        )
+    ds = ds.reset_coords().to_pandas().set_index("dives")
+    mld = (
+        ds[[variable, "depth"]]
+        .groupby("dives")
+        .apply(mld_profile, variable, thresh, ref_depth)
     )
 
     if return_as_mask:
         return np.concatenate([el for el in mld])
+    else:
+        return mld
+
+
+def mld_profile(df, variable, thresh, ref_depth, mask=False):
+    direction = 1 if np.unique(df.index % 1 == 0) else -1
+    dens_or_temp = df[variable].values[:: int(direction)]
+    depth = df.depth.values[:: int(direction)]
+    i = np.nanargmin(np.abs(depth - ref_depth))
+
+    if np.isnan(dens_or_temp[i]):
+        mld = np.nan
+        idx_mld = np.nan
+        print(
+            """no observations at relevant depth for profile {}
+        """.format(
+                df.index[0]
+            )
+        )
+    else:
+        dd = dens_or_temp - dens_or_temp[i]  # density difference
+        dd[depth < ref_depth] = np.nan
+        mixed = abs(dd) > thresh
+        if len(mixed) > 0:
+            idx_mld = np.argmax(abs(dd) > thresh)
+            mld = depth[idx_mld]
+        else:
+            mld = np.nan
+            idx_mld = np.nan
+            print(
+                """threshold criterion never true (all mixed or shallow
+                profile) for profile {}""".format(
+                    df.index[0]
+                )
+            )
+    if mask:
+        return depth <= mld
     else:
         return mld
 
