@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-import xarray as xr
 import numpy as np
+import xarray as xr
 
 
 def voto_seaexplorer_nc(filename):
@@ -43,7 +43,7 @@ def voto_seaexplorer_dataset(ds):
 
 
 def add_dive_column(ds):
-    """ add dive column to dataset
+    """add dive column to dataset
 
     Parameters:
     -----------
@@ -54,9 +54,8 @@ def add_dive_column(ds):
     xarray.Dataset
         Dataset containing a dives column
     """
-    ds['dives'] = (
-        ['time'], np.where(
-            ds.profile_direction == 1,
-            ds.profile_num,
-            ds.profile_num+0.5))
+    ds["dives"] = (
+        ["time"],
+        np.where(ds.profile_direction == 1, ds.profile_num, ds.profile_num + 0.5),
+    )
     return ds
