@@ -341,7 +341,7 @@ def process_time(files, df):
 
         # realistic upper and lower limits since 1970
         tmin = np.datetime64("2000-01-01 00:00:00", "s")
-        tmax = np.datetime64("2025-01-01 00:00:00", "s")
+        tmax = np.datetime64("2030-01-01 00:00:00", "s")
         lo_lim = (tmin - t0).astype(int)
         up_lim = (tmax - t0).astype(int)
 
