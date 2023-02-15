@@ -64,36 +64,34 @@ def mixed_layer_depth(ds, variable, thresh=0.01, ref_depth=10, return_as_mask=Fa
 
 
 def mld_profile(df, variable, thresh, ref_depth, mask=False):
-    direction = 1 if np.unique(df.index % 1 == 0) else -1
-    dens_or_temp = df[variable].values[:: int(direction)]
-    depth = df.depth.values[:: int(direction)]
-    i = np.nanargmin(np.abs(depth - ref_depth))
-
-    if np.isnan(dens_or_temp[i]):
+    df.dropna(subset=[variable])
+    if np.nanmin(np.abs(df.depth.values - ref_depth)) > 5:
+        message = """no observations within 5 m of ref_depth for dive {}
+                """.format(df.index[0])
+        warnings.warn(message, category=GliderToolsWarning)
         mld = np.nan
-        idx_mld = np.nan
-        print(
-            """no observations at relevant depth for profile {}
-        """.format(
-                df.index[0]
-            )
-        )
     else:
-        dd = dens_or_temp - dens_or_temp[i]  # density difference
+        direction = 1 if np.unique(df.index % 1 == 0) else -1
+        # create arrays in order of increasing depth
+        var_arr = df[variable].values[:: int(direction)]
+        depth = df.depth.values[:: int(direction)]
+        # get index closest to ref_depth
+        i = np.nanargmin(np.abs(depth - ref_depth))
+        # create difference array for threshold variable
+        dd = var_arr - var_arr[i]
+        # mask out all values that are shallower then ref_depth
         dd[depth < ref_depth] = np.nan
-        mixed = abs(dd) > thresh
+        # get all values in difference array within treshold range
+        mixed = dd[abs(dd) > thresh]
         if len(mixed) > 0:
             idx_mld = np.argmax(abs(dd) > thresh)
             mld = depth[idx_mld]
         else:
             mld = np.nan
-            idx_mld = np.nan
-            print(
-                """threshold criterion never true (all mixed or shallow
-                profile) for profile {}""".format(
-                    df.index[0]
-                )
-            )
+            message = """threshold criterion never true (all mixed or shallow
+            profile) for profile {}""".format(
+                df.index[0])
+            warnings.warn(message, category=GliderToolsWarning)
     if mask:
         return depth <= mld
     else:
