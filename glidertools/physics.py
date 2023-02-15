@@ -67,7 +67,9 @@ def mld_profile(df, variable, thresh, ref_depth, mask=False):
     df.dropna(subset=[variable])
     if np.nanmin(np.abs(df.depth.values - ref_depth)) > 5:
         message = """no observations within 5 m of ref_depth for dive {}
-                """.format(df.index[0])
+                """.format(
+            df.index[0]
+        )
         warnings.warn(message, category=GliderToolsWarning)
         mld = np.nan
     else:
@@ -90,7 +92,8 @@ def mld_profile(df, variable, thresh, ref_depth, mask=False):
             mld = np.nan
             message = """threshold criterion never true (all mixed or shallow
             profile) for profile {}""".format(
-                df.index[0])
+                df.index[0]
+            )
             warnings.warn(message, category=GliderToolsWarning)
     if mask:
         return depth <= mld
