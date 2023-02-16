@@ -64,8 +64,10 @@ def mixed_layer_depth(ds, variable, thresh=0.01, ref_depth=10, return_as_mask=Fa
 
 
 def mld_profile(df, variable, thresh, ref_depth, mask=False):
-    df.dropna(subset=[variable])
-    if np.nanmin(np.abs(df.depth.values - ref_depth)) > 5:
+    df = df.dropna(subset=[variable, 'depth'])
+    if len(df) == 0:
+        mld = np.nan
+    elif np.nanmin(np.abs(df.depth.values - ref_depth)) > 5:
         message = """no observations within 5 m of ref_depth for dive {}
                 """.format(
             df.index[0]
