@@ -106,34 +106,6 @@ def _mask_depth(ds, depths, above=True):
     return mask.values
 
 
-def mask_to_depth_array(dives, depth, var):
-    """
-    Use when function returns a boolean section (as a mask) and you would
-    like to return the depth of the positive mask (True) for each dive. This is
-    useful for cases like MLD which returns a mask. Note that this is for
-    ungridded data in "series" format.
-
-    Parameters
-    ----------
-    dives : np.array, dtype=float, shape=[n, ]
-        discrete dive numbers (down = d.0; up = d.5) that matches depth and var
-        length
-    depth : np.array, dtype=float, shape=[n, ]
-        depth of each measurement
-    var : np.array, dtype=bool, shape=[n,]
-        mask array
-
-    """
-
-    from numpy import array, diff, r_
-    from pandas import Series
-
-    i = r_[False, diff(var)].astype(bool)
-    idx_depth = Series(array(depth)[i], index=array(dives)[i])
-
-    return idx_depth
-
-
 def merge_dimensions(df1, df2, interp_lim=3):
     """
     Merges variables measured at different time intervals. Glider data may be

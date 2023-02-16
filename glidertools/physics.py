@@ -30,7 +30,7 @@ except ImportError:
 
 
 def mixed_layer_depth(
-    ds, variable, thresh=0.01, ref_depth=10, return_as_mask=False, verbose=True
+    ds, variable, thresh=0.01, ref_depth=10, verbose=True
 ):
     """
     Calculates the MLD for ungridded glider array.
@@ -58,16 +58,12 @@ def mixed_layer_depth(
     mld = (
         ds[[variable, "depth"]]
         .groupby("dives")
-        .apply(mld_profile, variable, thresh, ref_depth, return_as_mask, verbose)
+        .apply(mld_profile, variable, thresh, ref_depth, verbose)
     )
-
-    if return_as_mask:
-        return np.concatenate([el for el in mld])
-    else:
-        return mld
+    return mld
 
 
-def mld_profile(df, variable, thresh, ref_depth, mask=False, verbose=True):
+def mld_profile(df, variable, thresh, ref_depth, verbose=True):
     exception = False
     df = df.dropna(subset=[variable, "depth"])
     if len(df) == 0:
@@ -105,10 +101,7 @@ def mld_profile(df, variable, thresh, ref_depth, mask=False, verbose=True):
             )
     if verbose and exception:
         warnings.warn(message, category=GliderToolsWarning)
-    if mask:
-        return depth <= mld
-    else:
-        return mld
+    return mld
 
 
 def potential_density(salt_PSU, temp_C, pres_db, lat, lon, pres_ref=0):
