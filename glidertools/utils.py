@@ -48,6 +48,64 @@ def time_average_per_dive(dives, time):
     return diveavg
 
 
+def mask_profile_depth(df, mask_depth, above):
+    """
+    masks either above or below mask_depth. If type(mask_depth)=np.nan,
+    the whole profile will be masked. Warning: This function is for a single
+    profile only, for masking a complete Glider Dataset please look for
+    utils.mask_above_depth or utils.mask_below_depth.
+
+    Parameters:
+    -----------
+    df : xarray.Dataframe or pandas.Dataframe
+    mask_depths : float (for constant depth masking) or pandas.Series as
+        returned e.g. by the mixed_layer_depth function
+    above : boolean
+        Mask either above mask_depth (True) or below (False)
+    """
+    if type(mask_depth) not in [int, float]:
+        # this case for calling from _mask_depth
+        mask_depth = mask_depth.loc[df.index[0]]
+    if above:
+        mask = df.depth > mask_depth
+    else:
+        mask = df.depth < mask_depth
+    return mask
+
+
+def mask_above_depth(ds, depths):
+    """"
+    Masks all data above depths.
+
+    Parameters:
+    -----------
+    df : xarray.Dataframe or pandas.Dataframe
+    mask_depths : float (for constant depth masking) or pandas.Series as
+        returned e.g. by the mixed_layer_depth function
+    """
+    return _mask_depth(ds, depths, above=True)
+
+
+def mask_below_depth(ds, depths):
+    """"
+    Masks all data below depths.
+
+    Parameters:
+    -----------
+    df : xarray.Dataframe or pandas.Dataframe
+    mask_depths : float (for constant depth masking) or pandas.Series as
+        returned e.g. by the mixed_layer_depth function
+    """
+    return _mask_depth(ds, depths, above=False)
+
+
+def _mask_depth(ds, depths, above=True):
+    ds = ds.reset_coords().to_pandas().set_index("dives")
+    mask = ds.groupby("dives").apply(mask_profile_depth, depths, above)
+    # mask = mask if above else ~mask
+    return mask.values
+
+
 def mask_to_depth_array(dives, depth, var):
     """
     Use when function returns a boolean section (as a mask) and you would
