@@ -29,7 +29,9 @@ except ImportError:
     warnings.warn(message, category=GliderToolsWarning)
 
 
-def mixed_layer_depth(ds, variable, thresh=0.01, ref_depth=10, return_as_mask=False):
+def mixed_layer_depth(
+    ds, variable, thresh=0.01, ref_depth=10, return_as_mask=False, verbose=True
+):
     """
     Calculates the MLD for ungridded glider array.
 
@@ -43,6 +45,8 @@ def mixed_layer_depth(ds, variable, thresh=0.01, ref_depth=10, return_as_mask=Fa
          variable that will be used for the threshold criteria
     thresh : float=0.01 threshold for difference of variable
     ref_depth : float=10 reference depth for difference
+    return_as_mask : bool, optional
+    verbose : bool, optional
 
     Return
     ------
@@ -54,7 +58,7 @@ def mixed_layer_depth(ds, variable, thresh=0.01, ref_depth=10, return_as_mask=Fa
     mld = (
         ds[[variable, "depth"]]
         .groupby("dives")
-        .apply(mld_profile, variable, thresh, ref_depth)
+        .apply(mld_profile, variable, thresh, ref_depth, return_as_mask, verbose)
     )
 
     if return_as_mask:
@@ -63,16 +67,18 @@ def mixed_layer_depth(ds, variable, thresh=0.01, ref_depth=10, return_as_mask=Fa
         return mld
 
 
-def mld_profile(df, variable, thresh, ref_depth, mask=False):
+def mld_profile(df, variable, thresh, ref_depth, mask=False, verbose=True):
+    exception = False
     df = df.dropna(subset=[variable, "depth"])
     if len(df) == 0:
         mld = np.nan
+        exception = True
     elif np.nanmin(np.abs(df.depth.values - ref_depth)) > 5:
+        exception = True
         message = """no observations within 5 m of ref_depth for dive {}
                 """.format(
             df.index[0]
         )
-        warnings.warn(message, category=GliderToolsWarning)
         mld = np.nan
     else:
         direction = 1 if np.unique(df.index % 1 == 0) else -1
@@ -91,12 +97,14 @@ def mld_profile(df, variable, thresh, ref_depth, mask=False):
             idx_mld = np.argmax(abs(dd) > thresh)
             mld = depth[idx_mld]
         else:
+            exception = True
             mld = np.nan
-            message = """threshold criterion never true (all mixed or shallow
-            profile) for profile {}""".format(
+            message = """threshold criterion never true (all mixed or \
+                shallow profile) for profile {}""".format(
                 df.index[0]
             )
-            warnings.warn(message, category=GliderToolsWarning)
+    if verbose and exception:
+        warnings.warn(message, category=GliderToolsWarning)
     if mask:
         return depth <= mld
     else:
