@@ -29,6 +29,22 @@ except ImportError:
     warnings.warn(message, category=GliderToolsWarning)
 
 
+def group_by_profiles(ds, variables=None, numeric_only=False):
+    """
+
+
+    Parameters
+    ----------
+
+
+    Return
+    ------
+    """
+    ds = ds.reset_coords().to_pandas().set_index("dives")
+    profiles = ds[variables].groupby("dives")
+    return profiles
+
+
 def mixed_layer_depth(
     ds, variable, thresh=0.01, ref_depth=10, return_as_mask=False, verbose=True
 ):
@@ -54,13 +70,10 @@ def mixed_layer_depth(
         will be an array of depths the length of the
         number of unique dives.
     """
-    ds = ds.reset_coords().to_pandas().set_index("dives")
-    mld = (
-        ds[[variable, "depth"]]
-        .groupby("dives")
-        .apply(mld_profile, variable, thresh, ref_depth, return_as_mask, verbose)
+    groups = group_by_profiles(ds, [variable, "depth"])
+    mld = groups.apply(
+        mld_profile, variable, thresh, ref_depth, return_as_mask, verbose
     )
-
     if return_as_mask:
         return np.concatenate([el for el in mld])
     else:
