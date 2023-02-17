@@ -29,9 +29,7 @@ except ImportError:
     warnings.warn(message, category=GliderToolsWarning)
 
 
-def mixed_layer_depth(
-    ds, variable, thresh=0.01, ref_depth=10, verbose=True
-):
+def mixed_layer_depth(ds, variable, thresh=0.01, ref_depth=10, verbose=True):
     """
     Calculates the MLD for ungridded glider array.
 

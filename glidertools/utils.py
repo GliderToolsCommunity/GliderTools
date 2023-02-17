@@ -74,7 +74,7 @@ def mask_profile_depth(df, mask_depth, above):
 
 
 def mask_above_depth(ds, depths):
-    """"
+    """
     Masks all data above depths.
 
     Parameters:
@@ -87,7 +87,7 @@ def mask_above_depth(ds, depths):
 
 
 def mask_below_depth(ds, depths):
-    """"
+    """
     Masks all data below depths.
 
     Parameters:
