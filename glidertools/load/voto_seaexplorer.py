@@ -59,3 +59,28 @@ def add_dive_column(ds):
         np.where(ds.profile_direction == 1, ds.profile_num, ds.profile_num + 0.5),
     )
     return ds
+
+
+def concat_datasets(datasets):
+    """
+    Concatenates multiple datasets along the time dimensions, profile_num
+    and dives variable(s) are adapted so that they start counting from one
+    for the first dataset and monotonically increase.
+
+    Parameters
+    ----------
+    datasets : list of xarray.Datasets
+
+    Returns
+    -------
+    xarray.Dataset
+        concatenated Dataset containing all the data from the list of datasets
+    """
+    for index in range(1, len(datasets)):
+        datasets[index]["profile_num"] += (
+            datasets[index - 1].copy()["profile_num"].max()
+        )
+    ds = xr.concat(datasets, dim="time")
+    ds = add_dive_column(ds)
+
+    return ds
