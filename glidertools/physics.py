@@ -10,6 +10,7 @@ from inspect import currentframe as getframe
 import numpy as np
 
 from .helpers import GliderToolsWarning, transfer_nc_attrs
+from .utils import group_by_profiles
 
 
 try:
@@ -27,22 +28,6 @@ except ImportError:
         "calculate brunt_vaisala and potential_density will not use TEOS-10."
     )
     warnings.warn(message, category=GliderToolsWarning)
-
-
-def group_by_profiles(ds, variables=None, numeric_only=False):
-    """
-
-
-    Parameters
-    ----------
-
-
-    Return
-    ------
-    """
-    ds = ds.reset_coords().to_pandas().set_index("dives")
-    profiles = ds[variables].groupby("dives")
-    return profiles
 
 
 def mixed_layer_depth(
