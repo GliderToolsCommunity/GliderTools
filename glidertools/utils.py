@@ -107,7 +107,6 @@ def mask_profile_depth(df, mask_depth, above):
     the whole profile will be masked. Warning: This function is for a SINGLE
     profile only, for masking a complete Glider Dataset please look for
     utils.mask_above_depth and/or utils.mask_below_depth.
-
     Parameters:
     -----------
     df : xarray.Dataframe or pandas.Dataframe
