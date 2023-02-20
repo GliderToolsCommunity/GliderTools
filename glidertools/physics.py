@@ -54,9 +54,7 @@ def mixed_layer_depth(ds, variable, thresh=0.01, ref_depth=10, verbose=True):
         number of unique dives.
     """
     groups = group_by_profiles(ds, [variable, "depth"])
-    mld = groups.apply(
-        mld_profile, variable, thresh, ref_depth, verbose
-    )
+    mld = groups.apply(mld_profile, variable, thresh, ref_depth, verbose)
     return mld
 
 
