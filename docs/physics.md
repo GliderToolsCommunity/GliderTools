@@ -22,11 +22,12 @@ plt.show()
 
 
 ```python
-mld = gt.physics.mixed_layer_depth(dives, depth, dens0)
+import matplotlib.pyplot as plt
+mld = gt.physics.mixed_layer_depth(ds, 'density', verbose=False)
 mld_smoothed = mld.rolling(10, min_periods=3).mean()
 
-mld_mask = gt.physics.mixed_layer_depth(dives, depth, dens0, return_as_mask=True)
-mld_grid = gt.grid_data(x, y, mld_mask, verbose=False)
+mld_mask = gt.utils.mask_below_depth(ds, mld)
+mld_grid = gt.grid_data(ds.dives, ds.depth, mld_mask, verbose=False)
 
 fig, ax = plt.subplots(1, 2, figsize=[9, 3], dpi=100, sharey=True)
 
@@ -37,7 +38,7 @@ gt.plot(mld_grid, ax=ax[1])
 
 ax[0].set_ylabel('Depth (m)')
 [a.set_xlabel('Dives') for a in ax]
-xticks(rotation=0)
+plt.xticks(rotation=0)
 
 fig.tight_layout()
 ```

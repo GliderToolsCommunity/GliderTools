@@ -24,14 +24,15 @@ What's New
     - Dark count corrections for optical sensors(:pull:'110'). By 'Isabelle Giddy <https://github.com/isgiddy>'_.
 
 
-v2022.xx (unreleased)
+v2023.xx (unreleased)
 ------------------------
 
-.. _whats-new.2022.xx:
+.. _whats-new.2023.xx:
 
 New Features
 ~~~~~~~~~~~~
 - added import for VOTO seaexplorer data (:pull:`170`) By `Martin Mohrmann <https://github.com/MartinMohrmann>`_.
+- added versatile, depth dependent masking (:pull:`172`) By `Martin Mohrmann <https://github.com/MartinMohrmann>`_.
 
 Breaking changes
 ~~~~~~~~~~~~~~~~
