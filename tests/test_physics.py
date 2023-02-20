@@ -7,6 +7,7 @@ from glidertools.physics import (
     potential_density,
     spice0,
 )
+from glidertools.utils import mask_above_depth, mask_below_depth
 
 
 filenames = "./tests/data/p542*.nc"
@@ -56,6 +57,15 @@ def test_mixed_layer_depth():
     mld = mixed_layer_depth(dat, "temp_raw")
     assert mld.min() > 10
     assert mld.max() < 40
+
+
+def test_masking():
+    # We "know" that the mld for this dataset is >10m and <40m
+    mld = mixed_layer_depth(dat, "temp_raw")
+    mask = mask_above_depth(dat, mld)
+    assert dat.depth[mask].max() > 10
+    mask = mask_below_depth(dat, mld)
+    assert dat.depth[mask].max() < 40
 
 
 def test_potential_density():
