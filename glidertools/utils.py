@@ -75,32 +75,62 @@ def group_by_profiles(ds, variables=None):
         return ds.groupby("dives")
 
 
-def mask_to_depth_array(dives, depth, var):
+def mask_above_depth(ds, depths):
     """
-    Use when function returns a boolean section (as a mask) and you would
-    like to return the depth of the positive mask (True) for each dive. This is
-    useful for cases like MLD which returns a mask. Note that this is for
-    ungridded data in "series" format.
+    Masks all data above depths.
 
-    Parameters
-    ----------
-    dives : np.array, dtype=float, shape=[n, ]
-        discrete dive numbers (down = d.0; up = d.5) that matches depth and var
-        length
-    depth : np.array, dtype=float, shape=[n, ]
-        depth of each measurement
-    var : np.array, dtype=bool, shape=[n,]
-        mask array
-
+    Parameters:
+    -----------
+    df : xarray.Dataframe or pandas.Dataframe
+    mask_depths : float (for constant depth masking) or pandas.Series as
+        returned e.g. by the mixed_layer_depth function
     """
+    return _mask_depth(ds, depths, above=True)
 
-    from numpy import array, diff, r_
-    from pandas import Series
 
-    i = r_[False, diff(var)].astype(bool)
-    idx_depth = Series(array(depth)[i], index=array(dives)[i])
+def mask_below_depth(ds, depths):
+    """
+    Masks all data below depths.
 
-    return idx_depth
+    Parameters:
+    -----------
+    df : xarray.Dataframe or pandas.Dataframe
+    mask_depths : float (for constant depth masking) or pandas.Series as
+        returned e.g. by the mixed_layer_depth function
+    """
+    return _mask_depth(ds, depths, above=False)
+
+
+def mask_profile_depth(df, mask_depth, above):
+    """
+    masks either above or below mask_depth. If type(mask_depth)=np.nan,
+    the whole profile will be masked. Warning: This function is for a SINGLE
+    profile only, for masking a complete Glider Dataset please look for
+    utils.mask_above_depth and/or utils.mask_below_depth.
+
+    Parameters:
+    -----------
+    df : xarray.Dataframe or pandas.Dataframe
+    mask_depths : float (for constant depth masking) or pandas.Series as
+        returned e.g. by the mixed_layer_depth function
+    above : boolean
+        Mask either above mask_depth (True) or below (False)
+    """
+    if type(mask_depth) not in [int, float]:
+        # this case for calling from _mask_depth
+        mask_depth = mask_depth.loc[df.index[0]]
+    if above:
+        mask = df.depth > mask_depth
+    else:
+        mask = df.depth < mask_depth
+    return mask
+
+
+def _mask_depth(ds, depths, above=True):
+    ds = ds.reset_coords().to_pandas().set_index("dives")
+    mask = ds.groupby("dives").apply(mask_profile_depth, depths, above)
+    # mask = mask if above else ~mask
+    return mask.values
 
 
 def merge_dimensions(df1, df2, interp_lim=3):
