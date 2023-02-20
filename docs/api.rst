@@ -15,8 +15,9 @@ Loading Data
    load.seaglider_show_variables
    load.ego_mission_netCDF
    load.slocum_geomar_matfile
-   load.voto_seaexplorer_nc
-   load.voto_seaexplorer_dataset
+   load.voto_seaexplorer.voto_seaexplorer_nc
+   load.voto_seaexplorer.voto_seaexplorer_dataset
+   load.voto_seaexplorer.concat_datasets
 
 
 High level processing
