@@ -118,7 +118,9 @@ General Utilities
    :toctree: ./_generated/
 
    utils.time_average_per_dive
-   utils.mask_to_depth_array
+   utils.mask_above_depths
+   utils.mask_below_depths
+   utils.mask_profile_depth
    utils.merge_dimensions
    utils.calc_glider_vert_velocity
    utils.calc_dive_phase
