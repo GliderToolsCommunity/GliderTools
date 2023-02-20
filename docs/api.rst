@@ -127,3 +127,4 @@ General Utilities
    utils.calc_dive_number
    utils.dive_phase_to_number
    utils.distance
+   utils.group_by_profiles
