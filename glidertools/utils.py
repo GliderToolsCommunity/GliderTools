@@ -39,10 +39,37 @@ def time_average_per_dive(dives, time):
     t_ser = Series(t_mid, index=t_grp.mean().index.values)
     diveavg = t_ser.reindex(index=dives).values
     diveavg = diveavg.astype("datetime64[s]")
-
     diveavg = transfer_nc_attrs(getframe(), time, diveavg, "_diveavg")
 
     return diveavg
+
+
+def group_by_profiles(ds, variables=None):
+    """
+    Group profiles by dives column, i.e. each group member is one dive. The
+    returned profiles can be evaluated statistically, e.g. by
+    pandas.DataFrame.mean or other aggregating methods. To filter out one
+    specific profile, use xarray.Dataset.where instead.
+
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        1-dimensional Glider dataset
+    variables : list of strings, optional
+        specify variables if only a subset of the dataset should be grouped
+        into profiles. Grouping only a subset is considerably faster and more
+        memory-effective.
+    Return
+    ------
+    profiles:
+    dataset grouped by profiles (dives variable), as created by the
+    pandas.groupby methods.
+    """
+    ds = ds.reset_coords().to_pandas().reset_index().set_index("dives")
+    if variables:
+        return ds[variables].groupby("dives")
+    else:
+        return ds.groupby("dives")
 
 
 def mask_above_depth(ds, depths):
@@ -77,7 +104,6 @@ def mask_profile_depth(df, mask_depth, above):
     the whole profile will be masked. Warning: This function is for a SINGLE
     profile only, for masking a complete Glider Dataset please look for
     utils.mask_above_depth and/or utils.mask_below_depth.
-
     Parameters:
     -----------
     df : xarray.Dataframe or pandas.Dataframe
