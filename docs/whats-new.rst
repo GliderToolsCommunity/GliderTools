@@ -53,10 +53,12 @@ Internal changes
 - Refactoring and update of testing and development framework, update of flake, black and almost all python dependencies
 
 
-v2021.05 (2021/5/21)
---------------------
 
-.. _whats-new.2021.05:
+Breaking changes
+~~~~~~~~~~~~~~~~
+- Fixed processing/calc_oxygen (:pull: `116`, :issue: `112`) By `Callum Rollo <https://github.com/callumrollo>`_.
+
+
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
