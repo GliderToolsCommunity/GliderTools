@@ -10,6 +10,7 @@ from inspect import currentframe as getframe
 import numpy as np
 
 from .helpers import GliderToolsWarning, transfer_nc_attrs
+from .utils import group_by_profiles
 
 
 try:
@@ -52,12 +53,8 @@ def mixed_layer_depth(ds, variable, thresh=0.01, ref_depth=10, verbose=True):
         will be an array of depths the length of the
         number of unique dives.
     """
-    ds = ds.reset_coords().to_pandas().set_index("dives")
-    mld = (
-        ds[[variable, "depth"]]
-        .groupby("dives")
-        .apply(mld_profile, variable, thresh, ref_depth, verbose)
-    )
+    groups = group_by_profiles(ds, [variable, "depth"])
+    mld = groups.apply(mld_profile, variable, thresh, ref_depth, verbose)
     return mld
 
 
