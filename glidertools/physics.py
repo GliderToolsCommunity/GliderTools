@@ -7,6 +7,8 @@ import warnings
 
 from inspect import currentframe as getframe
 
+import numpy as np
+
 from .helpers import GliderToolsWarning, transfer_nc_attrs
 
 
@@ -27,9 +29,7 @@ except ImportError:
     warnings.warn(message, category=GliderToolsWarning)
 
 
-def mixed_layer_depth(
-    dives, depth, dens_or_temp, thresh=0.01, ref_depth=10, return_as_mask=False
-):
+def mixed_layer_depth(ds, variable, thresh=0.01, ref_depth=10, verbose=True):
     """
     Calculates the MLD for ungridded glider array.
 
@@ -38,66 +38,68 @@ def mixed_layer_depth(
 
     Parameters
     ----------
-    dens_or_temp : array, dtype=float, shape=[n, ]
-        temperature/density of the entire dataset
-    depth : array, dtype=float, shape=[n, ]
-        depth for each measurement
-    dives : array, dtype=float, shape=[n, ]
-        will be used to calculate MLD per dive
-    thresh : float=0.01
-        threshold for difference
-    ref_depth : float=10
-        reference depth for difference
-    return_as_mask : bool=False
-        sets output to be a mask or an array of depth values
+    ds : xarray.Dataset Glider dataset
+    variable : str
+         variable that will be used for the threshold criteria
+    thresh : float=0.01 threshold for difference of variable
+    ref_depth : float=10 reference depth for difference
+    return_as_mask : bool, optional
+    verbose : bool, optional
 
     Return
     ------
     mld : array
-        will be a mask of shape=[n, ] or an array of depths the length of the
+        will be an array of depths the length of the
         number of unique dives.
     """
-    import numpy as np
-
-    from pandas import DataFrame
-
-    def mld_profile(dens_or_temp, depth, thresh, ref_depth, mask=False):
-
-        i = np.nanargmin(np.abs(depth - ref_depth))
-
-        if np.isnan(dens_or_temp[i]):
-            mld = np.nan
-        else:
-            dd = dens_or_temp - dens_or_temp[i]  # density difference
-            dd[depth < ref_depth] = np.nan
-            abs_dd = abs(dd - thresh)
-            depth_idx = np.nanargmin(abs_dd)
-            mld = depth[depth_idx]
-
-        if mask:
-            return depth <= mld
-        else:
-            return mld
-
-    arr = np.c_[dens_or_temp, depth, dives]
-    col = ["dens", "depth", "dives"]
-    df = DataFrame(data=arr, columns=col)
-
-    grp = df.groupby("dives")
-    mld = grp.apply(
-        lambda g: mld_profile(
-            g.dens.values,
-            g.depth.values,
-            thresh,
-            ref_depth,
-            mask=return_as_mask,
-        )
+    ds = ds.reset_coords().to_pandas().set_index("dives")
+    mld = (
+        ds[[variable, "depth"]]
+        .groupby("dives")
+        .apply(mld_profile, variable, thresh, ref_depth, verbose)
     )
+    return mld
 
-    if return_as_mask:
-        return np.concatenate([el for el in mld])
+
+def mld_profile(df, variable, thresh, ref_depth, verbose=True):
+    exception = False
+    df = df.dropna(subset=[variable, "depth"])
+    if len(df) == 0:
+        mld = np.nan
+        exception = True
+    elif np.nanmin(np.abs(df.depth.values - ref_depth)) > 5:
+        exception = True
+        message = """no observations within 5 m of ref_depth for dive {}
+                """.format(
+            df.index[0]
+        )
+        mld = np.nan
     else:
-        return mld
+        direction = 1 if np.unique(df.index % 1 == 0) else -1
+        # create arrays in order of increasing depth
+        var_arr = df[variable].values[:: int(direction)]
+        depth = df.depth.values[:: int(direction)]
+        # get index closest to ref_depth
+        i = np.nanargmin(np.abs(depth - ref_depth))
+        # create difference array for threshold variable
+        dd = var_arr - var_arr[i]
+        # mask out all values that are shallower then ref_depth
+        dd[depth < ref_depth] = np.nan
+        # get all values in difference array within treshold range
+        mixed = dd[abs(dd) > thresh]
+        if len(mixed) > 0:
+            idx_mld = np.argmax(abs(dd) > thresh)
+            mld = depth[idx_mld]
+        else:
+            exception = True
+            mld = np.nan
+            message = """threshold criterion never true (all mixed or \
+                shallow profile) for profile {}""".format(
+                df.index[0]
+            )
+    if verbose and exception:
+        warnings.warn(message, category=GliderToolsWarning)
+    return mld
 
 
 def potential_density(salt_PSU, temp_C, pres_db, lat, lon, pres_ref=0):
