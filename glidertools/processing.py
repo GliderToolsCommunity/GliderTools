@@ -152,6 +152,7 @@ def calc_oxygen(
 
     """
 
+    import numpy as np
     import seawater as sw
 
     from numpy import abs, array, c_, isnan, median, ones
@@ -205,7 +206,10 @@ def calc_oxygen(
         Y = o2raw[surf].copy()
         X = c_[ones(surf.sum()), o2sat[surf]]
         # removing outliers accodring to IQR
-        ll, ul = outlier_bounds_iqr(Y, multiplier=1.5)
+        # ll, ul = outlier_bounds_iqr(Y, multiplier=1.5)
+        iqr = outlier_bounds_iqr(Y, multiplier=1.5)
+        ll = np.nanmin(iqr)
+        ul = np.nanmax(iqr)
         m = (Y > ll) & (Y < ul)
         ratios = Y[m] / X[m, 1]
 
@@ -264,7 +268,7 @@ def calc_oxygen(
         o2aou = transfer_nc_attrs(
             getframe(),
             var,
-            o2mll,
+            o2aou,
             "o2aou",
             units="mL/L",
             comment="",
@@ -273,7 +277,7 @@ def calc_oxygen(
         o2pct = transfer_nc_attrs(
             getframe(),
             var,
-            o2mll,
+            o2pct,
             "o2pct",
             units="percent",
             comment="",
