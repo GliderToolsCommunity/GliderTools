@@ -23,15 +23,42 @@ What's New
     ~~~~~~~~~
     - Dark count corrections for optical sensors(:pull:'110'). By 'Isabelle Giddy <https://github.com/isgiddy>'_.
 
-v2021.xx (unreleased)
----------------------
 
-.. _whats-new.2021.xx:
+v2023.xx (unreleased)
+------------------------
 
-v2021.05 (2021/5/21)
---------------------
+.. _whats-new.2023.xx:
 
-.. _whats-new.2021.05:
+New Features
+~~~~~~~~~~~~
+- added import for VOTO seaexplorer data (:pull:`170`) By `Martin Mohrmann <https://github.com/MartinMohrmann>`_.
+- added versatile, depth dependent masking (:pull:`172`) By `Martin Mohrmann <https://github.com/MartinMohrmann>`_.
+
+Breaking changes
+~~~~~~~~~~~~~~~~
+- The mixed layer depth algorithm was corrected. (:pull:`169`, :issue:`168`). By `Martin Mohrmann <https://github.com/MartinMohrmann>`_. API change! Existing mixed layer computation code must be adapted.
+
+Internal changes
+~~~~~~~~~~~~~~~~
+- Some cleanup of old python2 dependencies (:pull:`166`). By `Martin Mohrmann <https://github.com/MartinMohrmann>`_.
+
+
+v2022.12.13 (2022/12/13)
+------------------------
+
+.. _whats-new.2022.12.13:
+
+Internal changes
+~~~~~~~~~~~~~~~~
+- Refactoring and update of testing and development framework, update of flake, black and almost all python dependencies
+
+
+
+Breaking changes
+~~~~~~~~~~~~~~~~
+- Fixed processing/calc_oxygen (:pull: `116`, :issue: `112`) By `Callum Rollo <https://github.com/callumrollo>`_.
+
+
 
 Internal Changes
 ~~~~~~~~~~~~~~~~
