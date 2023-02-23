@@ -3,9 +3,13 @@ from __future__ import absolute_import as _ai
 from __future__ import print_function as _pf
 from __future__ import unicode_literals as _ul
 
+import warnings
+
 from inspect import currentframe as getframe
 
 import numpy as np
+
+from .helpers import GliderToolsWarning, transfer_nc_attrs
 
 
 def mixed_layer_depth(ds, variable, thresh=0.01, ref_depth=10, verbose=True):
@@ -161,7 +165,7 @@ def brunt_vaisala(salt, temp, pres, lat=None):
     from numpy import nan, r_
 
     def pad_nan(a):
-        r_[a, nan]
+        return r_[a, nan]
 
     n2 = pad_nan(Nsquared(salt, temp, pres)[0])
 
