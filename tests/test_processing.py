@@ -13,7 +13,12 @@ from tests.test_physics import dat
 
 def test_calc_oxygen():
     o2ml, o2pc, o2au = calc_oxygen(
-        dat.oxy_raw, dat.pressure, dat.salt_raw, dat.temp_raw
+        dat.oxy_raw,
+        dat.pressure,
+        dat.salt_raw,
+        dat.temp_raw,
+        dat.latitude,
+        dat.longitude,
     )
     assert np.nanmin(o2ml) == pytest.approx(3.7152995, 0.0001)
     assert np.nanmax(o2ml) == pytest.approx(11.460690, 0.0001)

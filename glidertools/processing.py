@@ -193,7 +193,6 @@ def calc_oxygen(
             ),
         )
         o2raw = savitzky_golay(o2raw, savitzky_golay_window, savitzky_golay_order)
-
     absolute_salinity = gsw.SA_from_SP(salinity, pressure, lon, lat)
     conservative_temperature = gsw.conversions.CT_from_t(
         absolute_salinity, temperature, pressure
@@ -204,7 +203,7 @@ def calc_oxygen(
     o2sat = (
         gsw.O2sol(absolute_salinity, conservative_temperature, pressure, lon, lat)
         * 1.025
-    )
+    ).values
 
     if auto_conversion:
         # use linear regression to determine the oxygen unit
