@@ -109,7 +109,7 @@ def calc_oxygen(
     """
     This function processes oxygen.
 
-    It is assumedumol/kg are passed as input.
+    It is assumed umol/kg are passed as input.
     The units are automatically detected by looking at the mean ratio.
     Below are some conversions to help with the Oxygen units:
     If your oxygen values have units ml/L use the conversion function
