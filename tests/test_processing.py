@@ -35,7 +35,7 @@ def test_oxygen_conversion():
     absolute_salinity = gsw.SA_from_SP(
         dat.salt_raw, dat.pressure, dat.longitude, dat.latitude
     )
-    conservative_temperature = gsw.conversions.CT_from_t(
+    conservative_temperature = gsw.CT_from_t(
         absolute_salinity, dat.temp_raw, dat.pressure
     )
     density = gsw.density.rho(absolute_salinity, conservative_temperature, dat.pressure)
