@@ -90,205 +90,105 @@ def calc_physics(
     return z
 
 
+def oxygen_ml_per_l_to_umol_per_kg(o2_ml_l, density):
+    """
+    Converts oxygen from units ml per l to units of umol per kg
+    """
+    o2_umol_kg = o2_ml_l * 44.66 * 1000 / density
+    return o2_umol_kg
+
+
 def calc_oxygen(
     o2raw,
     pressure,
     salinity,
     temperature,
-    auto_conversion=True,
-    spike_window=7,
-    spike_method="median",
-    savitzky_golay_window=0,
-    savitzky_golay_order=2,
-    verbose=True,
+    lat,
+    lon,
 ):
     """
     This function processes oxygen.
 
-    It is assumed that either mL/L or umol/kg are passed as input.
+    It is assumed umol/kg are passed as input.
     The units are automatically detected by looking at the mean ratio.
     Below are some conversions to help with the Oxygen units:
+    If your oxygen values have units ml/L use the conversion function
+    oxygen_ml_per_l_to_umol_per_kg
 
-    >>> µmol/l > µmol/kg * 1.025
-        µmol/l > ml/l * 44.66
-        µmol/l > mg/l * 31.25
 
     Parameters
     ----------
     o2raw : array, dtype=float, shape=[n, ]
-        raw oxygen without unit conversion
+        raw oxygen in umol/kg
     pressure : array, dtype=float, shape=[n, ]
     salinity : array, dtype=float, shape=[n, ]
     temperature : array, dtype=float, shape=[n, ]
-    conversion : bool=True
-        tries to determine the unit of oxygen based on ``o2raw`` values.
-        The user needs to do a manual conversion if False
-    spike_window : int=7
-        rolling window size to apply for the ``cleaning.despike`` function.
-    spike_method : string='median'
-        can be 'median' or 'minmax'. see ``cleaning.despike`` for more info.
-    savitzky_golay_window : int=0
-        rolling window size for ``cleaning.savitzky_golay`` function
-    savitzky_golay_order : int=2
-        polynomial order for ``cleaning.savitzky_golay`` function
-    verbose : bool=True
+    lat: np.array / pd.Series, dtype=float, shape=[n, ]
+        The latitude of the glider position.
+    lon: np.array / pd.Series, dtype=float, shape=[n, ]
+        The longitude of the glider position.
 
     Returns
     -------
     o2mll : array, dtype=float, shape=[n, ]
-        oxygen concentration in mL/L (if unit auto_conversion is set True)
+        oxygen concentration in mL/L
     o2pct : array, dtype=float, shape=[n, ]
         theoretical oxygen saturation percentage
     o2aou : array, dtype=float, shape=[n, ]
-        aparent oxygen utilisation based on measured oxygen and oxygen
+        apparent oxygen utilisation based on measured oxygen and oxygen
         saturation.
 
-    Note
-    ----
-    To Do: Oxygen processing should have its own section to be consistent
-
     """
-
+    import gsw
     import numpy as np
-    import seawater as sw
 
-    from numpy import abs, array, c_, isnan, median, ones
-    from pandas import Series
+    var = o2raw.copy()  # metadata preservation
 
-    from .cleaning import despike, outlier_bounds_iqr, savitzky_golay
+    o2raw = np.array(o2raw)
+    pressure = np.array(pressure)
+    temperature = np.array(temperature)
+    salinity = np.array(salinity)
+    absolute_salinity = gsw.SA_from_SP(salinity, pressure, lon, lat)
+    conservative_temperature = gsw.CT_from_t(absolute_salinity, temperature, pressure)
+    density = gsw.density.rho(absolute_salinity, conservative_temperature, pressure)
+    o2sat = gsw.O2sol(
+        absolute_salinity, conservative_temperature, pressure, lon, lat
+    ).values
 
-    var = o2raw.copy()  # metdata preservation
-    if isinstance(o2raw, Series):
-        name = o2raw.name
-    else:
-        name = "Oxygen"
-    o2raw = array(o2raw)
-    pressure = array(pressure)
-    temperature = array(temperature)
-    salinity = array(salinity)
+    o2mll = np.array(o2raw) / 44.66 * (density / 1000)
 
-    if spike_window:
-        o2raw, _ = despike(o2raw, spike_window, spike_method)
-        printv(
-            verbose,
-            "\n" + "=" * 50 + "\n{}:\n"
-            "\tSmoothing data with despiking algorithm:\n\t"
-            "    spike identification (spike window={})"
-            "".format(name, spike_window),
-        )
+    o2aou = o2sat - o2raw
+    o2pct = o2raw / o2sat * 100
 
-    if savitzky_golay_window:
-        printv(
-            verbose,
-            ("\tSmoothing with Savitzky-Golay filter " "(window={}, order={})").format(
-                savitzky_golay_window, savitzky_golay_order
-            ),
-        )
-        o2raw = savitzky_golay(o2raw, savitzky_golay_window, savitzky_golay_order)
+    o2mll = transfer_nc_attrs(
+        getframe(),
+        var,
+        o2mll,
+        "o2mll",
+        units="mL/L",
+        comment="",
+        standard_name="dissolved_oxygen",
+    )
+    o2aou = transfer_nc_attrs(
+        getframe(),
+        var,
+        o2aou,
+        "o2aou",
+        units="umol kg^-3",
+        comment="",
+        standard_name="apparent_oxygen_utilisation",
+    )
+    o2pct = transfer_nc_attrs(
+        getframe(),
+        var,
+        o2pct,
+        "o2pct",
+        units="percent",
+        comment="",
+        standard_name="theoretical_oxygen_saturation",
+    )
 
-    o2sat = sw.satO2(salinity, temperature)
-    density = sw.dens(salinity, temperature, pressure)
-
-    if auto_conversion:
-        # use linear regression to determine the oxygen unit
-        # raw surface (<10m) O2 is regressed theoretical saturation
-        # the slope of the regression will be indicative of the
-        # units as theoretical saturation is always in mL/L
-        # Use the min difference between the slope and known
-        # conversion factors to estimate the appropriate conversion.
-
-        # clean the data first with basic cleaning
-        surf = (pressure < 20) & ~isnan(o2raw) & ~isnan(o2sat)
-        # prepare the data for linear regression
-        Y = o2raw[surf].copy()
-        X = c_[ones(surf.sum()), o2sat[surf]]
-        # removing outliers accodring to IQR
-        # ll, ul = outlier_bounds_iqr(Y, multiplier=1.5)
-        iqr = outlier_bounds_iqr(Y, multiplier=1.5)
-        ll = np.nanmin(iqr)
-        ul = np.nanmax(iqr)
-        m = (Y > ll) & (Y < ul)
-        ratios = Y[m] / X[m, 1]
-
-        # compare the slopes
-        observed_ratio = median(ratios)
-        # the theoretical values have been divided by 1.025 to account for
-        # the density of seawater
-        theoretic_ratio = array([1, 43.5])
-        ratio_diffs = abs(observed_ratio - theoretic_ratio)
-        # catch if the difference is too big
-        if ratio_diffs.min() > 10:
-            printv(
-                verbose,
-                (
-                    "Oxygen unit could not be estimated automatically. "
-                    "Do the unit conversion on the raw data before "
-                    "passing it to the function. \n"
-                    "Below is some info to help you\n"
-                    "    µmol/l > µmol/kg * 1.025\n"
-                    "    µmol/l > ml/l * 44.66\n"
-                    "    µmol/l > mg/l * 31.25"
-                ),
-            )
-        # otherwise do the conversion
-        else:
-            unit_idx = ratio_diffs.argmin()
-            if unit_idx == 0:
-                unit = "mL/L"
-                o2mll = array(o2raw)
-            elif unit_idx == 2:
-                unit = "mg/L"
-                o2mll = array(o2raw) / 31.25 * (density / 1000)
-            elif unit_idx == 1:
-                unit = "umol/kg"
-                o2mll = array(o2raw) / 44.66 * (density / 1000)
-            else:
-                printv(verbose, "Difference is {}".format(ratio_diffs))
-            printv(verbose, "\tUnits automatically detected {}".format(unit))
-            if ratio_diffs.min() > 5:
-                print(
-                    "\tWARNING: Confirm units mannually as near the "
-                    "confidence threshold"
-                )
-        o2aou = o2sat - o2mll
-        o2pct = o2mll / o2sat * 100
-
-        o2mll = transfer_nc_attrs(
-            getframe(),
-            var,
-            o2mll,
-            "o2mll",
-            units="mL/L",
-            comment="",
-            standard_name="dissolved_oxygen",
-        )
-        o2aou = transfer_nc_attrs(
-            getframe(),
-            var,
-            o2aou,
-            "o2aou",
-            units="mL/L",
-            comment="",
-            standard_name="aparent_oxygen_utilisation",
-        )
-        o2pct = transfer_nc_attrs(
-            getframe(),
-            var,
-            o2pct,
-            "o2pct",
-            units="percent",
-            comment="",
-            standard_name="theoretical_oxgen_saturation",
-        )
-
-        return o2mll, o2pct, o2aou
-
-    else:
-        print(
-            "No oxygen conversion applied - user "
-            "must impliment before or after running "
-            "the cleaning functions."
-        )
+    return o2mll, o2pct, o2aou
 
 
 def calc_backscatter(

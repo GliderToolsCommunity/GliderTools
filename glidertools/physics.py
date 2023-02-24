@@ -10,23 +10,6 @@ from .helpers import GliderToolsWarning, transfer_nc_attrs
 from .utils import group_by_profiles
 
 
-try:
-    _gsw_avail = True
-    from gsw import alpha as alpha_thermal
-    from gsw import beta as beta_saline
-except ImportError:
-    _gsw_avail = False
-    from seawater import alpha as alpha_thermal  # noqa: F401
-    from seawater import beta as beta_saline  # noqa: F401
-
-    message = (
-        "'gsw' could not be imported (Python 2.x is not compatible "
-        "with 'gsw'). Reverting to 'seawater'. You will not be able to "
-        "calculate brunt_vaisala and potential_density will not use TEOS-10."
-    )
-    warnings.warn(message, category=GliderToolsWarning)
-
-
 def mixed_layer_depth(ds, variable, thresh=0.01, ref_depth=10, verbose=True):
     """
     Calculates the MLD for ungridded glider array.
@@ -121,26 +104,12 @@ def potential_density(salt_PSU, temp_C, pres_db, lat, lon, pres_ref=0):
     Returns
     -------
     potential_density : array, dtype=float, shape=[n, ]
-
-
-    Note
-    ----
-    Using seawater.dens does not yield the same results as this function. We
-    get very close results to what the SeaGlider Basestation returns with this
-    function. The difference of this function with the basestation is on
-    average ~ 0.003 kg/m3
     """
 
-    try:
-        import gsw
+    import gsw
 
-        salt_abs = gsw.SA_from_SP(salt_PSU, pres_db, lon, lat)
-        pot_dens = gsw.pot_rho_t_exact(salt_abs, temp_C, pres_db, pres_ref)
-    except ImportError:
-        import seawater as sw
-
-        pot_dens = sw.pden(salt_PSU, temp_C, pres_db, pres_ref)
-
+    salt_abs = gsw.SA_from_SP(salt_PSU, pres_db, lon, lat)
+    pot_dens = gsw.pot_rho_t_exact(salt_abs, temp_C, pres_db, pres_ref)
     pot_dens = transfer_nc_attrs(
         getframe(),
         temp_C,
@@ -153,105 +122,96 @@ def potential_density(salt_PSU, temp_C, pres_db, lat, lon, pres_ref=0):
     return pot_dens
 
 
-if _gsw_avail:
+def brunt_vaisala(salt, temp, pres, lat=None):
+    r"""
+    Calculate the square of the buoyancy frequency.
 
-    def brunt_vaisala(salt, temp, pres, lat=None):
-        r"""
-        Calculate the square of the buoyancy frequency.
+    This is a copy from GSW package, with the exception that
+    the array maintains the same shape as the input. Note that
+    it only works on ungridded data at the moment.
 
-        This is a copy from GSW package, with the exception that
-        the array maintains the same shape as the input. Note that
-        it only works on ungridded data at the moment.
+    .. math::
 
-        .. math::
+    N^{2} = \frac{-g}{\sigma_{\theta}} \frac{d\sigma_{\theta}}{dz}
 
-        N^{2} = \frac{-g}{\sigma_{\theta}} \frac{d\sigma_{\theta}}{dz}
+    Parameters
+    ----------
+    SA : array-like
+        Absolute Salinity, g/kg
+    CT : array-like
+        Conservative Temperature (ITS-90), degrees C
+    p : array-like
+        Sea pressure (absolute pressure minus 10.1325 dbar), dbar
+    lat : array-like, 1-D, optional
+        Latitude, degrees.
+    axis : int, optional
+        The dimension along which pressure increases.
 
-        Parameters
-        ----------
-        SA : array-like
-            Absolute Salinity, g/kg
-        CT : array-like
-            Conservative Temperature (ITS-90), degrees C
-        p : array-like
-            Sea pressure (absolute pressure minus 10.1325 dbar), dbar
-        lat : array-like, 1-D, optional
-            Latitude, degrees.
-        axis : int, optional
-            The dimension along which pressure increases.
+    Returns
+    -------
+    N2 : array
+        Buoyancy frequency-squared at pressure midpoints, 1/s.
+        The shape along the pressure axis dimension is one
+        less than that of the inputs.
+    """
 
-        Returns
-        -------
-        N2 : array
-            Buoyancy frequency-squared at pressure midpoints, 1/s.
-            The shape along the pressure axis dimension is one
-            less than that of the inputs.
-        """
+    from gsw import Nsquared
+    from numpy import nan, r_
 
-        from gsw import Nsquared
-        from numpy import nan, r_
+    def pad_nan(a):
+        return r_[a, nan]
 
-        def pad_nan(a):
-            return r_[a, nan]
+    n2 = pad_nan(Nsquared(salt, temp, pres)[0])
 
-        n2 = pad_nan(Nsquared(salt, temp, pres)[0])
+    n2 = transfer_nc_attrs(
+        getframe(),
+        temp,
+        n2,
+        "N_squared",
+        units="1/s2",
+        comment="",
+        standard_name="brunt_vaisala_freq",
+    )
 
-        n2 = transfer_nc_attrs(
-            getframe(),
-            temp,
-            n2,
-            "N_squared",
-            units="1/s2",
-            comment="",
-            standard_name="brunt_vaisala_freq",
-        )
-
-        return n2
-
-    # compute spice
-    def spice0(salt_PSU, temp_C, pres_db, lat, lon):
-        """
-        Calculate spiciness from glider measurements of salinity and temperature.
-
-        Parameters
-        ----------
-        salt_PSU : array, dtype=float, shape=[n, ]
-            practical salinty
-        temp_C : array, dtype=float, shape=[n, ]
-        temperature in deg C
-        pres_db : array, dtype=float, shape=[n, ]
-            pressure in decibar
-        lat : array, dtype=float, shape=[n, ]
-            latitude in degrees north
-        lon : array, dtype=float, shape=[n, ]
-            longitude in degrees east
-
-        Returns
-        -------
-        potential_density : array, dtype=float, shape=[n, ]
+    return n2
 
 
-        Note
-        ----
-        Using seawater.dens does not yield the same results as this function. We
-        get very close results to what the SeaGlider Basestation returns with this
-        function. The difference of this function with the basestation is on
-        average ~ 0.003 kg/m3
-        """
-        import gsw
+# compute spice
+def spice0(salt_PSU, temp_C, pres_db, lat, lon):
+    """
+    Calculate spiciness from glider measurements of salinity and temperature.
 
-        salt_abs = gsw.SA_from_SP(salt_PSU, pres_db, lon, lat)
-        cons_temp = gsw.CT_from_t(salt_abs, temp_C, pres_db)
+    Parameters
+    ----------
+    salt_PSU : array, dtype=float, shape=[n, ]
+        practical salinty
+    temp_C : array, dtype=float, shape=[n, ]
+    temperature in deg C
+    pres_db : array, dtype=float, shape=[n, ]
+        pressure in decibar
+    lat : array, dtype=float, shape=[n, ]
+        latitude in degrees north
+    lon : array, dtype=float, shape=[n, ]
+        longitude in degrees east
 
-        spice0 = gsw.spiciness0(salt_abs, cons_temp)
+    Returns
+    -------
+    potential_density : array, dtype=float, shape=[n, ]
+    """
+    import gsw
 
-        spice0 = transfer_nc_attrs(
-            getframe(),
-            temp_C,
-            spice0,
-            "spiciness0",
-            units=" ",
-            comment="",
-            standard_name="spiciness0",
-        )
-        return spice0
+    salt_abs = gsw.SA_from_SP(salt_PSU, pres_db, lon, lat)
+    cons_temp = gsw.CT_from_t(salt_abs, temp_C, pres_db)
+
+    spice0 = gsw.spiciness0(salt_abs, cons_temp)
+
+    spice0 = transfer_nc_attrs(
+        getframe(),
+        temp_C,
+        spice0,
+        "spiciness0",
+        units=" ",
+        comment="",
+        standard_name="spiciness0",
+    )
+    return spice0
