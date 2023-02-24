@@ -149,9 +149,7 @@ def calc_oxygen(
     temperature = np.array(temperature)
     salinity = np.array(salinity)
     absolute_salinity = gsw.SA_from_SP(salinity, pressure, lon, lat)
-    conservative_temperature = gsw.CT_from_t(
-        absolute_salinity, temperature, pressure
-    )
+    conservative_temperature = gsw.CT_from_t(absolute_salinity, temperature, pressure)
     density = gsw.density.rho(absolute_salinity, conservative_temperature, pressure)
     o2sat = gsw.O2sol(
         absolute_salinity, conservative_temperature, pressure, lon, lat
