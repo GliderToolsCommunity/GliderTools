@@ -15,7 +15,6 @@ dependencies:
   - skyfield
   - pip
   - pip:
-    - seawater
     - codecov
     - pytest-cov
     - pytest-xdist
