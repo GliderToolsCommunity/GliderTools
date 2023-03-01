@@ -1,4 +1,4 @@
-from glidertools.load.voto_seaexplorer import concat_datasets, voto_seaexplorer_nc
+from glidertools.load import voto_concat_datasets, voto_seaexplorer_nc
 
 
 filename = "./tests/data/voto_nrt.nc"
@@ -12,6 +12,6 @@ def test_dives_column_addition():
     assert len(ds1.dives) > 1
 
 
-def test_concat_datasets():
-    ds_concat = concat_datasets([ds1, ds2])
+def test_voto_concat_datasets():
+    ds_concat = voto_concat_datasets([ds1, ds2])
     assert 2 * len(ds1.time) == len(ds_concat.time)
