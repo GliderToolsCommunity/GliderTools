@@ -45,7 +45,7 @@ gt.load.seaglider_show_variables(filenames)
 
 Glidertools supports loading Seaexplorer files. This is implemented and tested with `VOTO https://observations.voiceoftheocean.org`_ datasets in mind currently, but we are happy about feedback/pullrequests how it works for other SeaExplorer datasets. VOTO data can either be downloaded from the website using a browser or, more comfortable, from an `ERDAP server https://erddap.observations.voiceoftheocean.org/erddap/index.html`_ . See the `demo notebook <https://github.com/voto-ocean-knowledge/download_glider_data>`_ to get started with downloads over the API.
 
-After download of a .nc file or xarray-Dataset, it can be read into Glidertools by calling `gt.load.voto_seaexplorer_nc` or `gt.load.voto_seaexplorer_dataset` respectively. Resulting datasets can be merged by calling `gt.load.voto_concat_datasets`. The import of the data into GliderTools is hereby finished, remaining steps on this wiki-page are optional. 
+After download of a .nc file or xarray-Dataset, it can be read into Glidertools by calling `gt.load.voto_seaexplorer_nc` or `gt.load.voto_seaexplorer_dataset` respectively. Resulting datasets can be merged by calling `gt.load.voto_concat_datasets`. The import of the data into GliderTools is hereby finished, remaining steps on this wiki-page are optional.
 
 ## Load variables
 
