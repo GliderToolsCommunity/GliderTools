@@ -46,7 +46,7 @@ def time_average_per_dive(dives, time):
 
 def group_by_profiles(ds, variables=None):
     """
-    Group profiles by dives column, i.e. each group member is one dive. The
+    Group profiles by dives column. Each group member is one dive. The
     returned profiles can be evaluated statistically, e.g. by
     pandas.DataFrame.mean or other aggregating methods. To filter out one
     specific profile, use xarray.Dataset.where instead.
@@ -76,8 +76,8 @@ def mask_above_depth(ds, depths):
     """
     Masks all data above depths.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     df : xarray.Dataframe or pandas.Dataframe
     mask_depths : float (for constant depth masking) or pandas.Series as
         returned e.g. by the mixed_layer_depth function
@@ -89,8 +89,8 @@ def mask_below_depth(ds, depths):
     """
     Masks all data below depths.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     df : xarray.Dataframe or pandas.Dataframe
     mask_depths : float (for constant depth masking) or pandas.Series as
         returned e.g. by the mixed_layer_depth function
@@ -100,12 +100,13 @@ def mask_below_depth(ds, depths):
 
 def mask_profile_depth(df, mask_depth, above):
     """
-    masks either above or below mask_depth. If type(mask_depth)=np.nan,
+    Masks either above or below mask_depth. If type(mask_depth)=np.nan,
     the whole profile will be masked. Warning: This function is for a SINGLE
     profile only, for masking a complete Glider Dataset please look for
     utils.mask_above_depth and/or utils.mask_below_depth.
-    Parameters:
-    -----------
+
+    Parameters
+    ----------
     df : xarray.Dataframe or pandas.Dataframe
     mask_depths : float (for constant depth masking) or pandas.Series as
         returned e.g. by the mixed_layer_depth function
