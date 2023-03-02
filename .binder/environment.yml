@@ -1,0 +1,20 @@
+name: glidertools_notebooks
+channels:
+  - conda-forge
+dependencies:
+  - numexpr
+  - netCDF4
+  - pandas
+  - xarray >=2022.10.0
+  - numpy
+  - scikit-learn
+  - scipy
+  - tqdm
+  - matplotlib
+  - gsw
+  - skyfield
+  - jupyterlab
+  - cmocean
+  - pip
+  - pip:
+    - glidertools @ git+https://github.com/GliderToolsCommunity/GliderTools.git@master
