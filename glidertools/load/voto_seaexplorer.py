@@ -61,7 +61,7 @@ def add_dive_column(ds):
     return ds
 
 
-def concat_datasets(datasets):
+def voto_concat_datasets(datasets):
     """
     Concatenates multiple datasets along the time dimensions, profile_num
     and dives variable(s) are adapted so that they start counting from one
