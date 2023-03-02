@@ -61,7 +61,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "GliderTools"
-copyright = "GliderTools, 2019"
+copyright = "GliderTools, 2023"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
