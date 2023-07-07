@@ -116,7 +116,7 @@ def par_dark_count(par, depth, time, depth_percentile=90):
     if ma.sum(xi) < 1:
         warnings.warn(
             "There are no reliable night time measurements. This dark count correction cannot be "
-            "cannot be trusted",
+            "trusted",
             UserWarning,
         )
 
@@ -697,7 +697,7 @@ def quenching_correction(
     df = pd.DataFrame(np.c_[flr, bbp], columns=["flr", "bbp"])
     # get the binned averages for each batch and select the night
     night_ave = df.groupby([day, batch, np.around(depth)]).mean()
-    night_ave = night_ave.dropna().loc[False]
+    night_ave = night_ave.dropna().loc[False, :, :]
     # A second group where only batches are grouped
     grp_batch = df.groupby(batch)
 
