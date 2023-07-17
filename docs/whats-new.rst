@@ -36,6 +36,7 @@ New Features
 
 Breaking changes
 ~~~~~~~~~~~~~~~~
+- GliderTools defaults for Figure creation were changed. Automatic application of plt.tight_layout was dropped in favour of more flexible embedding of GliderTools plots into existing layouts/subplots.
 - The mixed layer depth algorithm was corrected. (:pull:`169`, :issue:`168`). By `Martin Mohrmann <https://github.com/MartinMohrmann>`_. API change! Existing mixed layer computation code must be adapted.
 
 Internal changes
