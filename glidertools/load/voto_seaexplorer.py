@@ -76,6 +76,16 @@ def voto_concat_datasets(datasets):
     xarray.Dataset
         concatenated Dataset containing all the data from the list of datasets
     """
+    # in case the datasets have a different set of variables, emtpy variables are created
+    # to allow for concatenation (concat with different set of variables leads to error)
+    mlist = [set(dataset.variables.keys()) for dataset in datasets]
+    allvariables = set.union(*mlist)
+    for dataset in datasets:
+        missing_vars = allvariables - set(dataset.variables.keys())
+        for missing_var in missing_vars:
+            dataset[missing_var] = np.nan
+
+    # renumber profiles, so that profile_num still is unique in concat-dataset
     for index in range(1, len(datasets)):
         datasets[index]["profile_num"] += (
             datasets[index - 1].copy()["profile_num"].max()
