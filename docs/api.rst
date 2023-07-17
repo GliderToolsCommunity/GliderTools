@@ -15,6 +15,9 @@ Loading Data
    load.seaglider_show_variables
    load.ego_mission_netCDF
    load.slocum_geomar_matfile
+   load.voto_seaexplorer_nc
+   load.voto_seaexplorer_dataset
+   load.voto_concat_datasets
 
 
 High level processing
@@ -115,10 +118,13 @@ General Utilities
    :toctree: ./_generated/
 
    utils.time_average_per_dive
-   utils.mask_to_depth_array
+   utils.mask_above_depths
+   utils.mask_below_depths
+   utils.mask_profile_depth
    utils.merge_dimensions
    utils.calc_glider_vert_velocity
    utils.calc_dive_phase
    utils.calc_dive_number
    utils.dive_phase_to_number
    utils.distance
+   utils.group_by_profiles

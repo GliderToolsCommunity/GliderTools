@@ -1,12 +1,17 @@
 import inspect
 
-from pkg_resources import DistributionNotFound, get_distribution
 
+def package_version():
+    # package version will only be returned if package is installed through e.g. pip or conda,
+    # development code is unaware of its own version (and there is not such a thing in dev anyway).
+    # Advantage: We don't have to keep track of versioning manually
+    from importlib.metadata import PackageNotFoundError, version
 
-try:
-    version = get_distribution("glidertools").version
-except DistributionNotFound:
-    version = "version_undefined"
+    try:
+        version = version("glidertools")
+    except PackageNotFoundError:
+        version = "version_undefined"
+    return version
 
 
 class GliderToolsWarning(UserWarning):
@@ -79,7 +84,7 @@ def transfer_nc_attrs(frame, input_xds, output_arr, output_name, **attrs):
         attributes = input_xds.attrs.copy()
         history = "" if "history" not in attributes else attributes["history"]
         history += "[{}] (v{}) {};\n".format(
-            time_now(), version, rebuild_func_call(frame)
+            time_now(), package_version(), rebuild_func_call(frame)
         )
         attributes.update({"history": history})
         attributes.update(attrs)

@@ -1,4 +1,4 @@
-name: test_env_glidertools
+name: glidertools_notebooks
 channels:
   - conda-forge
 dependencies:
@@ -13,8 +13,8 @@ dependencies:
   - matplotlib
   - gsw
   - skyfield
+  - jupyterlab
+  - cmocean
   - pip
   - pip:
-    - codecov
-    - pytest-cov
-    - pytest-xdist
+    - glidertools @ git+https://github.com/GliderToolsCommunity/GliderTools.git@master

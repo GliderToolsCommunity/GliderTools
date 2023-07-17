@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-from __future__ import absolute_import as _ai
-from __future__ import print_function as _pf
-from __future__ import unicode_literals as _ul
 
 from inspect import currentframe as getframe
 
@@ -42,38 +39,95 @@ def time_average_per_dive(dives, time):
     t_ser = Series(t_mid, index=t_grp.mean().index.values)
     diveavg = t_ser.reindex(index=dives).values
     diveavg = diveavg.astype("datetime64[s]")
-
     diveavg = transfer_nc_attrs(getframe(), time, diveavg, "_diveavg")
 
     return diveavg
 
 
-def mask_to_depth_array(dives, depth, var):
+def group_by_profiles(ds, variables=None):
     """
-    Use when function returns a boolean section (as a mask) and you would
-    like to return the depth of the positive mask (True) for each dive. This is
-    useful for cases like MLD which returns a mask. Note that this is for
-    ungridded data in "series" format.
+    Group profiles by dives column. Each group member is one dive. The
+    returned profiles can be evaluated statistically, e.g. by
+    pandas.DataFrame.mean or other aggregating methods. To filter out one
+    specific profile, use xarray.Dataset.where instead.
 
     Parameters
     ----------
-    dives : np.array, dtype=float, shape=[n, ]
-        discrete dive numbers (down = d.0; up = d.5) that matches depth and var
-        length
-    depth : np.array, dtype=float, shape=[n, ]
-        depth of each measurement
-    var : np.array, dtype=bool, shape=[n,]
-        mask array
-
+    ds : xarray.Dataset
+        1-dimensional Glider dataset
+    variables : list of strings, optional
+        specify variables if only a subset of the dataset should be grouped
+        into profiles. Grouping only a subset is considerably faster and more
+        memory-effective.
+    Return
+    ------
+    profiles:
+    dataset grouped by profiles (dives variable), as created by the
+    pandas.groupby methods.
     """
+    ds = ds.reset_coords().to_pandas().reset_index().set_index("dives")
+    if variables:
+        return ds[variables].groupby("dives")
+    else:
+        return ds.groupby("dives")
 
-    from numpy import array, diff, r_
-    from pandas import Series
 
-    i = r_[False, diff(var)].astype(bool)
-    idx_depth = Series(array(depth)[i], index=array(dives)[i])
+def mask_above_depth(ds, depths):
+    """
+    Masks all data above depths.
 
-    return idx_depth
+    Parameters
+    ----------
+    df : xarray.Dataframe or pandas.Dataframe
+    mask_depths : float (for constant depth masking) or pandas.Series as
+        returned e.g. by the mixed_layer_depth function
+    """
+    return _mask_depth(ds, depths, above=True)
+
+
+def mask_below_depth(ds, depths):
+    """
+    Masks all data below depths.
+
+    Parameters
+    ----------
+    df : xarray.Dataframe or pandas.Dataframe
+    mask_depths : float (for constant depth masking) or pandas.Series as
+        returned e.g. by the mixed_layer_depth function
+    """
+    return _mask_depth(ds, depths, above=False)
+
+
+def mask_profile_depth(df, mask_depth, above):
+    """
+    Masks either above or below mask_depth. If type(mask_depth)=np.nan,
+    the whole profile will be masked. Warning: This function is for a SINGLE
+    profile only, for masking a complete Glider Dataset please look for
+    utils.mask_above_depth and/or utils.mask_below_depth.
+
+    Parameters
+    ----------
+    df : xarray.Dataframe or pandas.Dataframe
+    mask_depths : float (for constant depth masking) or pandas.Series as
+        returned e.g. by the mixed_layer_depth function
+    above : boolean
+        Mask either above mask_depth (True) or below (False)
+    """
+    if type(mask_depth) not in [int, float]:
+        # this case for calling from _mask_depth
+        mask_depth = mask_depth.loc[df.index[0]]
+    if above:
+        mask = df.depth > mask_depth
+    else:
+        mask = df.depth < mask_depth
+    return mask
+
+
+def _mask_depth(ds, depths, above=True):
+    ds = ds.reset_coords().to_pandas().set_index("dives")
+    mask = ds.groupby("dives").apply(mask_profile_depth, depths, above)
+    # mask = mask if above else ~mask
+    return mask.values
 
 
 def merge_dimensions(df1, df2, interp_lim=3):
