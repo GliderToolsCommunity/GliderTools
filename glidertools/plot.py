@@ -124,7 +124,7 @@ class plot_functions(object):
         """
         from datetime import datetime
 
-        from matplotlib.pyplot import colorbar, subplots
+        from matplotlib.pyplot import colorbar, subplot
         from numpy import datetime64, nanpercentile
 
         ax = kwargs.pop("ax", None)
@@ -145,9 +145,7 @@ class plot_functions(object):
             kwargs["vmax"] = nanpercentile(z.data, 99.5)
 
         if ax is None:
-            fig, ax = subplots(1, 1, figsize=[9, 3.5], dpi=90)
-        else:
-            fig = ax.get_figure()
+            ax = subplot()
 
         im = ax.pcolormesh(x, y, z, **kwargs)
         ax.cb = colorbar(mappable=im, pad=0.02, ax=ax, fraction=0.05)
@@ -162,7 +160,6 @@ class plot_functions(object):
             ax.set_title(name)
 
         [tick.set_rotation(45) for tick in ax.get_xticklabels()]
-        fig.tight_layout()
 
         return ax
 
@@ -194,7 +191,7 @@ class plot_functions(object):
 
         from datetime import datetime
 
-        from matplotlib.pyplot import colorbar, subplots
+        from matplotlib.pyplot import colorbar, subplot
         from numpy import datetime64, nanpercentile
 
         ax = kwargs.pop("ax", None)
@@ -210,9 +207,7 @@ class plot_functions(object):
             kwargs["vmax"] = nanpercentile(z[~z.mask], 99.5)
 
         if ax is None:
-            fig, ax = subplots(1, 1, figsize=[9, 3.5], dpi=90)
-        else:
-            fig = ax.get_figure()
+            ax = subplot()
 
         im = ax.contourf(x, y, z, **kwargs)
         ax.cb = colorbar(mappable=im, pad=0.02, ax=ax, fraction=0.05)
@@ -225,7 +220,6 @@ class plot_functions(object):
         ax.cb.set_label(name)
 
         [tick.set_rotation(45) for tick in ax.get_xticklabels()]
-        fig.tight_layout()
 
         return ax
 
@@ -259,7 +253,7 @@ class plot_functions(object):
 
         from datetime import datetime
 
-        from matplotlib.pyplot import colorbar, subplots
+        from matplotlib.pyplot import colorbar, subplot
         from numpy import array, datetime64, isnan, ma, nanmax, nanmin, nanpercentile
 
         z = ma.masked_invalid(z)
@@ -285,9 +279,8 @@ class plot_functions(object):
             kwargs["vmax"] = nanpercentile(z, 99.5)
 
         if ax is None:
-            fig, ax = subplots(1, 1, figsize=[9, 3.5], dpi=90)
-        else:
-            fig = ax.get_figure()
+            ax = subplot()
+
         im = ax.scatter(x, y, c=z, rasterized=True, **kwargs)
 
         ax.cb = colorbar(mappable=im, pad=0.02, ax=ax, fraction=0.05)
@@ -297,7 +290,6 @@ class plot_functions(object):
         ax.set_xlabel("Date" if x_time else "Dives")
 
         [tick.set_rotation(45) for tick in ax.get_xticklabels()]
-        fig.tight_layout()
 
         return ax
 
@@ -325,7 +317,7 @@ class plot_functions(object):
         axes
         """
         from matplotlib.colors import LogNorm
-        from matplotlib.pyplot import colorbar, subplots
+        from matplotlib.pyplot import colorbar, subplot
         from numpy import abs, array, diff, isnan, nan, nanmedian, r_
 
         from .mapping import get_optimal_bins
@@ -355,7 +347,7 @@ class plot_functions(object):
             xbins = r_[nan, xbins]
 
         if ax is None:
-            fig, ax = subplots(1, 1, figsize=[4, 6])
+            ax = subplot()
 
         im = ax.hist2d(x, y, bins=bins, norm=LogNorm(), rasterized=True, **hist_kwargs)[
             -1
@@ -648,6 +640,6 @@ class logo:
         return fig, ax
 
 
-if __name__ == "__main__":
-    pass
-    "fun people"
+# if __name__ == "__main__":
+#     pass
+#     "fun people"
