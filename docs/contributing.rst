@@ -163,3 +163,15 @@ Preparing Pull Requests
      $ git rebase upstream/master  # Apply the changes that have been made to central repo,
      $ # since your last fetch, onto you master.
      $ git branch -d your-bugfix-feature-branch-name  # to delete the branch after PR is approved
+
+Release Instructions
+--------------------
+
+This is a documentation repo for people in the group on how to do the integrated deployment.
+
+NB RULE! Never commit to master.
+
+1. Change the version in the setup.py file. Must be format YYYY.<release number>
+2. Create a release with a tag that has the same format as the version above.
+3. The distribution will be built automatically and pushed to PyPi
+4. The DOI will also be updated on Zenodo. (untested, see #165)
