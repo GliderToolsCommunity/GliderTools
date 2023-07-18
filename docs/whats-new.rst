@@ -38,6 +38,7 @@ Breaking changes
 ~~~~~~~~~~~~~~~~
 - GliderTools defaults for Figure creation were changed. Automatic application of plt.tight_layout was dropped in favour of more flexible embedding of GliderTools plots into existing layouts/subplots.
 - The mixed layer depth algorithm was corrected. (:pull:`169`, :issue:`168`). By `Martin Mohrmann <https://github.com/MartinMohrmann>`_. API change! Existing mixed layer computation code must be adapted.
+- Changed the behavior of `find_dive_phase` and `calc_dive_number` to use a smaller depth threshold when determining a valid dive (15 dbar down from 200 dbar).  this is also now adjusteable. (:pull:`134`) By `Tom Hull <https://github.com/tomhull>`_.
 
 Internal changes
 ~~~~~~~~~~~~~~~~
@@ -54,11 +55,9 @@ Internal changes
 - Refactoring and update of testing and development framework, update of flake, black and almost all python dependencies
 
 
-
 Breaking changes
 ~~~~~~~~~~~~~~~~
 - Fixed processing/calc_oxygen (:pull: `116`, :issue: `112`) By `Callum Rollo <https://github.com/callumrollo>`_.
-
 
 
 Internal Changes
