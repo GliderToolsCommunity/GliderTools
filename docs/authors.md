@@ -16,6 +16,7 @@ The following people have made contributions to the project (in alphabetical ord
 - [Julius Busecke](http://jbusecke.github.io/) -  Columbia University, USA. (ORCID: [0000-0001-8571-865X](https://orcid.org/0000-0001-8571-865X))
 - [Isabelle Giddy](https://github.com/isgiddy/) - University of Cape Town: Cape Town, Western Cape, South Africa. (ORCID: [0000-0002-8926-3311](https://orcid.org/0000-0002-8926-3311))
 - [Luke Gregor](https://github.com/lukegre) - Environmental Physics, ETH Zuerich: Zurich, Switzerland. (ORCID: [0000-0001-6071-1857](https://orcid.org/0000-0001-6071-1857))
+- [Tom Hull](https://github.com/tomhull) - Centre for Environment Fisheries and Aquaculture Science: Lowestoft, UK. (ORCID: [0000-0002-1714-9317](https://orcid.org/0000-0002-1714-9317))
 - [Martin Mohrmann](https://github.com/MartinMohrmann) - Voice of the Ocean Foundation, Gothenburg, Sweden. (ORCID: [0000-0001-8056-4866](https://orcid.org/0000-0001-8056-4866))
 - [Sarah-Anne Nicholson](https://github.com/sarahnicholson) - Council for Scientific and Industrial Research: Cape Town, South Africa. (ORCID: [0000-0002-1226-1828](https://orcid.org/0000-0002-1226-1828))
 - [Marcel du Plessis](https://mduplessis.com) - University of Cape Town: Cape Town, Western Cape, South Africa. (ORCID: [0000-0003-2759-2467](https://orcid.org/0000-0003-2759-2467))
