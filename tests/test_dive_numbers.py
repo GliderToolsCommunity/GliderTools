@@ -1,5 +1,3 @@
-import pytest
-
 import glidertools.utils as gt_util
 
 from glidertools.load import seaglider_basestation_netCDFs
