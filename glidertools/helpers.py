@@ -91,7 +91,7 @@ def transfer_nc_attrs(frame, input_xds, output_arr, output_name, **attrs):
 
         keys = list(attributes.keys())
         for key in keys:
-            if attributes[key] == "":
+            if str(attributes[key]) == "":
                 attributes.pop(key)
 
         xds = xr.DataArray(
