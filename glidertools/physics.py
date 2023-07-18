@@ -44,6 +44,10 @@ def mld_profile(df, variable, thresh, ref_depth, verbose=True):
     if len(df) == 0:
         mld = np.nan
         exception = True
+        message = """no observations found for specified variable in dive {}
+                """.format(
+            df.index[0]
+        )
     elif np.nanmin(np.abs(df.depth.values - ref_depth)) > 5:
         exception = True
         message = """no observations within 5 m of ref_depth for dive {}
