@@ -806,6 +806,7 @@ def quenching_report(
 
     from . import plot
 
+    # restrict all input arrays to depth < 183 m
     y = array(depth)
     i = y < 183
     y = y[i]
@@ -815,8 +816,10 @@ def quenching_report(
     fig, ax = subplots(3, 1, figsize=[10, 11], dpi=90)
     title = "Quenching correction with Thomalla et al. (2017)"
 
+    # set robust plotting limits for corrected fluorescence and (0,1)
+    # limits for boolean quenching layer mask
     bmin, bmax = nanpercentile(z[1], [2, 98])
-    smin, smax = nanpercentile(z[2], [2, 98])
+    smin, smax = (0, 1)
     props = dict(cmap=cm.YlGnBu_r)
     props.update(pcolor_kwargs)
 

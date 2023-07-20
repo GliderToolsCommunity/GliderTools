@@ -40,15 +40,20 @@ def mixed_layer_depth(ds, variable, thresh=0.01, ref_depth=10, verbose=True):
 
 def mld_profile(df, variable, thresh, ref_depth, verbose=True):
     exception = False
+    divenum = df.index[0]
     df = df.dropna(subset=[variable, "depth"])
     if len(df) == 0:
         mld = np.nan
         exception = True
+        message = """no observations found for specified variable in dive {}
+                """.format(
+            divenum
+        )
     elif np.nanmin(np.abs(df.depth.values - ref_depth)) > 5:
         exception = True
         message = """no observations within 5 m of ref_depth for dive {}
                 """.format(
-            df.index[0]
+            divenum
         )
         mld = np.nan
     else:
@@ -72,7 +77,7 @@ def mld_profile(df, variable, thresh, ref_depth, verbose=True):
             mld = np.nan
             message = """threshold criterion never true (all mixed or \
                 shallow profile) for profile {}""".format(
-                df.index[0]
+                divenum
             )
     if verbose and exception:
         warnings.warn(message, category=GliderToolsWarning)
