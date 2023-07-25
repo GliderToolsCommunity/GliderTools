@@ -24,25 +24,40 @@ What's New
     - Dark count corrections for optical sensors(:pull:'110'). By 'Isabelle Giddy <https://github.com/isgiddy>'_.
 
 
-v2023.xx (unreleased)
+v2023.07.25 (2023/07/25)
 ------------------------
 
-.. _whats-new.2023.xx:
+.. _whats-new.2023.07.25:
 
 New Features
 ~~~~~~~~~~~~
 - added import for VOTO seaexplorer data (:pull:`170`) By `Martin Mohrmann <https://github.com/MartinMohrmann>`_.
-- added versatile, depth dependent masking (:pull:`172`) By `Martin Mohrmann <https://github.com/MartinMohrmann>`_.
+- added versatile, depth dependent masking (:pull:`172`) and per profile grouping (:pull:`175`). By `Martin Mohrmann <https://github.com/MartinMohrmann>`_.
+- add concatenation of two or more datasets (:pull:`173`), even with different set of variables (:pull:`183`). By `Martin Mohrmann <https://github.com/MartinMohrmann>`_.
 
 Breaking changes
 ~~~~~~~~~~~~~~~~
-- GliderTools defaults for Figure creation were changed. Automatic application of plt.tight_layout was dropped in favour of more flexible embedding of GliderTools plots into existing layouts/subplots.
-- The mixed layer depth algorithm was corrected. (:pull:`169`, :issue:`168`). By `Martin Mohrmann <https://github.com/MartinMohrmann>`_. API change! Existing mixed layer computation code must be adapted.
 - Changed the behavior of `find_dive_phase` and `calc_dive_number` to use a smaller depth threshold when determining a valid dive (15 dbar down from 200 dbar).  this is also now adjusteable. (:pull:`134`) By `Tom Hull <https://github.com/tomhull>`_.
+- GliderTools defaults for Figure creation were changed. Automatic application of plt.tight_layout was dropped in favour of more flexible embedding of GliderTools plots into existing layouts/subplots. (:pull:`185`). By `Martin Mohrmann <https://github.com/MartinMohrmann>`_.
+- The mixed layer depth algorithm was corrected. (:pull:`169`, :issue:`168`). By `Martin Mohrmann <https://github.com/MartinMohrmann>`_. API change! Existing mixed layer computation code must be adapted.
 
 Internal changes
 ~~~~~~~~~~~~~~~~
+- Removed outdated python-seawater dependency (:pull:`186`). By `Callum Rollo <https://github.com/callumrollo>`_.
+- Update documentation of required dependencies (:pull:`174`). By `Sören Thomsen <https://github.com/soerenthomsen>`_.
 - Some cleanup of old python2 dependencies (:pull:`166`). By `Martin Mohrmann <https://github.com/MartinMohrmann>`_.
+- Replace deprecated pkg_resources with importlib.metadata (:pull:`187`). By `Martin Mohrmann <https://github.com/MartinMohrmann>`_.
+- Add release guide to documentation (:pull:`186`). By `Martin Mohrmann <https://github.com/MartinMohrmann>`_.
+- Cleanup of unused imports (:pull:`174`). By `Martin Mohrmann <https://github.com/MartinMohrmann>`_.
+
+Bug fixes
+~~~~~~~~~
+- Adapt demo notebook to updated Glider Tools (:pull:`179`). By `Callum Rollo <https://github.com/callumrollo>`_.
+- Fix netCDF attribute handling for non-string attributes (:pull:`194`). By `Martin Mohrmann <https://github.com/MartinMohrmann>`_.
+- Adapt quenching_report to modern numpy versions (:pull:`191`) By `Martin Mohrmann <https://github.com/MartinMohrmann>`_.
+- Improve error handling for MLD computation (:pull:`190`). By `Martin Mohrmann <https://github.com/MartinMohrmann>`_.
+
+Thanks also to `Julius Busecke <https://github.com/jbusecke>`_ for help with the github CI, `Sam Woodman <https://github.com/smwoodman>`_ for detailed bug reports and everyone else who has contributed.
 
 
 v2022.12.13 (2022/12/13)
