@@ -261,9 +261,9 @@ def calc_dive_phase(time, depth, dive_depth_threshold=15):
 
     phase[velocity > 0.5] = 1  # down dive
     phase[velocity < -0.5] = 4  # up dive
-    phase[
-        (depth > dive_depth_threshold) & (velocity >= -0.5) & (velocity <= 0.5)
-    ] = 3  # inflexion
+    phase[(depth > dive_depth_threshold) & (velocity >= -0.5) & (velocity <= 0.5)] = (
+        3  # inflexion
+    )
     phase[depth <= dive_depth_threshold] = 0  # surface drift
     phase[isnan(phase)] = 6
     phase = phase.astype(int)
