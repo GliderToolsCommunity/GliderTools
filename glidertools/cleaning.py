@@ -711,9 +711,7 @@ def savitzky_golay(var, window_size, order, deriv=0, rate=1, interpolate=True):
         y = array(arr)
 
     # precompute coefficients
-    b = mat(
-        [[k**i for i in order_range] for k in range(-half_window, half_window + 1)]
-    )
+    b = mat([[k**i for i in order_range] for k in range(-half_window, half_window + 1)])
     m = linalg.pinv(b).A[deriv] * rate**deriv * factorial(deriv)
     # pad the signal at the extremes with
     # values taken from the signal itself
