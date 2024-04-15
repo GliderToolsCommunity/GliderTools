@@ -974,7 +974,9 @@ def grid_data(
     gridded = gridded.reindex(labels.astype(float))
 
     if interp_lim > 0:
-        gridded = gridded.interpolate(limit=interp_lim).bfill(limit=interp_lim)
+        gridded = gridded.interpolate(limit=interp_lim, limit_area="inside").bfill(
+            limit=interp_lim
+        )
 
     if not return_xarray:
         return gridded
