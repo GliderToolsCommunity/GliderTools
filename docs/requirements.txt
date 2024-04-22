@@ -1,4 +1,3 @@
 glidertools
 docutils
 recommonmark
-sphinx
