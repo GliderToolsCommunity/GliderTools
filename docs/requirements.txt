@@ -1,4 +1,2 @@
 glidertools
-docutils
-recommonmark
-sphinx-rtd-theme
+docutils<0.18
