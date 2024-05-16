@@ -23,6 +23,15 @@ What's New
     ~~~~~~~~~
     - Dark count corrections for optical sensors(:pull:'110'). By 'Isabelle Giddy <https://github.com/isgiddy>'_.
 
+v2024.xx (unreleased)
+---------------------
+
+.. _whats-new.2024.xx:
+
+Bug fixes
+~~~~~~~~~
+- fixed quenching correction for eastern longitudes larger than 70E (:issue:`202`). (:pull:`204`) by 'Martin Mohrmann <https://github.com/MartinMohrmann'>`_.
+
 
 v2023.07.25 (2023/07/25)
 ------------------------
