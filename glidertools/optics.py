@@ -520,6 +520,8 @@ def sunset_sunrise(time, lat, lon):
                 sundown.hour[0],
                 sundown.minute[0],
             ).to_datetime64()
+            # adressing glidertools issue #202 where su>sd for longitudes > 70E
+            su = (su - np.timedelta64(1, "D")) if su > sd else su
 
             sunrise.append(su)
             sunset.append(sd)
