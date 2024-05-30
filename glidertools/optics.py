@@ -697,7 +697,7 @@ def quenching_correction(
     df = pd.DataFrame(np.c_[flr, bbp], columns=["flr", "bbp"])
     # get the binned averages for each batch and select the night
     night_ave = df.groupby([day, batch, np.around(depth)]).mean()
-    night_ave = night_ave.dropna().loc[False, :, :]
+    night_ave = night_ave.dropna().xs(False, level=0, drop_level=True)
     # A second group where only batches are grouped
     grp_batch = df.groupby(batch)
 
