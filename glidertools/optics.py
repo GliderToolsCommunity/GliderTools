@@ -448,10 +448,8 @@ def sunset_sunrise(time, lat, lon):
     # set days as index
     df = df.set_index(df.time.values.astype("datetime64[D]"))
 
-    # groupby days and find sunrise for unique days
     # groupby days and find sunrise/sunset for unique days
     grp_avg = df.groupby(df.index).mean(numeric_only=False)
-    date = grp_avg.index.to_pydatetime()
     date = grp_avg.index
 
     time_utc = ts.utc(date.year, date.month, date.day, date.hour)
