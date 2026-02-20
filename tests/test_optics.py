@@ -21,7 +21,12 @@ def test_sunrise_sunset():
     ]
     lat = -35, 45, 80
     lon = 0, 0, 0
-    sunrise, sunset = sunset_sunrise(time, lat, lon)
+    try:
+        sunrise, sunset = sunset_sunrise(time, lat, lon)
+    except (OSError, ImportError) as e:
+        pytest.skip(
+            f"Skipping test because skyfield could not download ephemeris data: {e}"
+        )
 
     # Three entries, there should be three outputs
     assert len(sunrise) == len(lat)
